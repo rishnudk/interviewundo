@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
+// DashboardLayout is handled globally by route group layout
 import { DifficultyBadge } from '@/components/ui/difficulty-badge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -75,7 +75,7 @@ export default function Home() {
   ];
 
   return (
-    <DashboardLayout>
+    <>
       <div className="space-y-8 pb-12">
         {/* Welcome Section */}
         <div className="rounded-3xl bg-gradient-to-r from-indigo-600 to-violet-600 p-8 text-white relative overflow-hidden shadow-lg shadow-indigo-500/10">
@@ -227,7 +227,7 @@ export default function Home() {
           </Card>
         </div>
       </div>
-    </DashboardLayout>
+    </>
   );
 }
 
