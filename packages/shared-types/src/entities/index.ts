@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import { Difficulty, Category, SubmissionStatus, UserRole } from '../enums';
 
 // ============================================================
