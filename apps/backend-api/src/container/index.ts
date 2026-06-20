@@ -19,6 +19,7 @@ import { RefreshToken } from '../application/use-cases/auth/RefreshToken';
 import { GetProblems } from '../application/use-cases/problem/GetProblems';
 import { GetProblemBySlug } from '../application/use-cases/problem/GetProblemBySlug';
 import { SubmitSolution } from '../application/use-cases/submission/SubmitSolution';
+import { RunCode } from '../application/use-cases/submission/RunCode';
 
 // --- Controllers ---
 import { AuthController } from '../presentation/controllers/AuthController';
@@ -71,11 +72,12 @@ const submitSolution = new SubmitSolution(
   mockQueueService,
   mockNotificationService,
 );
+const runCode = new RunCode(problemRepository, mockQueueService);
 
 // Step 3: Instantiate controllers
 const authController = new AuthController(registerUser, loginUser, refreshToken);
 const problemController = new ProblemController(getProblems, getProblemBySlug);
-const submissionController = new SubmissionController(submitSolution);
+const submissionController = new SubmissionController(submitSolution, runCode);
 
 // Step 4: Export container
 export const container = {
@@ -96,6 +98,7 @@ export const container = {
     getProblems,
     getProblemBySlug,
     submitSolution,
+    runCode,
   },
   controllers: {
     authController,
