@@ -33,6 +33,7 @@ export default function ProblemWorkspacePage() {
   const [editorTheme, setEditorTheme] = useState<'vs-dark' | 'light'>('vs-dark');
   const [fontSize, setFontSize] = useState<number>(14);
   const [code, setCode] = useState<string>('');
+  const [language, setLanguage] = useState<'javascript' | 'typescript' | 'python'>('javascript');
 
   // Mobile Navigation: 'description' | 'code' | 'output'
   const [mobileTab, setMobileTab] = useState<'description' | 'code'>('description');
@@ -120,7 +121,7 @@ export default function ProblemWorkspacePage() {
       setIsRunning(false);
       setConsoleOutput({
         status: 'Finished',
-        stdout: 'Success! All mock tests passed.',
+        stdout: `Success! All mock tests passed in ${language}.`,
         passed: true,
       });
     }, 1500);
@@ -136,7 +137,7 @@ export default function ProblemWorkspacePage() {
       setIsSubmitting(false);
       setConsoleOutput({
         status: 'Accepted',
-        stdout: 'All test cases passed!\nRuntime: 76 ms\nMemory: 42.1 MB',
+        stdout: `All test cases passed in ${language}!\nRuntime: 76 ms\nMemory: 42.1 MB`,
         passed: true,
       });
     }, 2000);
@@ -292,20 +293,29 @@ export default function ProblemWorkspacePage() {
         >
           {/* Top Panel: Monaco Editor */}
           <div className="flex-1 flex flex-col min-h-0 relative">
-            <div className="flex items-center justify-between px-6 py-2 border-b border-border bg-[#181818] shrink-0 text-xs font-semibold text-muted-foreground select-none">
-              <div className="flex items-center gap-1.5 text-zinc-400">
+            <div className="flex items-center justify-between px-6 py-2 border-b border-border bg-[#181818] shrink-0 text-xs font-semibold text-zinc-400 select-none">
+              <div className="flex items-center gap-1.5">
                 <FileCode size={13} />
-                solution.js
+                {language === 'javascript' && 'solution.js'}
+                {language === 'typescript' && 'solution.ts'}
+                {language === 'python' && 'solution.py'}
               </div>
-              <span className="text-[10px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded font-mono">
-                JavaScript
-              </span>
+
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as any)}
+                className="bg-[#2a2a2a] hover:bg-zinc-800 text-zinc-300 text-[11px] font-semibold px-2.5 py-1 rounded outline-none border border-zinc-700/60 cursor-pointer focus:border-zinc-500 transition-colors"
+              >
+                <option value="javascript">JavaScript</option>
+                <option value="typescript">TypeScript</option>
+                <option value="python">Python</option>
+              </select>
             </div>
 
             <div className="flex-1 min-h-0 bg-[#1e1e1e]">
               <Editor
                 height="100%"
-                language="javascript"
+                language={language}
                 theme={editorTheme}
                 value={code}
                 onChange={(val) => setCode(val || '')}
