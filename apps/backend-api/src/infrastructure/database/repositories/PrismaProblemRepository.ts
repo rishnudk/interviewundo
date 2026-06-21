@@ -75,7 +75,9 @@ export class PrismaProblemRepository implements IProblemRepository {
     return this.mapPrismaProblem(prismaProblem);
   }
 
-  async findAll(filters: ProblemFilterDTO & { isPublished?: boolean }): Promise<{ data: Problem[]; total: number }> {
+  async findAll(
+    filters: ProblemFilterDTO & { isPublished?: boolean },
+  ): Promise<{ data: Problem[]; total: number }> {
     const where: any = {};
 
     // Filter by published status
@@ -168,5 +170,42 @@ export class PrismaProblemRepository implements IProblemRepository {
         },
       },
     });
+  }
+
+  async countByDifficulty(): Promise<Record<string, number>> {
+    const counts = await prisma.problem.groupBy({
+      by: ['difficulty'],
+      where: { isPublished: true },
+      _count: {
+        id: true,
+      },
+    });
+
+    const result: Record<string, number> = { EASY: 0, MEDIUM: 0, HARD: 0 };
+    counts.forEach((c) => {
+      result[c.difficulty] = c._count.id;
+    });
+    return result;
+  }
+
+  async countByCategory(): Promise<Record<string, number>> {
+    const counts = await prisma.problem.groupBy({
+      by: ['category'],
+      where: { isPublished: true },
+      _count: {
+        id: true,
+      },
+    });
+
+    const result: Record<string, number> = {
+      JAVASCRIPT: 0,
+      REACT: 0,
+      NODEJS: 0,
+      TYPESCRIPT: 0,
+    };
+    counts.forEach((c) => {
+      result[c.category] = c._count.id;
+    });
+    return result;
   }
 }

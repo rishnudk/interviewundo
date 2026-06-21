@@ -150,6 +150,107 @@ export class PrismaSubmissionRepository implements ISubmissionRepository {
     return solvedGroup.length;
   }
 
+  async countAcceptedByUser(userId: string): Promise<number> {
+    return prisma.submission.count({
+      where: {
+        userId,
+        status: 'ACCEPTED',
+      },
+    });
+  }
+
+  async getSolvedProblemsDifficultyByUser(userId: string): Promise<Record<string, number>> {
+    const solvedProblems = await prisma.submission.findMany({
+      where: {
+        userId,
+        status: 'ACCEPTED',
+      },
+      select: {
+        problem: {
+          select: {
+            difficulty: true,
+          },
+        },
+      },
+      distinct: ['problemId'],
+    });
+
+    const result = { EASY: 0, MEDIUM: 0, HARD: 0 };
+    solvedProblems.forEach((s: any) => {
+      const diff = s.problem.difficulty;
+      if (diff in result) {
+        result[diff as keyof typeof result]++;
+      }
+    });
+    return result;
+  }
+
+  async getSolvedProblemsCategoryByUser(userId: string): Promise<Record<string, number>> {
+    const solvedProblems = await prisma.submission.findMany({
+      where: {
+        userId,
+        status: 'ACCEPTED',
+      },
+      select: {
+        problem: {
+          select: {
+            category: true,
+          },
+        },
+      },
+      distinct: ['problemId'],
+    });
+
+    const result = { JAVASCRIPT: 0, REACT: 0, NODEJS: 0, TYPESCRIPT: 0 };
+    solvedProblems.forEach((s: any) => {
+      const cat = s.problem.category;
+      if (cat in result) {
+        result[cat as keyof typeof result]++;
+      }
+    });
+    return result;
+  }
+
+  async getRecentActivityByUser(
+    userId: string,
+    limit: number,
+  ): Promise<
+    Array<{
+      id: string;
+      problemId: string;
+      problemTitle: string;
+      problemSlug: string;
+      difficulty: string;
+      status: string;
+      createdAt: Date;
+    }>
+  > {
+    const submissions = await prisma.submission.findMany({
+      where: { userId },
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        problem: {
+          select: {
+            title: true,
+            slug: true,
+            difficulty: true,
+          },
+        },
+      },
+    });
+
+    return submissions.map((s: any) => ({
+      id: s.id,
+      problemId: s.problemId,
+      problemTitle: s.problem.title,
+      problemSlug: s.problem.slug,
+      difficulty: s.problem.difficulty,
+      status: s.status,
+      createdAt: s.createdAt,
+    }));
+  }
+
   async getActivityByUser(
     userId: string,
     startDate: Date,

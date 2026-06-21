@@ -25,11 +25,16 @@ import { SubmitSolution } from '../application/use-cases/submission/SubmitSoluti
 import { RunCode } from '../application/use-cases/submission/RunCode';
 import { GetSubmissions } from '../application/use-cases/submission/GetSubmissions';
 import { GetSubmissionResult } from '../application/use-cases/submission/GetSubmissionResult';
+import { GetUserStats } from '../application/use-cases/dashboard/GetUserStats';
+import { GetCategoryProgress } from '../application/use-cases/dashboard/GetCategoryProgress';
+import { GetActivityHeatmap } from '../application/use-cases/dashboard/GetActivityHeatmap';
+import { GetRecentActivity } from '../application/use-cases/dashboard/GetRecentActivity';
 
 // --- Controllers ---
 import { AuthController } from '../presentation/controllers/AuthController';
 import { ProblemController } from '../presentation/controllers/ProblemController';
 import { SubmissionController } from '../presentation/controllers/SubmissionController';
+import { DashboardController } from '../presentation/controllers/DashboardController';
 
 // ============================================================
 // Wire Dependencies
@@ -62,6 +67,10 @@ const submitSolution = new SubmitSolution(
 const runCode = new RunCode(problemRepository, queueService);
 const getSubmissions = new GetSubmissions(submissionRepository);
 const getSubmissionResult = new GetSubmissionResult(submissionRepository);
+const getUserStats = new GetUserStats(submissionRepository, problemRepository, userRepository);
+const getCategoryProgress = new GetCategoryProgress(submissionRepository, problemRepository);
+const getActivityHeatmap = new GetActivityHeatmap(submissionRepository);
+const getRecentActivity = new GetRecentActivity(submissionRepository);
 
 // Step 3: Instantiate controllers
 const authController = new AuthController(registerUser, loginUser, refreshToken);
@@ -71,6 +80,12 @@ const submissionController = new SubmissionController(
   runCode,
   getSubmissions,
   getSubmissionResult,
+);
+const dashboardController = new DashboardController(
+  getUserStats,
+  getCategoryProgress,
+  getActivityHeatmap,
+  getRecentActivity,
 );
 
 // Step 4: Export container
@@ -95,10 +110,15 @@ export const container = {
     runCode,
     getSubmissions,
     getSubmissionResult,
+    getUserStats,
+    getCategoryProgress,
+    getActivityHeatmap,
+    getRecentActivity,
   },
   controllers: {
     authController,
     problemController,
     submissionController,
+    dashboardController,
   },
 };

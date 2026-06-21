@@ -38,6 +38,27 @@ export interface ISubmissionRepository {
 
   countSolvedByUser(userId: string): Promise<number>;
 
+  countAcceptedByUser(userId: string): Promise<number>;
+
+  getSolvedProblemsDifficultyByUser(userId: string): Promise<Record<string, number>>;
+
+  getSolvedProblemsCategoryByUser(userId: string): Promise<Record<string, number>>;
+
+  getRecentActivityByUser(
+    userId: string,
+    limit: number,
+  ): Promise<
+    Array<{
+      id: string;
+      problemId: string;
+      problemTitle: string;
+      problemSlug: string;
+      difficulty: string;
+      status: string;
+      createdAt: Date;
+    }>
+  >;
+
   getActivityByUser(
     userId: string,
     startDate: Date,

@@ -10,9 +10,9 @@ This document tracks the tasks from the [Revised Implementation Plan](file:///d:
 | :---------------------------- | :-------------: | :---------: | :----------: | :-------------: |
 | **Sprint 1: Foundation**      |       54        |     54      |    100.0%    |    Completed    |
 | **Sprint 2: Core Engine**     |       32        |     32      |    100.0%    |    Completed    |
-| **Sprint 3: Polish & Admin**  |        0        |     34      |     0.0%     |   Not Started   |
+| **Sprint 3: Polish & Admin**  |        9        |     34      |    26.5%     |   In Progress   |
 | **Sprint 4: Differentiation** |        0        |     33      |     0.0%     |   Not Started   |
-| **Total Project**             |     **86**      |   **153**   |  **56.2%**   | **In Progress** |
+| **Total Project**             |     **95**      |   **153**   |  **62.1%**   | **In Progress** |
 
 ---
 
@@ -179,15 +179,15 @@ This document tracks the tasks from the [Revised Implementation Plan](file:///d:
 
 #### Day 21–22: User Dashboard
 
-- [ ] **Create GetUserStats use case** (total solved, success rate, streak)
-- [ ] **Create GetCategoryProgress use case**
-- [ ] **Create GetActivityHeatmap use case** (daily solve counts)
-- [ ] **Create GetRecentActivity use case**
-- [ ] **Create DashboardController + routes**
-- [ ] **Create stats overview component** (solved, streak, success rate)
-- [ ] **Create category progress bar chart** (using Recharts)
-- [ ] **Create activity heatmap component** (GitHub-style calendar graph)
-- [ ] **Create recent submissions widget**
+- [x] **Create GetUserStats use case** (total solved, success rate, streak) — Implemented in [GetUserStats.ts](file:///d:/interview-prep-platform/apps/backend-api/src/application/use-cases/dashboard/GetUserStats.ts)
+- [x] **Create GetCategoryProgress use case** — Implemented in [GetCategoryProgress.ts](file:///d:/interview-prep-platform/apps/backend-api/src/application/use-cases/dashboard/GetCategoryProgress.ts)
+- [x] **Create GetActivityHeatmap use case** (daily solve counts) — Implemented in [GetActivityHeatmap.ts](file:///d:/interview-prep-platform/apps/backend-api/src/application/use-cases/dashboard/GetActivityHeatmap.ts)
+- [x] **Create GetRecentActivity use case** — Implemented in [GetRecentActivity.ts](file:///d:/interview-prep-platform/apps/backend-api/src/application/use-cases/dashboard/GetRecentActivity.ts)
+- [x] **Create DashboardController + routes** — Implemented in [DashboardController.ts](file:///d:/interview-prep-platform/apps/backend-api/src/presentation/controllers/DashboardController.ts) and [dashboard.routes.ts](file:///d:/interview-prep-platform/apps/backend-api/src/presentation/routes/dashboard.routes.ts)
+- [x] **Create stats overview component** (solved, streak, success rate) — Implemented in [page.tsx](<file:///d:/interview-prep-platform/apps/frontend/src/app/(authenticated)/page.tsx>)
+- [x] **Create category progress bar chart** (using Recharts) — Implemented in [page.tsx](<file:///d:/interview-prep-platform/apps/frontend/src/app/(authenticated)/page.tsx>)
+- [x] **Create activity heatmap component** (GitHub-style calendar graph) — Implemented in [page.tsx](<file:///d:/interview-prep-platform/apps/frontend/src/app/(authenticated)/page.tsx>)
+- [x] **Create recent submissions widget** — Implemented in [page.tsx](<file:///d:/interview-prep-platform/apps/frontend/src/app/(authenticated)/page.tsx>)
 - [ ] **Create daily challenge card**
 
 #### Day 23–24: Submission History

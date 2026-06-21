@@ -30,4 +30,8 @@ export interface IProblemRepository {
   incrementSolvedCount(id: string): Promise<void>;
 
   incrementAttemptCount(id: string): Promise<void>;
+
+  countByDifficulty(): Promise<Record<string, number>>;
+
+  countByCategory(): Promise<Record<string, number>>;
 }
