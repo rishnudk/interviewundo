@@ -243,6 +243,88 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* Daily Challenge Banner */}
+      {isDailyLoading ? (
+        <div className="w-full bg-card/30 border border-border backdrop-blur-sm rounded-3xl p-6 md:p-8 animate-pulse space-y-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-3 flex-1">
+              <div className="h-5 w-32 bg-muted rounded-full" />
+              <div className="h-7 w-1/3 bg-muted rounded" />
+              <div className="h-4 w-2/3 bg-muted rounded" />
+            </div>
+            <div className="h-10 w-32 bg-muted rounded-xl" />
+          </div>
+        </div>
+      ) : dailyChallenge?.data ? (
+        <div className="w-full relative overflow-hidden rounded-3xl border border-orange-500/20 bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-indigo-500/10 backdrop-blur-md shadow-lg shadow-orange-500/5 transition-all duration-300 hover:border-orange-500/30 group">
+          {/* Decorative glowing blobs */}
+          <div className="absolute -top-12 -right-12 w-48 h-48 bg-orange-500/10 rounded-full blur-3xl pointer-events-none group-hover:scale-110 transition-transform duration-500" />
+          <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none group-hover:scale-110 transition-transform duration-500" />
+
+          <div className="p-6 md:p-8 relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-3 max-w-3xl">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/20 text-orange-500 dark:text-orange-400 text-xs font-bold tracking-wider uppercase border border-orange-500/30">
+                  <Flame size={12} className="animate-pulse fill-orange-500" />
+                  Daily Challenge
+                </span>
+                <span className="text-xs text-muted-foreground">•</span>
+                <DifficultyBadge difficulty={dailyChallenge.data.difficulty} />
+                <span className="text-xs text-muted-foreground">•</span>
+                <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2.5 py-0.5 rounded-md">
+                  {dailyChallenge.data.category}
+                </span>
+              </div>
+
+              <div className="space-y-1">
+                <h3 className="text-xl md:text-2xl font-bold tracking-tight text-foreground group-hover:text-orange-500 dark:group-hover:text-orange-400 transition-colors">
+                  {dailyChallenge.data.title}
+                </h3>
+                <p className="text-sm text-muted-foreground/90 line-clamp-2 leading-relaxed">
+                  {dailyChallenge.data.description.replace(/[#*`]/g, '')}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-4 pt-1 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 size={14} className="text-emerald-500" />
+                  <span className="font-semibold text-foreground">
+                    {dailyChallenge.data.solvedCount}
+                  </span>{' '}
+                  Solved
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Activity size={14} className="text-indigo-500" />
+                  <span className="font-semibold text-foreground">
+                    {dailyChallenge.data.attemptCount > 0
+                      ? Math.round(
+                          (dailyChallenge.data.solvedCount / dailyChallenge.data.attemptCount) *
+                            100,
+                        )
+                      : 0}
+                    %
+                  </span>{' '}
+                  Acceptance Rate
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 self-start md:self-auto shrink-0">
+              <Link
+                href={`/problems/${dailyChallenge.data.slug}`}
+                className={cn(
+                  buttonVariants({ size: 'lg', variant: 'default' }),
+                  'bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl font-semibold shadow-md shadow-orange-500/10 active:scale-95 transition-all flex items-center gap-2 border-0',
+                )}
+              >
+                Solve Challenge
+                <PlayCircle size={18} />
+              </Link>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {/* Stats Grid */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {statsGridData.map((stat, idx) => {
@@ -388,86 +470,6 @@ export default function DashboardPage() {
 
         {/* Right Side: Heatmap Calendar & Recent Submissions */}
         <div className="space-y-6">
-          {/* Daily Challenge Card */}
-          {isDailyLoading ? (
-            <Card className="border-border bg-card/30 backdrop-blur-sm relative overflow-hidden">
-              <CardContent className="p-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="h-5 w-28 bg-muted rounded-full animate-pulse" />
-                  <div className="h-5 w-16 bg-muted rounded-full animate-pulse" />
-                </div>
-                <div className="space-y-2">
-                  <div className="h-6 w-3/4 bg-muted rounded animate-pulse" />
-                  <div className="h-4 w-full bg-muted rounded animate-pulse" />
-                  <div className="h-4 w-5/6 bg-muted rounded animate-pulse" />
-                </div>
-                <div className="h-4 w-32 bg-muted rounded animate-pulse" />
-                <div className="pt-4 flex items-center justify-between border-t border-border/40">
-                  <div className="h-4 w-32 bg-muted rounded animate-pulse" />
-                  <div className="h-8 w-24 bg-muted rounded-xl animate-pulse" />
-                </div>
-              </CardContent>
-            </Card>
-          ) : dailyChallenge?.data ? (
-            <Card className="border-indigo-500/20 bg-gradient-to-br from-indigo-500/5 to-violet-500/5 backdrop-blur-md relative overflow-hidden group hover:border-indigo-500/30 transition-all duration-300 shadow-lg shadow-indigo-500/5">
-              <div className="absolute top-0 right-0 -mr-6 -mt-6 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-              <CardContent className="p-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 text-[10px] font-bold tracking-wider uppercase border border-indigo-500/20 animate-pulse">
-                    <Sparkles size={10} className="stroke-[2.5]" />
-                    Daily Challenge
-                  </span>
-                  <DifficultyBadge difficulty={dailyChallenge.data.difficulty} />
-                </div>
-
-                <div className="space-y-1">
-                  <h3 className="text-lg font-bold text-foreground tracking-tight group-hover:text-indigo-400 transition-colors">
-                    {dailyChallenge.data.title}
-                  </h3>
-                  <p className="text-xs text-muted-foreground line-clamp-2">
-                    {dailyChallenge.data.description.replace(/[#*`]/g, '')}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <CheckCircle2 size={12} className="text-emerald-500" />
-                    <span>{dailyChallenge.data.solvedCount} Solved</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Activity size={12} className="text-indigo-500" />
-                    <span>
-                      {dailyChallenge.data.attemptCount > 0
-                        ? Math.round(
-                            (dailyChallenge.data.solvedCount / dailyChallenge.data.attemptCount) *
-                              100,
-                          )
-                        : 0}
-                      % Acc
-                    </span>
-                  </div>
-                </div>
-
-                <div className="pt-2 flex items-center justify-between border-t border-border/40">
-                  <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                    <Flame size={14} className="text-orange-500 animate-pulse fill-orange-500" />
-                    <span>Solve to extend your streak!</span>
-                  </div>
-                  <Link
-                    href={`/problems/${dailyChallenge.data.slug}`}
-                    className={cn(
-                      buttonVariants({ size: 'sm', variant: 'default' }),
-                      'bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-md active:scale-95 transition-all flex items-center gap-1.5',
-                    )}
-                  >
-                    Solve Challenge
-                    <PlayCircle size={12} />
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          ) : null}
-
           {/* Submission Heatmap */}
           <Card className="border-border bg-card/30 backdrop-blur-sm">
             <CardHeader>

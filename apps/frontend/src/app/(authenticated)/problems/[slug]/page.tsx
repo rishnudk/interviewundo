@@ -157,6 +157,8 @@ export default function ProblemWorkspacePage() {
       status: string;
       data?: any;
       error?: string;
+      userStreak?: number;
+      streakMilestone?: number | null;
     }) => {
       console.log('Received WebSocket submission:status update:', payload);
       if (payload.submissionId !== activeJobId) return;
@@ -178,6 +180,19 @@ export default function ProblemWorkspacePage() {
           payload.status === 'Finished'
         ) {
           showSuccess('All tests passed! Solution Accepted.');
+          if (payload.streakMilestone) {
+            setTimeout(() => {
+              showSuccess(
+                `🎉 Milestone Reached: ${payload.streakMilestone}-Day coding streak! Outstanding!`,
+              );
+            }, 1000);
+          } else if (payload.userStreak) {
+            setTimeout(() => {
+              showSuccess(
+                `🔥 Streak extended! Current streak: ${payload.userStreak} ${payload.userStreak === 1 ? 'Day' : 'Days'}`,
+              );
+            }, 1000);
+          }
         } else if (payload.status === 'WRONG_ANSWER') {
           showError('Wrong Answer: Some test cases failed.');
         } else if (payload.status === 'TIME_LIMIT_EXCEEDED') {

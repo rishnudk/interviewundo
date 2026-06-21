@@ -133,6 +133,86 @@ export const submissionWorker = new Worker(
           });
         }
 
+        // Calculate and update user streak
+        let newStreak = 0;
+        let streakMilestone: number | null = null;
+
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { streak: true, lastActiveAt: true },
+        });
+
+        if (user) {
+          newStreak = user.streak;
+          const today = new Date();
+
+          if (finalStatus === 'ACCEPTED') {
+            let shouldUpdate = false;
+            if (!user.lastActiveAt) {
+              newStreak = 1;
+              shouldUpdate = true;
+            } else {
+              const lastActive = new Date(user.lastActiveAt);
+              const todayMidnight = new Date(
+                Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()),
+              );
+              const lastActiveMidnight = new Date(
+                Date.UTC(lastActive.getFullYear(), lastActive.getMonth(), lastActive.getDate()),
+              );
+
+              const diffTime = todayMidnight.getTime() - lastActiveMidnight.getTime();
+              const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+              if (diffDays === 1) {
+                newStreak += 1;
+                shouldUpdate = true;
+              } else if (diffDays > 1) {
+                newStreak = 1;
+                shouldUpdate = true;
+              } else if (diffDays === 0) {
+                // Maintain current streak, but update timestamp to keep lastActiveAt fresh
+                shouldUpdate = true;
+              }
+            }
+
+            if (shouldUpdate) {
+              await prisma.user.update({
+                where: { id: userId },
+                data: {
+                  streak: newStreak,
+                  lastActiveAt: today,
+                },
+              });
+
+              if (newStreak !== user.streak && [3, 7, 14, 30, 50, 100].includes(newStreak)) {
+                streakMilestone = newStreak;
+              }
+            }
+          } else {
+            // Decay check on non-accepted submissions
+            if (user.lastActiveAt) {
+              const lastActive = new Date(user.lastActiveAt);
+              const todayMidnight = new Date(
+                Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()),
+              );
+              const lastActiveMidnight = new Date(
+                Date.UTC(lastActive.getFullYear(), lastActive.getMonth(), lastActive.getDate()),
+              );
+
+              const diffTime = todayMidnight.getTime() - lastActiveMidnight.getTime();
+              const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+              if (diffDays > 1) {
+                newStreak = 0;
+                await prisma.user.update({
+                  where: { id: userId },
+                  data: { streak: 0 },
+                });
+              }
+            }
+          }
+        }
+
         // Publish final results to Redis pub/sub
         await redis.publish(
           'submission:updates',
@@ -141,6 +221,8 @@ export const submissionWorker = new Worker(
             submissionId,
             status: finalStatus,
             error: execResult.error,
+            userStreak: newStreak,
+            streakMilestone,
             data: {
               runtime: execResult.runtime,
               memory: execResult.memory,

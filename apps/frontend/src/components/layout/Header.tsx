@@ -3,22 +3,25 @@
 import React from 'react';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/providers';
+import { useQuery } from '@tanstack/react-query';
 import { ThemeToggle } from './ThemeToggle';
 import { Sidebar } from './Sidebar';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import {
-  Menu,
-  Flame,
-  Calendar,
-  ChevronRight,
-  Sparkles,
-} from 'lucide-react';
+import { Menu, Flame, Calendar, ChevronRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 export function Header() {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, apiFetch } = useAuth();
+
+  // Fetch real user stats for active coding streak
+  const { data: stats } = useQuery({
+    queryKey: ['userStats'],
+    queryFn: () => apiFetch<{ streak: number }>('/api/dashboard/stats'),
+    enabled: !!user,
+    refetchOnWindowFocus: false,
+  });
 
   // Simple route to title map
   const getPageTitle = () => {
@@ -30,7 +33,7 @@ export function Header() {
     return 'Dashboard';
   };
 
-  const streakCount = user?.hasOwnProperty('streak') ? (user as any).streak : 3; // Default fallback to 3 for mockup look
+  const streakCount = stats?.streak ?? 0;
 
   return (
     <header className="h-16 border-b border-border bg-background/50 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-40">
@@ -39,11 +42,7 @@ export function Header() {
         <Sheet>
           <SheetTrigger
             render={
-              <Button
-                variant="ghost"
-                size="icon"
-                className="md:hidden rounded-lg hover:bg-accent"
-              >
+              <Button variant="ghost" size="icon" className="md:hidden rounded-lg hover:bg-accent">
                 <Menu size={20} />
               </Button>
             }
@@ -67,7 +66,10 @@ export function Header() {
         >
           <Calendar size={13} className="shrink-0 group-hover:scale-110 transition-transform" />
           <span>Daily Challenge</span>
-          <ChevronRight size={12} className="opacity-60 group-hover:translate-x-0.5 transition-transform" />
+          <ChevronRight
+            size={12}
+            className="opacity-60 group-hover:translate-x-0.5 transition-transform"
+          />
         </Link>
 
         {/* User Streak Widget */}

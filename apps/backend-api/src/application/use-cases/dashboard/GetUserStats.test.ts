@@ -117,4 +117,36 @@ describe('GetUserStats Use Case', () => {
     expect(result.successRate).toBe(0);
     expect(result.streak).toBe(0);
   });
+
+  it('should reset user streak to 0 if lastActiveAt is more than 1 day ago', async () => {
+    const twoDaysAgo = new Date();
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+    const mockUser = {
+      id: 'user-123',
+      name: 'Test User',
+      email: 'test@example.com',
+      role: 'STUDENT',
+      streak: 5,
+      lastActiveAt: twoDaysAgo,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    vi.mocked(submissionRepository.countSolvedByUser).mockResolvedValue(10);
+    vi.mocked(problemRepository.countByDifficulty).mockResolvedValue({
+      EASY: 20,
+      MEDIUM: 30,
+      HARD: 10,
+    });
+    vi.mocked(submissionRepository.getSolvedProblemsDifficultyByUser).mockResolvedValue({});
+    vi.mocked(submissionRepository.countByUser).mockResolvedValue(25);
+    vi.mocked(submissionRepository.countAcceptedByUser).mockResolvedValue(12);
+    vi.mocked(userRepository.findById).mockResolvedValue(mockUser as any);
+
+    const result = await useCase.execute({ userId: 'user-123' });
+
+    expect(userRepository.updateStreak).toHaveBeenCalledWith('user-123', 0, twoDaysAgo);
+    expect(result.streak).toBe(0);
+  });
 });
