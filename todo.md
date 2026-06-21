@@ -258,9 +258,9 @@ This document tracks the tasks from the [Revised Implementation Plan](file:///d:
 - [x] **Create cron job to rotate daily challenge**
 - [x] **Create GetDailyChallenge use case**
 - [x] **Create daily challenge banner** on dashboard
-- [ ] **Implement streak calculation logic**
-- [ ] **Show streak counter in header**
-- [ ] **Create streak milestone notifications**
+- [x] **Implement streak calculation logic** — Centralized UTC-safe streak progression and reset logic now lives in [index.ts](file:///D:/interview-prep-platform/packages/shared-utils/src/index.ts) and is used by the judge worker and dashboard stats.
+- [x] **Show streak counter in header** — The authenticated header now renders the live active streak from [Header.tsx](file:///D:/interview-prep-platform/apps/frontend/src/components/layout/Header.tsx).
+- [x] **Create streak milestone notifications** — Global socket-driven streak and milestone toasts now run from [StreakNotificationListener.tsx](file:///D:/interview-prep-platform/apps/frontend/src/components/layout/StreakNotificationListener.tsx).
 
 ---
 

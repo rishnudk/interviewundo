@@ -76,10 +76,12 @@ export function Header() {
         {user && (
           <div
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-bold shadow-sm shadow-amber-500/5 hover:bg-amber-500/15 transition-all select-none cursor-default"
-            title={`${streakCount} Day Active Streak! Keep it burning.`}
+            title={`${streakCount} ${streakCount === 1 ? 'day' : 'days'} in your active streak.`}
           >
             <Flame size={14} className="fill-current text-amber-500 animate-bounce" />
-            <span>{streakCount} Days</span>
+            <span>
+              {streakCount} {streakCount === 1 ? 'Day' : 'Days'}
+            </span>
           </div>
         )}
 

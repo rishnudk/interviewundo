@@ -3,10 +3,13 @@
 import React from 'react';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
+import { StreakNotificationListener } from './StreakNotificationListener';
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-background">
+      <StreakNotificationListener />
+
       {/* Sidebar - Desktop Only */}
       <Sidebar className="hidden md:flex shrink-0 z-30" />
 
@@ -21,9 +24,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
         {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto px-6 py-6 md:px-8 relative z-10">
-          <div className="max-w-7xl mx-auto h-full">
-            {children}
-          </div>
+          <div className="max-w-7xl mx-auto h-full">{children}</div>
         </main>
       </div>
     </div>

@@ -2,6 +2,7 @@ import type { IUseCase } from '../../interfaces/IUseCase';
 import type { ISubmissionRepository } from '../../../domain/ports/repositories/ISubmissionRepository';
 import type { IProblemRepository } from '../../../domain/ports/repositories/IProblemRepository';
 import type { IUserRepository } from '../../../domain/ports/repositories/IUserRepository';
+import { getCurrentStreakState } from '@interviewprep/shared-utils';
 
 // ============================================================
 // GetUserStats Use Case
@@ -52,24 +53,9 @@ export class GetUserStats implements IUseCase<GetUserStatsInput, UserStatsOutput
     const successRate =
       totalSubmissions > 0 ? Math.round((acceptedSubmissions / totalSubmissions) * 100) : 0;
 
-    let userStreak = user ? user.streak : 0;
-    if (user && user.lastActiveAt) {
-      const today = new Date();
-      const lastActive = new Date(user.lastActiveAt);
-      const todayMidnight = new Date(
-        Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()),
-      );
-      const lastActiveMidnight = new Date(
-        Date.UTC(lastActive.getFullYear(), lastActive.getMonth(), lastActive.getDate()),
-      );
-
-      const diffTime = todayMidnight.getTime() - lastActiveMidnight.getTime();
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-      if (diffDays > 1) {
-        await this.userRepository.updateStreak(userId, 0, user.lastActiveAt);
-        userStreak = 0;
-      }
+    const userStreak = user ? getCurrentStreakState(user.streak, user.lastActiveAt) : 0;
+    if (user && userStreak !== user.streak && user.lastActiveAt) {
+      await this.userRepository.updateStreak(userId, userStreak, user.lastActiveAt);
     }
 
     return {

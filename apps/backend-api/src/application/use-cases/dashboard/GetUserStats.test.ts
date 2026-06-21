@@ -59,6 +59,7 @@ describe('GetUserStats Use Case', () => {
       email: 'test@example.com',
       role: 'STUDENT' as UserRole,
       streak: 5,
+      lastActiveAt: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
