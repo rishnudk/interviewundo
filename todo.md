@@ -274,10 +274,10 @@ This document tracks the tasks from the [Revised Implementation Plan](file:///d:
 
 #### Day 38–39: Documentation
 
-- [ ] **Setup Swagger/OpenAPI** with `swagger-jsdoc`
-- [ ] **Document all API endpoints** (schemas, request/response, errors)
-- [ ] **Expose interactive Swagger UI** at `/api-docs`
-- [ ] **Write professional README.md** (with Mermaid architecture diagram)
+- [x] **Setup Swagger/OpenAPI** with `swagger-jsdoc` — Added centralized OpenAPI generation in [openapi.ts](file:///D:/interview-prep-platform/apps/backend-api/src/docs/openapi.ts) and route annotations in [swagger.ts](file:///D:/interview-prep-platform/apps/backend-api/src/docs/swagger.ts).
+- [x] **Document all API endpoints** (schemas, request/response, errors) — Added schema and endpoint coverage for auth, problems, submissions, dashboard, admin, and health routes in [swagger.ts](file:///D:/interview-prep-platform/apps/backend-api/src/docs/swagger.ts).
+- [x] **Expose interactive Swagger UI** at `/api-docs` — Mounted Swagger UI and raw spec JSON from [app.ts](file:///D:/interview-prep-platform/apps/backend-api/src/app.ts).
+- [x] **Write professional README.md** (with Mermaid architecture diagram) — Rewrote [README.md](file:///D:/interview-prep-platform/README.md) with setup, architecture, API, testing, and deployment guidance.
 
 #### Day 40: Production Deployment
 

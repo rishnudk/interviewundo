@@ -1,136 +1,181 @@
 # InterviewPrep Platform
 
-A LeetCode-style interview preparation platform focused on JavaScript, React, Node.js, and TypeScript — with sandboxed Docker code execution.
+InterviewPrep is a LeetCode-style interview practice platform focused on JavaScript, React, Node.js, and TypeScript. It combines a modern Next.js frontend, a clean-architecture Express API, and a judge worker that executes user code inside sandboxed Docker containers.
 
-![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white)
-![Next.js](https://img.shields.io/badge/Next.js-15-000000?logo=next.js&logoColor=white)
-![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-Sandboxed-2496ED?logo=docker&logoColor=white)
+## Highlights
 
----
+- Authentication with email/password JWT flow and GitHub OAuth
+- Searchable problem catalog with filtering, daily challenges, and AI hints
+- Real-time submission lifecycle updates with Socket.IO
+- Sandboxed code execution using BullMQ, Redis, Docker, and a dedicated judge worker
+- Dashboard analytics for streaks, activity, and progress by category
+- Admin workflows for problem and test-case management
+- Interactive OpenAPI docs at `/api-docs`
 
 ## Architecture
 
-```
-┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
-│   Next.js       │────▶│   Express API    │────▶│  Judge Worker   │
-│   Frontend      │     │   (Clean Arch)   │     │  (Docker Exec)  │
-│                 │     │                  │     │                 │
-│ • Monaco Editor │     │ Domain Layer     │     │ • BullMQ        │
-│ • TanStack Query│     │ Application Layer│     │ • Dockerode     │
-│ • Zustand       │     │ Infrastructure   │     │ • Sandboxed     │
-│ • shadcn/ui     │     │ Presentation     │     │   Execution     │
-└─────────────────┘     └────────┬─────────┘     └────────┬────────┘
-                                 │                         │
-                        ┌────────▼─────────┐     ┌────────▼────────┐
-                        │   PostgreSQL     │     │     Redis       │
-                        │   (Supabase)     │     │   (BullMQ +     │
-                        │                  │     │    Cache)       │
-                        └──────────────────┘     └─────────────────┘
+```mermaid
+flowchart LR
+    FE["Next.js Frontend"] --> API["Express API"]
+    API --> PG["PostgreSQL"]
+    API --> REDIS["Redis"]
+    API --> WS["Socket.IO"]
+    API --> QUEUE["BullMQ Queue"]
+    QUEUE --> WORKER["Judge Worker"]
+    WORKER --> DOCKER["Sandboxed Docker Runtime"]
+    WORKER --> PG
+    WORKER --> REDIS
+    FE -. realtime status .-> WS
 ```
 
-### Clean Architecture (Backend)
+### Backend layering
 
+```mermaid
+flowchart LR
+    PRESENTATION["Presentation\n(routes, controllers, middleware)"] --> APPLICATION["Application\n(use cases)"]
+    APPLICATION --> DOMAIN["Domain\n(entities, ports, errors)"]
+    INFRA["Infrastructure\n(Prisma, Redis, JWT, queues, AI)"] --> DOMAIN
+    INFRA --> APPLICATION
 ```
-Presentation  →  Application  →  Domain  ←  Infrastructure
-(Express)        (Use Cases)     (Ports)    (Prisma, Redis, JWT)
+
+## Monorepo layout
+
+```text
+apps/
+  frontend/        Next.js app router frontend
+  backend-api/     Express API with clean architecture
+  judge-worker/    BullMQ worker for sandboxed code execution
+packages/
+  shared-types/    Shared DTOs, enums, entities, Zod schemas
+  shared-utils/    Shared utilities
+infrastructure/
+  docker-compose.yml
 ```
 
-**Dependency Rule:** All dependencies point inward. Domain has zero framework imports.
+## Tech stack
 
----
+| Area      | Stack                                                               |
+| --------- | ------------------------------------------------------------------- |
+| Frontend  | Next.js, React, TypeScript, Tailwind CSS, shadcn/ui, TanStack Query |
+| Backend   | Express 5, TypeScript, Prisma, PostgreSQL                           |
+| Auth      | jose, argon2, next-auth                                             |
+| Realtime  | Socket.IO                                                           |
+| Queueing  | BullMQ, Redis                                                       |
+| Execution | Docker, dockerode                                                   |
+| Testing   | Vitest, Supertest, Playwright                                       |
+| Tooling   | Turborepo, ESLint, Prettier, Husky                                  |
 
-## Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Frontend | Next.js 15, TypeScript, Tailwind CSS, shadcn/ui, Zustand, TanStack Query |
-| Backend | Express 5, TypeScript, Prisma 6, PostgreSQL 16 |
-| Auth | jose (JWT), argon2 (passwords), next-auth (OAuth) |
-| Queue | BullMQ + Redis 7 |
-| Execution | Docker (sandboxed containers via dockerode) |
-| Testing | Vitest (unit/integration), Playwright (E2E) |
-| CI/CD | GitHub Actions, Turborepo |
-| Deployment | Vercel (frontend), VPS (backend + worker), Supabase (database) |
-
----
-
-## Getting Started
+## Getting started
 
 ### Prerequisites
 
 - Node.js 22+
-- Docker Desktop (for PostgreSQL, Redis, and code execution)
 - npm 10+
+- Docker Desktop
 
-### Setup
+### Installation
 
 ```bash
-# 1. Clone the repository
 git clone https://github.com/YOUR_USERNAME/interview-prep-platform.git
 cd interview-prep-platform
-
-# 2. Install dependencies
 npm install
-
-# 3. Start PostgreSQL and Redis
-docker compose -f infrastructure/docker-compose.yml up -d
-
-# 4. Setup environment variables
 cp .env.example .env
-# Edit .env with your values
-
-# 5. Run database migration
+docker compose -f infrastructure/docker-compose.yml up -d
 npm run db:migrate
-
-# 6. Seed the database
 npm run db:seed
-
-# 7. Start development servers
 npm run dev
 ```
 
-### Available Scripts
+### Default local URLs
 
-| Script | Description |
-|---|---|
-| `npm run dev` | Start all services in development mode |
-| `npm run build` | Build all packages |
-| `npm run lint` | Run ESLint across all packages |
-| `npm run typecheck` | TypeScript type checking |
-| `npm run test` | Run unit and integration tests |
-| `npm run test:e2e` | Run Playwright E2E tests |
-| `npm run db:migrate` | Run Prisma migrations |
-| `npm run db:seed` | Seed the database |
-| `npm run db:studio` | Open Prisma Studio |
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:4000`
+- Swagger UI: `http://localhost:4000/api-docs`
+- OpenAPI JSON: `http://localhost:4000/api-docs.json`
 
----
+## Environment variables
 
-## Project Structure
+The backend validates environment variables on startup. These are the key values you need locally:
 
-```
-interview-prep-platform/
-├── apps/
-│   ├── frontend/          # Next.js (App Router)
-│   ├── backend-api/       # Express (Clean Architecture)
-│   └── judge-worker/      # Docker code execution service
-├── packages/
-│   ├── shared-types/      # Shared TypeScript types + Zod schemas
-│   └── shared-utils/      # Shared utility functions
-├── infrastructure/
-│   └── docker-compose.yml # Local dev (PostgreSQL + Redis)
-└── turbo.json             # Turborepo config
+```env
+DATABASE_URL=
+REDIS_URL=
+JWT_ACCESS_SECRET=
+JWT_REFRESH_SECRET=
+JWT_ACCESS_EXPIRY=15m
+JWT_REFRESH_EXPIRY=7d
+PORT=4000
+NODE_ENV=development
+FRONTEND_URL=http://localhost:3000
+CORS_ORIGINS=http://localhost:3000
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+GROK_API_KEY=
+GROK_MODEL=grok-2
 ```
 
----
+## Useful scripts
 
-## API Documentation
+| Script               | Purpose                           |
+| -------------------- | --------------------------------- |
+| `npm run dev`        | Start the monorepo in development |
+| `npm run build`      | Build all workspaces              |
+| `npm run lint`       | Run linting across the repo       |
+| `npm run typecheck`  | Run TypeScript checks             |
+| `npm run test`       | Run unit and integration tests    |
+| `npm run test:e2e`   | Run Playwright end-to-end tests   |
+| `npm run db:migrate` | Apply Prisma migrations           |
+| `npm run db:seed`    | Seed sample data                  |
+| `npm run db:studio`  | Open Prisma Studio                |
 
-Interactive API docs available at: `http://localhost:4000/api-docs` (when backend is running)
+## API overview
 
----
+The API is documented with Swagger/OpenAPI and exposed through `swagger-jsdoc` + `swagger-ui-express`.
+
+### Main endpoint groups
+
+- `Auth`: register, login, refresh token, GitHub auth
+- `Problems`: list problems, fetch by slug, daily challenge, AI hint generation
+- `Submissions`: submit code, run playground code, list submissions, fetch result details
+- `Dashboard`: summary metrics, progress, heatmap, recent activity
+- `Admin`: stats, problem CRUD, test-case CRUD
+- `Health`: liveness and readiness probes
+
+## Delivery flow
+
+1. A user opens a problem in the frontend and writes code in Monaco.
+2. The frontend submits code to the Express API.
+3. The API stores the submission and enqueues a BullMQ job.
+4. The judge worker executes the code inside a constrained Docker container.
+5. The worker saves the result and publishes status updates.
+6. Socket.IO pushes those updates back to the user interface in real time.
+
+## Testing
+
+The repo includes:
+
+- Unit tests for use cases with Vitest
+- Route-level integration tests with Supertest
+- End-to-end user-path tests with Playwright
+
+Run backend and integration coverage:
+
+```bash
+npm run test
+```
+
+Run browser flows:
+
+```bash
+npm run test:e2e
+```
+
+## Production notes
+
+- Frontend is designed for deployment on Vercel
+- Backend and judge worker are suited for Docker-based VPS deployment
+- PostgreSQL can run on Supabase or a managed Postgres provider
+- Redis is required for queues, cache, and realtime worker updates
 
 ## License
 

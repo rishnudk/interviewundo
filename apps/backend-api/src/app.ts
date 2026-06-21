@@ -2,12 +2,14 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import pinoHttp from 'pino-http';
+import swaggerUi from 'swagger-ui-express';
 import { env } from './config/env';
 import { logger } from './config/logger';
 import { router } from './presentation/routes';
 import { errorHandler } from './presentation/middleware/error-handler';
 import { requestId } from './presentation/middleware/request-id';
 import { rateLimiter } from './presentation/middleware/rate-limiter';
+import { swaggerSpec } from './docs/openapi';
 
 // ============================================================
 // Express App Bootstrap
@@ -36,6 +38,19 @@ app.use(
       if (res.statusCode >= 400) return 'warn';
       return 'info';
     },
+  }),
+);
+
+app.get('/api-docs.json', (_req, res) => {
+  res.json(swaggerSpec);
+});
+
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    explorer: true,
+    customSiteTitle: 'InterviewPrep API Docs',
   }),
 );
 

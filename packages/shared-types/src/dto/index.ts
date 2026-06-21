@@ -43,6 +43,11 @@ export interface AuthResponseDTO {
 
 export const CreateProblemSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters').max(200),
+  slug: z
+    .string()
+    .min(3, 'Slug must be at least 3 characters')
+    .max(200)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be URL-friendly'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
   difficulty: z.nativeEnum(Difficulty),
   category: z.nativeEnum(Category),
