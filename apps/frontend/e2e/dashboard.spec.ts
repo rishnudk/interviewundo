@@ -1,10 +1,10 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, Page } from '@playwright/test';
 
 function uniqueEmail(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 100000)}@example.com`;
 }
 
-async function registerAndOpenDashboard(page: Parameters<typeof test>[0]['page']) {
+async function registerAndOpenDashboard(page: Page) {
   await page.goto('/register');
   await page.fill('#name', 'Dashboard Explorer');
   await page.fill('#email', uniqueEmail('dashboard-e2e'));

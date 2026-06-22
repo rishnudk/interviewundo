@@ -55,10 +55,6 @@ export default function ProblemWorkspacePage() {
     }
   };
 
-  const editorConfig = problem?.category
-    ? getCategoryEditorConfig(problem.category)
-    : { language: 'javascript', filename: 'solution.js' };
-
   // Mobile Navigation: 'description' | 'code' | 'output'
   const [mobileTab, setMobileTab] = useState<'description' | 'code'>('description');
 
@@ -128,6 +124,10 @@ export default function ProblemWorkspacePage() {
       }>(`/api/problems/${slug}`);
     },
   });
+
+  const editorConfig = problem?.category
+    ? getCategoryEditorConfig(problem.category)
+    : { language: 'javascript', filename: 'solution.js' };
 
   // Load starter code once problem data is fetched
   useEffect(() => {
