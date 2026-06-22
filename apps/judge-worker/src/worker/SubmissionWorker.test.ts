@@ -5,6 +5,9 @@ import { vi, describe, it, expect, beforeEach, beforeAll } from 'vitest';
 (globalThis as any).mockSubmissionUpdate = vi.fn();
 (globalThis as any).mockSubmissionResultCreate = vi.fn();
 (globalThis as any).mockProblemUpdate = vi.fn();
+(globalThis as any).mockProblemFindUnique = vi.fn();
+(globalThis as any).mockUserFindUnique = vi.fn();
+(globalThis as any).mockUserUpdate = vi.fn();
 (globalThis as any).mockTransaction = vi.fn();
 (globalThis as any).mockRedisPublish = vi.fn();
 (globalThis as any).mockRedisSetex = vi.fn();
@@ -23,7 +26,12 @@ vi.mock('../config/database', () => ({
       create: (...args: any[]) => (globalThis as any).mockSubmissionResultCreate(...args),
     },
     problem: {
+      findUnique: (...args: any[]) => (globalThis as any).mockProblemFindUnique(...args),
       update: (...args: any[]) => (globalThis as any).mockProblemUpdate(...args),
+    },
+    user: {
+      findUnique: (...args: any[]) => (globalThis as any).mockUserFindUnique(...args),
+      update: (...args: any[]) => (globalThis as any).mockUserUpdate(...args),
     },
     $transaction: (...args: any[]) => (globalThis as any).mockTransaction(...args),
   },
@@ -80,7 +88,20 @@ describe('SubmissionWorker Unit Tests', () => {
     vi.clearAllMocks();
 
     (globalThis as any).mockTestCaseFindMany.mockResolvedValue(mockTestCases);
-    (globalThis as any).mockTransaction.mockImplementation(async (promises: any) => promises);
+    (globalThis as any).mockSubmissionUpdate.mockResolvedValue({});
+    (globalThis as any).mockSubmissionResultCreate.mockResolvedValue({});
+    (globalThis as any).mockProblemUpdate.mockResolvedValue({});
+    (globalThis as any).mockProblemFindUnique.mockResolvedValue({ category: 'JAVASCRIPT' });
+    (globalThis as any).mockUserFindUnique.mockResolvedValue({
+      streak: 1,
+      lastActiveAt: new Date(),
+    });
+    (globalThis as any).mockUserUpdate.mockResolvedValue({});
+    (globalThis as any).mockRedisPublish.mockResolvedValue(1);
+    (globalThis as any).mockRedisSetex.mockResolvedValue('OK');
+    (globalThis as any).mockTransaction.mockImplementation(async (promises: any) =>
+      Promise.all(promises),
+    );
   });
 
   it('should process a database submission successfully and save ACCEPTED status', async () => {

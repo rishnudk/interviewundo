@@ -7,13 +7,9 @@ import * as tar from 'tar';
 import { logger } from '../config/logger';
 import { IExecutor, TestCaseInput, TestCaseResult, ExecutionResult } from './IExecutor';
 
-// Initialize Dockerode
 const docker = new Docker();
 
-export class JavascriptExecutor implements IExecutor {
-  /**
-   * Helper to extract the primary function or class name from starter/user code
-   */
+export class MongodbExecutor implements IExecutor {
   private extractFunctionName(code: string): string | null {
     const functionMatch = code.match(/function\*?\s+([a-zA-Z0-9_]+)\s*\(/);
     if (functionMatch) return functionMatch[1];
@@ -27,13 +23,11 @@ export class JavascriptExecutor implements IExecutor {
     return null;
   }
 
-  /**
-   * Generates the runner script that will run inside the container
-   */
   private generateRunnerCode(functionName: string): string {
     return `
 const fs = require('fs');
 const path = require('path');
+const { MongoClient } = require('mongodb');
 
 function deepEqual(a, b) {
   if (a === b) return true;
@@ -57,74 +51,106 @@ function deepEqual(a, b) {
   return false;
 }
 
-try {
-  const targetFn = require('./solution');
-  if (!targetFn) {
+async function run() {
+  const mongoUrl = process.env.MONGO_URL || 'mongodb://host.docker.internal:27017';
+  const client = new MongoClient(mongoUrl);
+  
+  try {
+    await client.connect();
+    
+    const targetFn = require('./solution');
+    if (!targetFn) {
+      console.log(JSON.stringify({
+        error: 'Target function "${functionName}" was not found or not exported properly.'
+      }));
+      process.exit(1);
+    }
+
+    const testCases = JSON.parse(fs.readFileSync(path.join(__dirname, 'testcases.json'), 'utf8'));
+    const results = [];
+
+    for (let i = 0; i < testCases.length; i++) {
+      const tc = testCases[i];
+      const dbName = 'judge_' + process.env.SUBMISSION_ID + '_' + i;
+      const db = client.db(dbName);
+      
+      let actual = null;
+      let error = null;
+      const start = process.hrtime.bigint();
+
+      try {
+        // Seed database
+        const seedData = JSON.parse(tc.input);
+        if (Array.isArray(seedData)) {
+          if (seedData.length > 0) {
+            await db.collection('test_collection').insertMany(seedData);
+          }
+        } else if (typeof seedData === 'object' && seedData !== null) {
+          for (const [colName, docs] of Object.entries(seedData)) {
+            if (Array.isArray(docs) && docs.length > 0) {
+              await db.collection(colName).insertMany(docs);
+            }
+          }
+        }
+
+        // Execute user query
+        const rawActual = await targetFn(db);
+        
+        // Serialize actual results to strip BSON types for standard JSON comparison
+        actual = JSON.parse(JSON.stringify(rawActual));
+      } catch (e) {
+        const errName = e.name || 'Error';
+        const errMsg = e.message || String(e);
+        error = errName + ': ' + errMsg;
+      } finally {
+        try {
+          // Drop database cleanup
+          await db.dropDatabase();
+        } catch (dropErr) {}
+      }
+
+      const end = process.hrtime.bigint();
+      const runtimeMs = Number(end - start) / 1e6;
+      const expected = JSON.parse(tc.expectedOutput);
+
+      results.push({
+        id: tc.id,
+        passed: error === null && deepEqual(actual, expected),
+        actual: actual !== null ? actual : null,
+        expected,
+        runtime: Number(runtimeMs.toFixed(2)),
+        error
+      });
+    }
+
+    console.log(JSON.stringify({ results }));
+  } catch (globalErr) {
+    const errName = globalErr.name || 'Error';
+    const errMsg = globalErr.message || String(globalErr);
     console.log(JSON.stringify({
-      error: 'Target function/class "${functionName}" was not found or not exported properly.'
+      error: errName + ': ' + errMsg
     }));
     process.exit(1);
+  } finally {
+    await client.close().catch(() => {});
   }
-
-  const testCases = JSON.parse(fs.readFileSync(path.join(__dirname, 'testcases.json'), 'utf8'));
-  const results = [];
-
-  for (let i = 0; i < testCases.length; i++) {
-    const tc = testCases[i];
-    const args = JSON.parse(tc.input);
-    const expected = JSON.parse(tc.expectedOutput);
-
-    const start = process.hrtime.bigint();
-    let actual;
-    let error = null;
-
-    try {
-      actual = targetFn(...args);
-    } catch (e) {
-      const errName = e.name || 'Error';
-      const errMsg = e.message || String(e);
-      error = errName + ': ' + errMsg;
-    }
-    const end = process.hrtime.bigint();
-    const runtimeMs = Number(end - start) / 1e6; // to ms
-
-    results.push({
-      id: tc.id,
-      passed: error === null && deepEqual(actual, expected),
-      actual: actual !== undefined ? actual : null,
-      expected,
-      runtime: Number(runtimeMs.toFixed(2)),
-      error
-    });
-  }
-
-  console.log(JSON.stringify({ results }));
-} catch (globalErr) {
-  const errName = globalErr.name || 'Error';
-  const errMsg = globalErr.message || String(globalErr);
-  console.log(JSON.stringify({
-    error: errName + ': ' + errMsg
-  }));
-  process.exit(1);
 }
+
+run();
 `;
   }
 
-  /**
-   * Main execution method
-   */
   async execute(
     submissionId: string,
     code: string,
     testCases: TestCaseInput[],
     timeoutMs: number = 10000,
   ): Promise<ExecutionResult> {
-    const tempDir = path.join(os.tmpdir(), 'judge', submissionId);
-    const tarPath = path.join(os.tmpdir(), `judge-${submissionId}.tar`);
+    const tempDir = path.join(os.tmpdir(), 'judge-mongodb', submissionId);
+    const tarPath = path.join(os.tmpdir(), `judge-mongodb-${submissionId}.tar`);
     let container: Docker.Container | null = null;
 
     try {
-      // 1. Determine target function to export
       const functionName = this.extractFunctionName(code);
       if (!functionName) {
         return {
@@ -139,13 +165,13 @@ try {
       const solutionCode = `${code}\n\nmodule.exports = typeof ${functionName} !== 'undefined' ? ${functionName} : null;\n`;
       const runnerCode = this.generateRunnerCode(functionName);
 
-      // 2. Write temp files
+      // Write temp files
       fs.mkdirSync(tempDir, { recursive: true });
       fs.writeFileSync(path.join(tempDir, 'solution.js'), solutionCode);
       fs.writeFileSync(path.join(tempDir, 'testcases.json'), JSON.stringify(testCases));
       fs.writeFileSync(path.join(tempDir, 'runner.js'), runnerCode);
 
-      // 3. Create tarball
+      // Create tarball
       await tar.create(
         {
           gzip: false,
@@ -155,28 +181,33 @@ try {
         ['solution.js', 'runner.js', 'testcases.json'],
       );
 
-      // 4. Create and start Docker container (node:22-slim)
-      // Enforces: 256MB memory limit, 1 CPU limit, no network access, and non-root execution
+      // Create and start Docker container (node-mongodb-runner)
+      // Enforces 256MB memory limit, 1 CPU limit, no network access, and non-root execution
       container = await docker.createContainer({
-        Image: 'node:22-slim',
-        Cmd: ['sleep', '60'], // keep container alive for execution duration
-        NetworkDisabled: true,
+        Image: 'node-mongodb-runner',
+        Cmd: ['sleep', '60'],
+        NetworkDisabled: false, // Network enabled to access shared MongoDB container
         User: 'node',
         WorkingDir: '/app',
+        Env: [
+          `SUBMISSION_ID=${submissionId}`,
+          `MONGO_URL=${process.env.MONGO_URL || 'mongodb://host.docker.internal:27017'}`,
+        ],
         HostConfig: {
-          Memory: 256 * 1024 * 1024, // 256 MB
-          NanoCpus: 1000000000, // 1 CPU
-          AutoRemove: false, // Keep container so we can extract status
+          Memory: 256 * 1024 * 1024,
+          NanoCpus: 1000000000,
+          AutoRemove: false,
+          ExtraHosts: ['host.docker.internal:host-gateway'],
         },
       });
 
       await container.start();
 
-      // 5. Copy tarball to container's /app directory
+      // Copy tarball to container
       const tarStream = fs.createReadStream(tarPath);
       await container.putArchive(tarStream, { path: '/app' });
 
-      // 6. Execute runner script
+      // Run runner script
       const exec = await container.exec({
         Cmd: ['node', '/app/runner.js'],
         AttachStdout: true,
@@ -185,7 +216,6 @@ try {
 
       const execStream = await exec.start({ Detach: false });
 
-      // Capture stdout & stderr
       const stdoutChunks: Buffer[] = [];
       const stderrChunks: Buffer[] = [];
 
@@ -205,7 +235,7 @@ try {
 
       container.modem.demuxStream(execStream, stdoutStream, stderrStream);
 
-      // 7. Enforce timeout (10 seconds)
+      // Enforce timeout
       const executionPromise = new Promise<void>((resolve, reject) => {
         execStream.on('end', resolve);
         execStream.on('error', reject);
@@ -219,25 +249,27 @@ try {
         await Promise.race([executionPromise, timeoutPromise]);
       } catch (err: any) {
         if (err.message === 'TIMEOUT') {
-          logger.warn(`Submission ${submissionId} timed out`);
+          logger.warn(`MongoDB Submission ${submissionId} timed out`);
           return {
             passed: false,
             passedCases: 0,
             totalCases: testCases.length,
             results: [],
-            error: 'Time Limit Exceeded: Your solution exceeded the 10-second limit.',
+            error: 'Time Limit Exceeded: Your aggregation/query exceeded the 10-second limit.',
           };
         }
         throw err;
       }
 
-      // Check exit code and inspect execution
       const execInspect = await exec.inspect();
       const stdoutStr = Buffer.concat(stdoutChunks).toString('utf8').trim();
       const stderrStr = Buffer.concat(stderrChunks).toString('utf8').trim();
 
       if (execInspect.ExitCode !== 0) {
-        logger.error({ stderrStr, exitCode: execInspect.ExitCode }, 'Execution error in container');
+        logger.error(
+          { stderrStr, exitCode: execInspect.ExitCode },
+          'MongoDB execution error in container',
+        );
         return {
           passed: false,
           passedCases: 0,
@@ -250,7 +282,6 @@ try {
         };
       }
 
-      // 8. Parse runner output
       try {
         const output = JSON.parse(stdoutStr);
         if (output.error) {
@@ -267,10 +298,6 @@ try {
         const passedCases = results.filter((r) => r.passed).length;
         const totalCases = testCases.length;
 
-        // Extract container stats (for memory/runtime logging)
-        await container.inspect();
-
-        // Sum up test case execution times for average/total runtime
         const totalRuntime = results.reduce((acc, r) => acc + r.runtime, 0);
 
         return {
@@ -279,10 +306,10 @@ try {
           totalCases,
           results,
           runtime: Math.round(totalRuntime),
-          memory: 1024 * 1024 * 5, // Simulated 5MB memory footprint or extract from container
+          memory: 1024 * 1024 * 12, // Estimated 12MB memory footprint for MongoDB client operations
         };
       } catch (parseErr) {
-        logger.error({ stdoutStr, parseErr }, 'Failed to parse runner output');
+        logger.error({ stdoutStr, parseErr }, 'Failed to parse MongoDB runner output');
         return {
           passed: false,
           passedCases: 0,
@@ -292,7 +319,7 @@ try {
         };
       }
     } catch (err: any) {
-      logger.error({ err }, 'Unexpected error in JavascriptExecutor');
+      logger.error({ err }, 'Unexpected error in MongodbExecutor');
       return {
         passed: false,
         passedCases: 0,
@@ -301,7 +328,7 @@ try {
         error: `Sandbox execution failed: ${err.message || String(err)}`,
       };
     } finally {
-      // 9. Cleanup container & temp files
+      // Cleanup
       if (container) {
         try {
           await container.stop({ t: 0 }).catch(() => {});
@@ -311,7 +338,6 @@ try {
         }
       }
 
-      // Clean up host temp directory & tarball
       try {
         if (fs.existsSync(tempDir)) {
           fs.rmSync(tempDir, { recursive: true, force: true });

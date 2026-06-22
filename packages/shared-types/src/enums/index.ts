@@ -18,6 +18,8 @@ export enum Category {
   REACT = 'REACT',
   NODEJS = 'NODEJS',
   TYPESCRIPT = 'TYPESCRIPT',
+  SQL = 'SQL',
+  MONGODB = 'MONGODB',
 }
 
 export enum SubmissionStatus {

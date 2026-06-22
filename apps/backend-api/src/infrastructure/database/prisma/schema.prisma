@@ -27,6 +27,8 @@ enum Category {
   REACT
   NODEJS
   TYPESCRIPT
+  SQL
+  MONGODB
 }
 
 enum SubmissionStatus {

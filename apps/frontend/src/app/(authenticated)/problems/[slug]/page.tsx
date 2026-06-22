@@ -37,7 +37,27 @@ export default function ProblemWorkspacePage() {
   const [editorTheme, setEditorTheme] = useState<'vs-dark' | 'light'>('vs-dark');
   const [fontSize, setFontSize] = useState<number>(14);
   const [code, setCode] = useState<string>('');
-  const [language, setLanguage] = useState<'javascript' | 'typescript' | 'python'>('javascript');
+
+  const getCategoryEditorConfig = (cat: string) => {
+    switch (cat) {
+      case 'JAVASCRIPT':
+      case 'NODEJS':
+      case 'REACT':
+        return { language: 'javascript', filename: 'solution.js' };
+      case 'TYPESCRIPT':
+        return { language: 'typescript', filename: 'solution.ts' };
+      case 'SQL':
+        return { language: 'sql', filename: 'query.sql' };
+      case 'MONGODB':
+        return { language: 'javascript', filename: 'pipeline.js' };
+      default:
+        return { language: 'javascript', filename: 'solution.js' };
+    }
+  };
+
+  const editorConfig = problem?.category
+    ? getCategoryEditorConfig(problem.category)
+    : { language: 'javascript', filename: 'solution.js' };
 
   // Mobile Navigation: 'description' | 'code' | 'output'
   const [mobileTab, setMobileTab] = useState<'description' | 'code'>('description');
@@ -257,7 +277,7 @@ export default function ProblemWorkspacePage() {
         body: JSON.stringify({
           problemId: problem.id,
           code,
-          language,
+          language: editorConfig.language,
         }),
       });
 
@@ -289,7 +309,7 @@ export default function ProblemWorkspacePage() {
         body: JSON.stringify({
           problemId: problem.id,
           code,
-          language,
+          language: editorConfig.language,
         }),
       });
 
@@ -513,28 +533,20 @@ export default function ProblemWorkspacePage() {
           {/* Top Panel: Monaco Editor */}
           <div className="flex-1 flex flex-col min-h-0 relative">
             <div className="flex items-center justify-between px-6 py-2 border-b border-border bg-[#181818] shrink-0 text-xs font-semibold text-zinc-400 select-none">
-              <div className="flex items-center gap-1.5">
-                <FileCode size={13} />
-                {language === 'javascript' && 'solution.js'}
-                {language === 'typescript' && 'solution.ts'}
-                {language === 'python' && 'solution.py'}
+              <div className="flex items-center gap-1.5 font-mono text-[11px] tracking-wide text-zinc-300">
+                <FileCode size={13} className="text-zinc-400" />
+                {editorConfig.filename}
               </div>
 
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value as any)}
-                className="bg-[#2a2a2a] hover:bg-zinc-800 text-zinc-300 text-[11px] font-semibold px-2.5 py-1 rounded outline-none border border-zinc-700/60 cursor-pointer focus:border-zinc-500 transition-colors"
-              >
-                <option value="javascript">JavaScript</option>
-                <option value="typescript">TypeScript</option>
-                <option value="python">Python</option>
-              </select>
+              <div className="bg-[#2a2a2a]/60 border border-zinc-800/80 px-2.5 py-1 rounded text-zinc-400 font-mono text-[9px] select-none uppercase tracking-wider font-extrabold">
+                {problem.category}
+              </div>
             </div>
 
             <div className="flex-1 min-h-0 bg-[#1e1e1e]">
               <Editor
                 height="100%"
-                language={language}
+                language={editorConfig.language}
                 theme={editorTheme}
                 value={code}
                 onChange={(val) => setCode(val || '')}

@@ -2,14 +2,35 @@ import { Worker, Job } from 'bullmq';
 import { redis } from '../config/redis';
 import { prisma } from '../config/database';
 import { JavascriptExecutor } from '../executor/JavascriptExecutor';
+import { SqlExecutor } from '../executor/SqlExecutor';
+import { MongodbExecutor } from '../executor/MongodbExecutor';
 import { logger } from '../config/logger';
 import {
   getAcceptedSubmissionStreakUpdate,
   getCurrentStreakState,
 } from '@interviewprep/shared-utils';
 
-// Instantiate the JavaScript executor
-const executor = new JavascriptExecutor();
+import { IExecutor } from '../executor/IExecutor';
+
+// Instantiate the executors
+const jsExecutor = new JavascriptExecutor();
+const sqlExecutor = new SqlExecutor();
+const mongodbExecutor = new MongodbExecutor();
+
+function getExecutorForCategory(category: string): IExecutor {
+  switch (category) {
+    case 'JAVASCRIPT':
+    case 'NODEJS':
+    case 'REACT':
+      return jsExecutor;
+    case 'SQL':
+      return sqlExecutor;
+    case 'MONGODB':
+      return mongodbExecutor;
+    default:
+      throw new Error(`Unsupported category for execution: ${category}`);
+  }
+}
 
 // ============================================================
 // SubmissionWorker — BullMQ Job Worker
@@ -26,11 +47,21 @@ export const submissionWorker = new Worker(
     const isPlayground = submissionId.startsWith('run-');
 
     try {
-      // 1. Fetch test cases from database
-      const testCases = await prisma.testCase.findMany({
-        where: { problemId },
-        orderBy: { order: 'asc' },
-      });
+      // 1. Fetch problem details and test cases from database
+      const [problem, testCases] = await prisma.$transaction([
+        prisma.problem.findUnique({
+          where: { id: problemId },
+          select: { category: true },
+        }),
+        prisma.testCase.findMany({
+          where: { problemId },
+          orderBy: { order: 'asc' },
+        }),
+      ]);
+
+      if (!problem) {
+        throw new Error(`Problem not found for ID: ${problemId}`);
+      }
 
       if (testCases.length === 0) {
         throw new Error(`No test cases found for problem ID: ${problemId}`);
@@ -61,6 +92,7 @@ export const submissionWorker = new Worker(
         expectedOutput: tc.expectedOutput,
       }));
 
+      const executor = getExecutorForCategory(problem.category);
       const execResult = await executor.execute(submissionId, code, formattedTestCases);
 
       // 4. Map executor outputs to final submission statuses

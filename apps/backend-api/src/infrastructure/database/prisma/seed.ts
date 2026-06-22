@@ -48,9 +48,9 @@ You can return the answer in any order.
           { input: '[[3,2,4], 6]', expectedOutput: '[1,2]', isHidden: false, order: 2 },
           { input: '[[3,3], 6]', expectedOutput: '[0,1]', isHidden: false, order: 3 },
           { input: '[[1,5,9,10,15], 25]', expectedOutput: '[3,4]', isHidden: true, order: 4 },
-          { input: '[[-1,-2,-3,-4,-5], -8]', expectedOutput: '[2,4]', isHidden: true, order: 5 }
-        ]
-      }
+          { input: '[[-1,-2,-3,-4,-5], -8]', expectedOutput: '[2,4]', isHidden: true, order: 5 },
+        ],
+      },
     },
     {
       title: 'Reverse a String',
@@ -85,12 +85,27 @@ You must do this by modifying the input array in-place with O(1) extra memory.
       order: 2,
       testCases: {
         create: [
-          { input: '[["h","e","l","l","o"]]', expectedOutput: '["o","l","l","e","h"]', isHidden: false, order: 1 },
-          { input: '[["H","a","n","n","a","h"]]', expectedOutput: '["h","a","n","n","a","H"]', isHidden: false, order: 2 },
+          {
+            input: '[["h","e","l","l","o"]]',
+            expectedOutput: '["o","l","l","e","h"]',
+            isHidden: false,
+            order: 1,
+          },
+          {
+            input: '[["H","a","n","n","a","h"]]',
+            expectedOutput: '["h","a","n","n","a","H"]',
+            isHidden: false,
+            order: 2,
+          },
           { input: '[["a"]]', expectedOutput: '["a"]', isHidden: true, order: 3 },
-          { input: '[["t","e","s","t"]]', expectedOutput: '["t","s","e","t"]', isHidden: true, order: 4 }
-        ]
-      }
+          {
+            input: '[["t","e","s","t"]]',
+            expectedOutput: '["t","s","e","t"]',
+            isHidden: true,
+            order: 4,
+          },
+        ],
+      },
     },
     {
       title: 'Palindrome Checker',
@@ -117,12 +132,17 @@ Given a string \`s\`, return \`true\` *if it is a palindrome, or \`false\` other
       order: 3,
       testCases: {
         create: [
-          { input: '["A man, a plan, a canal: Panama"]', expectedOutput: 'true', isHidden: false, order: 1 },
+          {
+            input: '["A man, a plan, a canal: Panama"]',
+            expectedOutput: 'true',
+            isHidden: false,
+            order: 1,
+          },
           { input: '["race a car"]', expectedOutput: 'false', isHidden: false, order: 2 },
           { input: '[" "]', expectedOutput: 'true', isHidden: true, order: 3 },
-          { input: '["0P"]', expectedOutput: 'false', isHidden: true, order: 4 }
-        ]
-      }
+          { input: '["0P"]', expectedOutput: 'false', isHidden: true, order: 4 },
+        ],
+      },
     },
     {
       title: 'Fibonacci Generator',
@@ -183,9 +203,9 @@ function getFibonacciArray(n) {
         create: [
           { input: '[5]', expectedOutput: '[0,1,1,2,3]', isHidden: false, order: 1 },
           { input: '[1]', expectedOutput: '[0]', isHidden: false, order: 2 },
-          { input: '[10]', expectedOutput: '[0,1,1,2,3,5,8,13,21,34]', isHidden: true, order: 3 }
-        ]
-      }
+          { input: '[10]', expectedOutput: '[0,1,1,2,3,5,8,13,21,34]', isHidden: true, order: 3 },
+        ],
+      },
     },
     {
       title: 'FizzBuzz',
@@ -226,10 +246,21 @@ function getFibonacciArray(n) {
       testCases: {
         create: [
           { input: '[3]', expectedOutput: '["1","2","Fizz"]', isHidden: false, order: 1 },
-          { input: '[5]', expectedOutput: '["1","2","Fizz","4","Buzz"]', isHidden: false, order: 2 },
-          { input: '[15]', expectedOutput: '["1","2","Fizz","4","Buzz","Fizz","7","8","Fizz","Buzz","11","Fizz","13","14","FizzBuzz"]', isHidden: true, order: 3 }
-        ]
-      }
+          {
+            input: '[5]',
+            expectedOutput: '["1","2","Fizz","4","Buzz"]',
+            isHidden: false,
+            order: 2,
+          },
+          {
+            input: '[15]',
+            expectedOutput:
+              '["1","2","Fizz","4","Buzz","Fizz","7","8","Fizz","Buzz","11","Fizz","13","14","FizzBuzz"]',
+            isHidden: true,
+            order: 3,
+          },
+        ],
+      },
     },
     {
       title: 'Chunk Array',
@@ -260,11 +291,21 @@ You must not modify the original array.
       order: 6,
       testCases: {
         create: [
-          { input: '[[1, 2, 3, 4, 5], 2]', expectedOutput: '[[1,2],[3,4],[5]]', isHidden: false, order: 1 },
-          { input: '[[1, 9, 6, 3, 2], 3]', expectedOutput: '[[1,9,6],[3,2]]', isHidden: false, order: 2 },
-          { input: '[[], 1]', expectedOutput: '[]', isHidden: true, order: 3 }
-        ]
-      }
+          {
+            input: '[[1, 2, 3, 4, 5], 2]',
+            expectedOutput: '[[1,2],[3,4],[5]]',
+            isHidden: false,
+            order: 1,
+          },
+          {
+            input: '[[1, 9, 6, 3, 2], 3]',
+            expectedOutput: '[[1,9,6],[3,2]]',
+            isHidden: false,
+            order: 2,
+          },
+          { input: '[[], 1]', expectedOutput: '[]', isHidden: true, order: 3 },
+        ],
+      },
     },
     {
       title: 'Flatten Array',
@@ -302,11 +343,26 @@ If \`n\` is not provided, flatten the array completely.
       order: 7,
       testCases: {
         create: [
-          { input: '[[1, 2, 3, [4, 5, [6, 7]], 8, [9]], 1]', expectedOutput: '[1,2,3,4,5,[6,7],8,9]', isHidden: false, order: 1 },
-          { input: '[[1, 2, 3, [4, 5, [6, 7]], 8, [9]], 2]', expectedOutput: '[1,2,3,4,5,6,7,8,9]', isHidden: false, order: 2 },
-          { input: '[[[1, [2, [3, [4]]]]]]', expectedOutput: '[1,2,3,4]', isHidden: true, order: 3 }
-        ]
-      }
+          {
+            input: '[[1, 2, 3, [4, 5, [6, 7]], 8, [9]], 1]',
+            expectedOutput: '[1,2,3,4,5,[6,7],8,9]',
+            isHidden: false,
+            order: 1,
+          },
+          {
+            input: '[[1, 2, 3, [4, 5, [6, 7]], 8, [9]], 2]',
+            expectedOutput: '[1,2,3,4,5,6,7,8,9]',
+            isHidden: false,
+            order: 2,
+          },
+          {
+            input: '[[[1, [2, [3, [4]]]]]]',
+            expectedOutput: '[1,2,3,4]',
+            isHidden: true,
+            order: 3,
+          },
+        ],
+      },
     },
     {
       title: 'Debounce Implementation',
@@ -363,10 +419,10 @@ debounced();
             input: '["debounce-test-simple"]',
             expectedOutput: '"passed"',
             isHidden: false,
-            order: 1
-          }
-        ]
-      }
+            order: 1,
+          },
+        ],
+      },
     },
     {
       title: 'Deep Clone Object',
@@ -410,10 +466,20 @@ original.b.c; // 2
       order: 9,
       testCases: {
         create: [
-          { input: '[{"a":1,"b":{"c":2}}]', expectedOutput: '{"a":1,"b":{"c":2}}', isHidden: false, order: 1 },
-          { input: '[[1,{"x":9},[2]]]', expectedOutput: '[1,{"x":9},[2]]', isHidden: false, order: 2 }
-        ]
-      }
+          {
+            input: '[{"a":1,"b":{"c":2}}]',
+            expectedOutput: '{"a":1,"b":{"c":2}}',
+            isHidden: false,
+            order: 1,
+          },
+          {
+            input: '[[1,{"x":9},[2]]]',
+            expectedOutput: '[1,{"x":9},[2]]',
+            isHidden: false,
+            order: 2,
+          },
+        ],
+      },
     },
     {
       title: 'Event Emitter Class',
@@ -482,9 +548,14 @@ emitter.emit('click', [5]); // []
       order: 10,
       testCases: {
         create: [
-          { input: '["emitter-test-simple"]', expectedOutput: '"passed"', isHidden: false, order: 1 }
-        ]
-      }
+          {
+            input: '["emitter-test-simple"]',
+            expectedOutput: '"passed"',
+            isHidden: false,
+            order: 1,
+          },
+        ],
+      },
     },
     {
       title: 'Promise.all Polyfill',
@@ -537,9 +608,14 @@ promiseAll([p1, p2, p3]).then(values => console.log(values)); // [3, 42, 'foo']
       order: 11,
       testCases: {
         create: [
-          { input: '["promise-all-simple"]', expectedOutput: '"passed"', isHidden: false, order: 1 }
-        ]
-      }
+          {
+            input: '["promise-all-simple"]',
+            expectedOutput: '"passed"',
+            isHidden: false,
+            order: 1,
+          },
+        ],
+      },
     },
     {
       title: 'Memoize Function',
@@ -584,9 +660,14 @@ callCount; // 1
       order: 12,
       testCases: {
         create: [
-          { input: '["memoize-test-simple"]', expectedOutput: '"passed"', isHidden: false, order: 1 }
-        ]
-      }
+          {
+            input: '["memoize-test-simple"]',
+            expectedOutput: '"passed"',
+            isHidden: false,
+            order: 1,
+          },
+        ],
+      },
     },
     {
       title: 'Currying Function',
@@ -625,9 +706,9 @@ curriedSum(1, 2, 3); // 6
       order: 13,
       testCases: {
         create: [
-          { input: '["curry-test-simple"]', expectedOutput: '"passed"', isHidden: false, order: 1 }
-        ]
-      }
+          { input: '["curry-test-simple"]', expectedOutput: '"passed"', isHidden: false, order: 1 },
+        ],
+      },
     },
     {
       title: 'Merge Sorted Arrays',
@@ -676,11 +757,16 @@ The modification must be in-place. The array \`nums1\` has a length of \`m + n\`
       order: 14,
       testCases: {
         create: [
-          { input: '[[1,2,3,0,0,0], 3, [2,5,6], 3]', expectedOutput: '[1,2,2,3,5,6]', isHidden: false, order: 1 },
+          {
+            input: '[[1,2,3,0,0,0], 3, [2,5,6], 3]',
+            expectedOutput: '[1,2,2,3,5,6]',
+            isHidden: false,
+            order: 1,
+          },
           { input: '[[1], 1, [], 0]', expectedOutput: '[1]', isHidden: false, order: 2 },
-          { input: '[[0], 0, [1], 1]', expectedOutput: '[1]', isHidden: true, order: 3 }
-        ]
-      }
+          { input: '[[0], 0, [1], 1]', expectedOutput: '[1]', isHidden: true, order: 3 },
+        ],
+      },
     },
     {
       title: 'TypeScript Type Utility: Omit',
@@ -712,11 +798,451 @@ function verifyOmit() {
       isPublished: true,
       order: 15,
       testCases: {
+        create: [{ input: '[]', expectedOutput: '"passed"', isHidden: false, order: 1 }],
+      },
+    },
+    {
+      title: 'Hash a String with SHA-256',
+      slug: 'hash-string-sha256',
+      description: `Use Node.js's built-in \`crypto\` module to generate a SHA-256 hash of a given text.
+
+Return the hash as a hexadecimal string.
+
+### Example:
+**Input:** text = "hello"  
+**Output:** "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"`,
+      difficulty: 'EASY',
+      category: 'NODEJS',
+      starterCode: `const crypto = require('crypto');
+
+function hashSHA256(text) {
+  // Write your code here
+}`,
+      solutionCode: `const crypto = require('crypto');
+
+function hashSHA256(text) {
+  return crypto.createHash('sha256').update(text).digest('hex');
+}`,
+      tags: ['crypto', 'security'],
+      isPublished: true,
+      order: 16,
+      testCases: {
         create: [
-          { input: '[]', expectedOutput: '"passed"', isHidden: false, order: 1 }
-        ]
+          {
+            input: '["hello"]',
+            expectedOutput: '"2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"',
+            isHidden: false,
+            order: 1,
+          },
+          {
+            input: '[""]',
+            expectedOutput: '"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"',
+            isHidden: false,
+            order: 2,
+          },
+          {
+            input: '["interview-prep"]',
+            expectedOutput: '"226bc8f15d74944fa12419c8d57577317e08929e0618037305988e404b901594"',
+            isHidden: true,
+            order: 3,
+          },
+        ],
+      },
+    },
+    {
+      title: 'Parse URL Query Parameters',
+      slug: 'parse-url-query-params',
+      description: `Write a function that parses a URL string and returns its query parameters as a key-value object.
+
+You can use Node's built-in \`URL\` API.
+
+### Example:
+**Input:** urlString = "https://example.com?name=Alice&age=25"  
+**Output:** { "name": "Alice", "age": "25" }`,
+      difficulty: 'EASY',
+      category: 'NODEJS',
+      starterCode: `function parseQueryParams(urlString) {
+  // Write your code here
+}`,
+      solutionCode: `function parseQueryParams(urlString) {
+  const url = new URL(urlString);
+  const params = {};
+  url.searchParams.forEach((value, key) => {
+    params[key] = value;
+  });
+  return params;
+}`,
+      tags: ['url', 'parsing'],
+      isPublished: true,
+      order: 17,
+      testCases: {
+        create: [
+          {
+            input: '["https://example.com?name=Alice&age=25"]',
+            expectedOutput: '{"name":"Alice","age":"25"}',
+            isHidden: false,
+            order: 1,
+          },
+          {
+            input: '["https://google.com/search?q=nodejs&hl=en"]',
+            expectedOutput: '{"q":"nodejs","hl":"en"}',
+            isHidden: false,
+            order: 2,
+          },
+          {
+            input: '["https://api.github.com/users"]',
+            expectedOutput: '{}',
+            isHidden: true,
+            order: 3,
+          },
+        ],
+      },
+    },
+    {
+      title: 'Filter Engineering Employees',
+      slug: 'filter-engineering-employees',
+      description: `We have a table \`employees\` with columns \`id\`, \`name\`, \`department\`, and \`salary\`.
+      
+Write a query to select the \`name\` and \`salary\` of all employees in the 'Engineering' department, sorted by \`salary\` in descending order.
+
+### Example:
+**Input:**
+\`employees\` table:
+| id | name    | department  | salary |
+|----|---------|-------------|--------|
+| 1  | Alice   | Engineering | 90000  |
+| 2  | Bob     | Sales       | 60000  |
+| 3  | Charlie | Engineering | 95000  |
+
+**Output:**
+| name    | salary |
+|---------|--------|
+| Charlie | 95000  |
+| Alice   | 90000  |`,
+      difficulty: 'EASY',
+      category: 'SQL',
+      starterCode: `-- Write your SQL query here
+`,
+      solutionCode: `SELECT name, salary FROM employees WHERE department = 'Engineering' ORDER BY salary DESC;`,
+      tags: ['sql', 'basic'],
+      isPublished: true,
+      order: 18,
+      testCases: {
+        create: [
+          {
+            input:
+              "\"CREATE TABLE employees (id INTEGER PRIMARY KEY, name TEXT, department TEXT, salary INTEGER); INSERT INTO employees VALUES (1, \\'Alice\\', \\'Engineering\\', 90000); INSERT INTO employees VALUES (2, \\'Bob\\', \\'Sales\\', 60000); INSERT INTO employees VALUES (3, \\'Charlie\\', \\'Engineering\\', 95000);\"",
+            expectedOutput: '[{"name":"Charlie","salary":95000},{"name":"Alice","salary":90000}]',
+            isHidden: false,
+            order: 1,
+          },
+          {
+            input:
+              "\"CREATE TABLE employees (id INTEGER PRIMARY KEY, name TEXT, department TEXT, salary INTEGER); INSERT INTO employees VALUES (1, \\'Eve\\', \\'Engineering\\', 80000); INSERT INTO employees VALUES (2, \\'Dave\\', \\'Marketing\\', 70000);\"",
+            expectedOutput: '[{"name":"Eve","salary":80000}]',
+            isHidden: true,
+            order: 2,
+          },
+        ],
+      },
+    },
+    {
+      title: 'User Total Order Amount',
+      slug: 'user-total-order-amount',
+      description: `We have two tables: \`users\` (with \`id\`, \`name\`) and \`orders\` (with \`id\`, \`user_id\`, \`amount\`).
+      
+Write a query to find the \`name\` of each user and the total sum of their order amounts as \`total_amount\`.
+Only include users who have made at least one order.
+Sort the results by \`total_amount\` in descending order.
+
+### Example:
+**Input:**
+\`users\` table:
+| id | name  |
+|----|-------|
+| 1  | Alice |
+| 2  | Bob   |
+
+\`orders\` table:
+| id  | user_id | amount |
+|-----|---------|--------|
+| 101 | 1       | 250    |
+| 102 | 2       | 100    |
+| 103 | 1       | 150    |
+
+**Output:**
+| name  | total_amount |
+|-------|--------------|
+| Alice | 400          |
+| Bob   | 100          |`,
+      difficulty: 'EASY',
+      category: 'SQL',
+      starterCode: `-- Write your SQL query here
+`,
+      solutionCode: `SELECT u.name, SUM(o.amount) AS total_amount FROM users u JOIN orders o ON u.id = o.user_id GROUP BY u.name ORDER BY total_amount DESC;`,
+      tags: ['sql', 'join'],
+      isPublished: true,
+      order: 19,
+      testCases: {
+        create: [
+          {
+            input:
+              "\"CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT); CREATE TABLE orders (id INTEGER PRIMARY KEY, user_id INTEGER, amount INTEGER); INSERT INTO users VALUES (1, \\'Alice\\'); INSERT INTO users VALUES (2, \\'Bob\\'); INSERT INTO orders VALUES (101, 1, 250); INSERT INTO orders VALUES (102, 2, 100); INSERT INTO orders VALUES (103, 1, 150);\"",
+            expectedOutput:
+              '[{"name":"Alice","total_amount":400},{"name":"Bob","total_amount":100}]',
+            isHidden: false,
+            order: 1,
+          },
+          {
+            input:
+              '"CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT); CREATE TABLE orders (id INTEGER PRIMARY KEY, user_id INTEGER, amount INTEGER); INSERT INTO users VALUES (1, \\\'Charlie\\\'); INSERT INTO orders VALUES (104, 3, 300);"',
+            expectedOutput: '[]',
+            isHidden: true,
+            order: 2,
+          },
+        ],
+      },
+    },
+    {
+      title: 'React Todo Reducer',
+      slug: 'react-todo-reducer',
+      description: `Write a reducer function \`todoReducer\` that manages a todo list state in a React application.
+      
+The state is an array of todo objects: \`{ id: number, text: string, completed: boolean }\`.
+
+The reducer must handle three actions:
+1. \`{ type: 'ADD', payload: { id: number, text: string } }\`: Adds a new todo to the end of the state with \`completed: false\`.
+2. \`{ type: 'TOGGLE', payload: { id: number } }\`: Toggles the \`completed\` status of the todo with the given \`id\`.
+3. \`{ type: 'DELETE', payload: { id: number } }\`: Deletes the todo with the given \`id\`.
+
+If the action type is unknown, return the current state.
+
+### Example:
+**Input:** state = [], action = { type: 'ADD', payload: { id: 1, text: 'Learn React' } }  
+**Output:** [{ id: 1, text: 'Learn React', completed: false }]`,
+      difficulty: 'EASY',
+      category: 'REACT',
+      starterCode: `function todoReducer(state, action) {
+  // Write your code here
+}`,
+      solutionCode: `function todoReducer(state, action) {
+  switch (action.type) {
+    case 'ADD':
+      return [...state, { id: action.payload.id, text: action.payload.text, completed: false }];
+    case 'TOGGLE':
+      return state.map(todo => todo.id === action.payload.id ? { ...todo, completed: !todo.completed } : todo);
+    case 'DELETE':
+      return state.filter(todo => todo.id !== action.payload.id);
+    default:
+      return state;
+  }
+}`,
+      tags: ['react', 'reducer', 'state'],
+      isPublished: true,
+      order: 20,
+      testCases: {
+        create: [
+          {
+            input: '[[], {"type": "ADD", "payload": {"id": 1, "text": "Learn React"}}]',
+            expectedOutput: '[{"id": 1, "text": "Learn React", "completed": false}]',
+            isHidden: false,
+            order: 1,
+          },
+          {
+            input:
+              '[[{"id": 1, "text": "Learn React", "completed": false}], {"type": "TOGGLE", "payload": {"id": 1}}]',
+            expectedOutput: '[{"id": 1, "text": "Learn React", "completed": true}]',
+            isHidden: false,
+            order: 2,
+          },
+          {
+            input:
+              '[[{"id": 1, "text": "Learn React", "completed": false}], {"type": "DELETE", "payload": {"id": 1}}]',
+            expectedOutput: '[]',
+            isHidden: true,
+            order: 3,
+          },
+        ],
+      },
+    },
+    {
+      title: 'React Wizard Derived State',
+      slug: 'react-wizard-derived-state',
+      description: `In forms with multiple steps (wizards), state is often derived from the list of steps, the current step index, and user answers.
+
+Write a function \`deriveWizardState(steps, currentStepIndex, formAnswers)\` that returns an object containing derived states:
+- \`canGoNext\`: boolean, \`true\` if all fields listed in \`requiredFields\` of the current step are present in \`formAnswers\` (i.e. not undefined, null, or empty string \`""\`).
+- \`canGoBack\`: boolean, \`true\` if \`currentStepIndex > 0\`.
+- \`progress\`: integer, from 0 to 100 representing the percentage of steps where all required fields have been completed.
+- \`isLastStep\`: boolean, \`true\` if the user is on the final step.
+
+### Example:
+**Input:** 
+\`steps\` = [{ title: 'Step 1', requiredFields: ['email'] }, { title: 'Step 2', requiredFields: ['password'] }]  
+\`currentStepIndex\` = 0  
+\`formAnswers\` = { email: 'user@test.com' }
+
+**Output:**
+\`{ canGoNext: true, canGoBack: false, progress: 50, isLastStep: false }\``,
+      difficulty: 'MEDIUM',
+      category: 'REACT',
+      starterCode: `function deriveWizardState(steps, currentStepIndex, formAnswers) {
+  // Write your code here
+}`,
+      solutionCode: `function deriveWizardState(steps, currentStepIndex, formAnswers) {
+  const currentStep = steps[currentStepIndex];
+  const isFieldFilled = (field) => {
+    const val = formAnswers[field];
+    return val !== undefined && val !== null && val !== '';
+  };
+  const canGoNext = currentStep.requiredFields.every(isFieldFilled);
+  const canGoBack = currentStepIndex > 0;
+  
+  const completedSteps = steps.filter(step => 
+    step.requiredFields.every(isFieldFilled)
+  ).length;
+  const progress = Math.round((completedSteps / steps.length) * 100);
+  
+  const isLastStep = currentStepIndex === steps.length - 1;
+  
+  return { canGoNext, canGoBack, progress, isLastStep };
+}`,
+      tags: ['react', 'state', 'derived-state'],
+      isPublished: true,
+      order: 21,
+      testCases: {
+        create: [
+          {
+            input:
+              '[[{"title": "Step 1", "requiredFields": ["email"]}, {"title": "Step 2", "requiredFields": ["password"]}], 0, {"email": "user@test.com"}]',
+            expectedOutput: '{"canGoNext":true,"canGoBack":false,"progress":50,"isLastStep":false}',
+            isHidden: false,
+            order: 1,
+          },
+          {
+            input:
+              '[[{"title": "Step 1", "requiredFields": ["email"]}, {"title": "Step 2", "requiredFields": ["password"]}], 1, {"email": "user@test.com"}]',
+            expectedOutput: '{"canGoNext":false,"canGoBack":true,"progress":50,"isLastStep":true}',
+            isHidden: true,
+            order: 2,
+          },
+        ],
+      },
+    },
+    {
+      title: 'Active Users Query',
+      slug: 'active-users-query',
+      description: `Write an asynchronous function \`getActiveUsers(db)\` that queries a MongoDB \`users\` collection.
+      
+Return an array of documents for users where \`status\` is 'active'. Only return the \`name\` and \`email\` fields (and exclude the \`_id\` field). Sort the results by \`name\` in ascending order.
+
+### Example:
+**Input:**
+\`users\` collection:
+| _id | name    | email             | status   |
+|-----|---------|-------------------|----------|
+| 1   | Alice   | alice@test.com    | active   |
+| 2   | Bob     | bob@test.com      | inactive |
+| 3   | Charlie | charlie@test.com  | active   |
+
+**Output:**
+\`[ { "name": "Alice", "email": "alice@test.com" }, { "name": "Charlie", "email": "charlie@test.com" } ]\``,
+      difficulty: 'EASY',
+      category: 'MONGODB',
+      starterCode: `async function getActiveUsers(db) {
+  // Write your code here
+}`,
+      solutionCode: `async function getActiveUsers(db) {
+  return await db.collection('users')
+    .find({ status: 'active' }, { projection: { _id: 0, name: 1, email: 1 } })
+    .sort({ name: 1 })
+    .toArray();
+}`,
+      tags: ['mongodb', 'find'],
+      isPublished: true,
+      order: 22,
+      testCases: {
+        create: [
+          {
+            input:
+              '{"users":[{"_id":1,"name":"Alice","email":"alice@test.com","status":"active"},{"_id":2,"name":"Bob","email":"bob@test.com","status":"inactive"},{"_id":3,"name":"Charlie","email":"charlie@test.com","status":"active"}]}',
+            expectedOutput:
+              '[{"name":"Alice","email":"alice@test.com"},{"name":"Charlie","email":"charlie@test.com"}]',
+            isHidden: false,
+            order: 1,
+          },
+          {
+            input:
+              '{"users":[{"_id":1,"name":"Dave","email":"dave@test.com","status":"inactive"}]}',
+            expectedOutput: '[]',
+            isHidden: true,
+            order: 2,
+          },
+        ],
+      },
+    },
+    {
+      title: 'Total Revenue by Product',
+      slug: 'total-revenue-by-product',
+      description: `Write an asynchronous function \`getSalesByProduct(db)\` that queries a MongoDB \`orders\` collection.
+      
+Use an aggregation pipeline to:
+1. Group orders by \`product\`
+2. Sum up the total revenue (\`price\` multiplied by \`quantity\`) as \`totalRevenue\`
+3. Sort the results by \`totalRevenue\` in descending order.
+
+### Example:
+**Input:**
+\`orders\` collection:
+| _id | product  | price | quantity |
+|-----|----------|-------|----------|
+| 101 | Laptop   | 1000  | 1        |
+| 102 | Mouse    | 25    | 3        |
+| 103 | Laptop   | 1000  | 2        |
+| 104 | Keyboard | 50    | 1        |
+
+**Output:**
+\`[ { "_id": "Laptop", "totalRevenue": 3000 }, { "_id": "Mouse", "totalRevenue": 75 }, { "_id": "Keyboard", "totalRevenue": 50 } ]\``,
+      difficulty: 'MEDIUM',
+      category: 'MONGODB',
+      starterCode: `async function getSalesByProduct(db) {
+  // Write your code here
+}`,
+      solutionCode: `async function getSalesByProduct(db) {
+  return await db.collection('orders').aggregate([
+    {
+      $group: {
+        _id: '$product',
+        totalRevenue: { $sum: { $multiply: ['$price', '$quantity'] } }
       }
+    },
+    {
+      $sort: { totalRevenue: -1 }
     }
+  ]).toArray();
+}`,
+      tags: ['mongodb', 'aggregation'],
+      isPublished: true,
+      order: 23,
+      testCases: {
+        create: [
+          {
+            input:
+              '{"orders":[{"_id":101,"product":"Laptop","price":1000,"quantity":1},{"_id":102,"product":"Mouse","price":25,"quantity":3},{"_id":103,"product":"Laptop","price":1000,"quantity":2},{"_id":104,"product":"Keyboard","price":50,"quantity":1}]}',
+            expectedOutput:
+              '[{"_id":"Laptop","totalRevenue":3000},{"_id":"Mouse","totalRevenue":75},{"_id":"Keyboard","totalRevenue":50}]',
+            isHidden: false,
+            order: 1,
+          },
+          {
+            input: '{"orders":[]}',
+            expectedOutput: '[]',
+            isHidden: true,
+            order: 2,
+          },
+        ],
+      },
+    },
   ];
 
   console.log(`🚀 Seeding ${problemsData.length} problems...`);

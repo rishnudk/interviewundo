@@ -7,33 +7,14 @@ import * as tar from 'tar';
 import { logger } from '../config/logger';
 import { IExecutor, TestCaseInput, TestCaseResult, ExecutionResult } from './IExecutor';
 
-// Initialize Dockerode
 const docker = new Docker();
 
-export class JavascriptExecutor implements IExecutor {
-  /**
-   * Helper to extract the primary function or class name from starter/user code
-   */
-  private extractFunctionName(code: string): string | null {
-    const functionMatch = code.match(/function\*?\s+([a-zA-Z0-9_]+)\s*\(/);
-    if (functionMatch) return functionMatch[1];
-
-    const classMatch = code.match(/class\s+([a-zA-Z0-9_]+)/);
-    if (classMatch) return classMatch[1];
-
-    const constMatch = code.match(/(?:const|let|var)\s+([a-zA-Z0-9_]+)\s*=\s*/);
-    if (constMatch) return constMatch[1];
-
-    return null;
-  }
-
-  /**
-   * Generates the runner script that will run inside the container
-   */
-  private generateRunnerCode(functionName: string): string {
+export class SqlExecutor implements IExecutor {
+  private generateRunnerCode(): string {
     return `
 const fs = require('fs');
 const path = require('path');
+const Database = require('better-sqlite3');
 
 function deepEqual(a, b) {
   if (a === b) return true;
@@ -58,40 +39,57 @@ function deepEqual(a, b) {
 }
 
 try {
-  const targetFn = require('./solution');
-  if (!targetFn) {
-    console.log(JSON.stringify({
-      error: 'Target function/class "${functionName}" was not found or not exported properly.'
-    }));
-    process.exit(1);
-  }
-
+  const userQuery = fs.readFileSync(path.join(__dirname, 'solution.sql'), 'utf8').trim();
   const testCases = JSON.parse(fs.readFileSync(path.join(__dirname, 'testcases.json'), 'utf8'));
   const results = [];
 
   for (let i = 0; i < testCases.length; i++) {
     const tc = testCases[i];
-    const args = JSON.parse(tc.input);
+    
+    // Parse setup SQL
+    let setupSql = tc.input;
+    try {
+      const parsed = JSON.parse(tc.input);
+      if (typeof parsed === 'string') {
+        setupSql = parsed;
+      } else if (Array.isArray(parsed)) {
+        setupSql = parsed.join('\\n');
+      }
+    } catch (e) {
+      // Treat as raw SQL string if JSON parsing fails
+    }
+
     const expected = JSON.parse(tc.expectedOutput);
 
-    const start = process.hrtime.bigint();
-    let actual;
+    const db = new Database(':memory:');
+    let actual = null;
     let error = null;
+    const start = process.hrtime.bigint();
 
     try {
-      actual = targetFn(...args);
+      // Execute schema setup
+      db.exec(setupSql);
+
+      // Execute user query
+      const stmt = db.prepare(userQuery);
+      actual = stmt.all();
     } catch (e) {
       const errName = e.name || 'Error';
       const errMsg = e.message || String(e);
       error = errName + ': ' + errMsg;
+    } finally {
+      try {
+        db.close();
+      } catch (closeErr) {}
     }
+
     const end = process.hrtime.bigint();
-    const runtimeMs = Number(end - start) / 1e6; // to ms
+    const runtimeMs = Number(end - start) / 1e6;
 
     results.push({
       id: tc.id,
       passed: error === null && deepEqual(actual, expected),
-      actual: actual !== undefined ? actual : null,
+      actual: actual !== null ? actual : null,
       expected,
       runtime: Number(runtimeMs.toFixed(2)),
       error
@@ -110,73 +108,57 @@ try {
 `;
   }
 
-  /**
-   * Main execution method
-   */
   async execute(
     submissionId: string,
     code: string,
     testCases: TestCaseInput[],
     timeoutMs: number = 10000,
   ): Promise<ExecutionResult> {
-    const tempDir = path.join(os.tmpdir(), 'judge', submissionId);
-    const tarPath = path.join(os.tmpdir(), `judge-${submissionId}.tar`);
+    const tempDir = path.join(os.tmpdir(), 'judge-sql', submissionId);
+    const tarPath = path.join(os.tmpdir(), `judge-sql-${submissionId}.tar`);
     let container: Docker.Container | null = null;
 
     try {
-      // 1. Determine target function to export
-      const functionName = this.extractFunctionName(code);
-      if (!functionName) {
-        return {
-          passed: false,
-          passedCases: 0,
-          totalCases: testCases.length,
-          results: [],
-          error: 'Syntax Error: Could not find any declared functions or classes in your code.',
-        };
-      }
+      const runnerCode = this.generateRunnerCode();
 
-      const solutionCode = `${code}\n\nmodule.exports = typeof ${functionName} !== 'undefined' ? ${functionName} : null;\n`;
-      const runnerCode = this.generateRunnerCode(functionName);
-
-      // 2. Write temp files
+      // Write temp files on the host
       fs.mkdirSync(tempDir, { recursive: true });
-      fs.writeFileSync(path.join(tempDir, 'solution.js'), solutionCode);
+      fs.writeFileSync(path.join(tempDir, 'solution.sql'), code);
       fs.writeFileSync(path.join(tempDir, 'testcases.json'), JSON.stringify(testCases));
       fs.writeFileSync(path.join(tempDir, 'runner.js'), runnerCode);
 
-      // 3. Create tarball
+      // Create tarball
       await tar.create(
         {
           gzip: false,
           file: tarPath,
           cwd: tempDir,
         },
-        ['solution.js', 'runner.js', 'testcases.json'],
+        ['solution.sql', 'runner.js', 'testcases.json'],
       );
 
-      // 4. Create and start Docker container (node:22-slim)
-      // Enforces: 256MB memory limit, 1 CPU limit, no network access, and non-root execution
+      // Create and start Docker container (node-sql-runner)
+      // Enforces 256MB memory limit, 1 CPU limit, no network access, and non-root execution
       container = await docker.createContainer({
-        Image: 'node:22-slim',
-        Cmd: ['sleep', '60'], // keep container alive for execution duration
+        Image: 'node-sql-runner',
+        Cmd: ['sleep', '60'],
         NetworkDisabled: true,
         User: 'node',
         WorkingDir: '/app',
         HostConfig: {
-          Memory: 256 * 1024 * 1024, // 256 MB
-          NanoCpus: 1000000000, // 1 CPU
-          AutoRemove: false, // Keep container so we can extract status
+          Memory: 256 * 1024 * 1024,
+          NanoCpus: 1000000000,
+          AutoRemove: false,
         },
       });
 
       await container.start();
 
-      // 5. Copy tarball to container's /app directory
+      // Copy tarball to container
       const tarStream = fs.createReadStream(tarPath);
       await container.putArchive(tarStream, { path: '/app' });
 
-      // 6. Execute runner script
+      // Run runner script
       const exec = await container.exec({
         Cmd: ['node', '/app/runner.js'],
         AttachStdout: true,
@@ -185,7 +167,6 @@ try {
 
       const execStream = await exec.start({ Detach: false });
 
-      // Capture stdout & stderr
       const stdoutChunks: Buffer[] = [];
       const stderrChunks: Buffer[] = [];
 
@@ -205,7 +186,7 @@ try {
 
       container.modem.demuxStream(execStream, stdoutStream, stderrStream);
 
-      // 7. Enforce timeout (10 seconds)
+      // Enforce timeout
       const executionPromise = new Promise<void>((resolve, reject) => {
         execStream.on('end', resolve);
         execStream.on('error', reject);
@@ -219,25 +200,27 @@ try {
         await Promise.race([executionPromise, timeoutPromise]);
       } catch (err: any) {
         if (err.message === 'TIMEOUT') {
-          logger.warn(`Submission ${submissionId} timed out`);
+          logger.warn(`SQL Submission ${submissionId} timed out`);
           return {
             passed: false,
             passedCases: 0,
             totalCases: testCases.length,
             results: [],
-            error: 'Time Limit Exceeded: Your solution exceeded the 10-second limit.',
+            error: 'Time Limit Exceeded: Your query exceeded the 10-second limit.',
           };
         }
         throw err;
       }
 
-      // Check exit code and inspect execution
       const execInspect = await exec.inspect();
       const stdoutStr = Buffer.concat(stdoutChunks).toString('utf8').trim();
       const stderrStr = Buffer.concat(stderrChunks).toString('utf8').trim();
 
       if (execInspect.ExitCode !== 0) {
-        logger.error({ stderrStr, exitCode: execInspect.ExitCode }, 'Execution error in container');
+        logger.error(
+          { stderrStr, exitCode: execInspect.ExitCode },
+          'SQL execution error in container',
+        );
         return {
           passed: false,
           passedCases: 0,
@@ -250,7 +233,6 @@ try {
         };
       }
 
-      // 8. Parse runner output
       try {
         const output = JSON.parse(stdoutStr);
         if (output.error) {
@@ -267,10 +249,6 @@ try {
         const passedCases = results.filter((r) => r.passed).length;
         const totalCases = testCases.length;
 
-        // Extract container stats (for memory/runtime logging)
-        await container.inspect();
-
-        // Sum up test case execution times for average/total runtime
         const totalRuntime = results.reduce((acc, r) => acc + r.runtime, 0);
 
         return {
@@ -279,10 +257,10 @@ try {
           totalCases,
           results,
           runtime: Math.round(totalRuntime),
-          memory: 1024 * 1024 * 5, // Simulated 5MB memory footprint or extract from container
+          memory: 1024 * 1024 * 8, // Estimated 8MB memory footprint for SQL
         };
       } catch (parseErr) {
-        logger.error({ stdoutStr, parseErr }, 'Failed to parse runner output');
+        logger.error({ stdoutStr, parseErr }, 'Failed to parse SQL runner output');
         return {
           passed: false,
           passedCases: 0,
@@ -292,7 +270,7 @@ try {
         };
       }
     } catch (err: any) {
-      logger.error({ err }, 'Unexpected error in JavascriptExecutor');
+      logger.error({ err }, 'Unexpected error in SqlExecutor');
       return {
         passed: false,
         passedCases: 0,
@@ -301,7 +279,7 @@ try {
         error: `Sandbox execution failed: ${err.message || String(err)}`,
       };
     } finally {
-      // 9. Cleanup container & temp files
+      // Cleanup
       if (container) {
         try {
           await container.stop({ t: 0 }).catch(() => {});
@@ -311,7 +289,6 @@ try {
         }
       }
 
-      // Clean up host temp directory & tarball
       try {
         if (fs.existsSync(tempDir)) {
           fs.rmSync(tempDir, { recursive: true, force: true });
