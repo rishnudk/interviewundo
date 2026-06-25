@@ -18,12 +18,14 @@ interface DifficultyProgressProps {
 
 export function DifficultyProgress({ difficultyBreakdown }: DifficultyProgressProps) {
   return (
-    <Card className="border-border bg-card/30 backdrop-blur-sm">
+    <Card className="bg-[#191919] border-white/5 rounded-[16px] shadow-[0_0_44px_rgba(0,0,0,0.8)]">
       <CardHeader>
-        <CardTitle className="text-base flex items-center gap-2">
-          <Target className="w-5 h-5 text-indigo-500" /> Difficulty Progress
+        <CardTitle className="text-base font-bold text-[#ffffff] flex items-center gap-2">
+          <Target className="w-5 h-5 text-[#479ffa]" /> Difficulty Progress
         </CardTitle>
-        <CardDescription>Breakdown of solved problems by difficulty level</CardDescription>
+        <CardDescription className="text-xs text-[#868f97]">
+          Breakdown of solved problems by difficulty level
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
         {(['EASY', 'MEDIUM', 'HARD'] as const).map((diff) => {
@@ -33,31 +35,31 @@ export function DifficultyProgress({ difficultyBreakdown }: DifficultyProgressPr
           const percent = total > 0 ? Math.round((solved / total) * 100) : 0;
 
           const colorMap = {
-            EASY: 'bg-emerald-500',
-            MEDIUM: 'bg-amber-500',
-            HARD: 'bg-destructive',
+            EASY: 'bg-[#4ebe96]',
+            MEDIUM: 'bg-[#ffa16c]',
+            HARD: 'bg-[#eb5757]',
           };
 
           const textMap = {
-            EASY: 'text-emerald-500',
-            MEDIUM: 'text-amber-500',
-            HARD: 'text-destructive',
+            EASY: 'text-[#4ebe96]',
+            MEDIUM: 'text-[#ffa16c]',
+            HARD: 'text-[#eb5757]',
           };
 
           return (
             <div key={diff} className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span
-                  className={cn('font-semibold text-xs uppercase tracking-wider', textMap[diff])}
+                  className={cn('font-bold text-[11px] uppercase tracking-wider', textMap[diff])}
                 >
                   {diff}
                 </span>
-                <span className="font-semibold text-muted-foreground">
+                <span className="font-semibold text-[#ffffff]">
                   {solved}{' '}
-                  <span className="text-xs text-muted-foreground/50">/ {total} solved</span>
+                  <span className="text-[11px] font-medium text-[#868f97]">/ {total} solved</span>
                 </span>
               </div>
-              <div className="w-full h-3 bg-muted rounded-full overflow-hidden relative">
+              <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden relative">
                 <div
                   className={cn('h-full rounded-full transition-all duration-500', colorMap[diff])}
                   style={{ width: `${percent}%` }}

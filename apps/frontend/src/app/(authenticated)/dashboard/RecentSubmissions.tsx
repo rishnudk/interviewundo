@@ -21,44 +21,41 @@ interface RecentSubmissionsProps {
 
 export function RecentSubmissions({ recent }: RecentSubmissionsProps) {
   return (
-    <Card className="border-border bg-card/30 backdrop-blur-sm">
+    <Card className="bg-[#191919] border-white/5 rounded-[16px] shadow-[0_0_44px_rgba(0,0,0,0.8)]">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle className="text-base">Recent Submissions</CardTitle>
-          <CardDescription>Your latest submissions on problems</CardDescription>
+          <CardTitle className="text-base font-bold text-[#ffffff]">Recent Submissions</CardTitle>
+          <CardDescription className="text-xs text-[#868f97]">
+            Your latest submissions on problems
+          </CardDescription>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {recent.length === 0 ? (
-          <div className="text-center py-6 text-sm text-muted-foreground">
+          <div className="text-center py-6 text-sm text-[#868f97]">
             No submissions yet. Start coding to build history!
           </div>
         ) : (
           recent.map((sub, idx) => {
             const statusColors = {
-              ACCEPTED:
-                'text-emerald-500 border-emerald-500/20 bg-emerald-500/5 dark:bg-emerald-500/10',
-              WRONG_ANSWER:
-                'text-destructive border-destructive/20 bg-destructive/5 dark:bg-destructive/10',
-              TIME_LIMIT_EXCEEDED:
-                'text-amber-500 border-amber-500/20 bg-amber-500/5 dark:bg-amber-500/10',
-              RUNTIME_ERROR:
-                'text-stone-500 border-stone-500/20 bg-stone-500/5 dark:bg-stone-500/10',
-              COMPILATION_ERROR:
-                'text-zinc-500 border-zinc-500/20 bg-zinc-500/5 dark:bg-zinc-500/10',
-              PENDING: 'text-muted-foreground border-border bg-muted/5',
-              PROCESSING: 'text-indigo-500 border-indigo-500/20 bg-indigo-500/5 animate-pulse',
+              ACCEPTED: 'text-[#4ebe96] border-[#4ebe96]/20 bg-[#4ebe96]/10',
+              WRONG_ANSWER: 'text-[#eb5757] border-[#eb5757]/20 bg-[#eb5757]/10',
+              TIME_LIMIT_EXCEEDED: 'text-[#ffa16c] border-[#ffa16c]/20 bg-[#ffa16c]/10',
+              RUNTIME_ERROR: 'text-[#cccccc] border-white/20 bg-white/5',
+              COMPILATION_ERROR: 'text-[#868f97] border-white/20 bg-white/5',
+              PENDING: 'text-[#868f97] border-white/10 bg-white/5',
+              PROCESSING: 'text-[#479ffa] border-[#479ffa]/20 bg-[#479ffa]/10 animate-pulse',
             };
 
             return (
               <div
                 key={idx}
-                className="flex items-center justify-between p-3 rounded-2xl border border-border/50 hover:bg-accent/30 transition-all duration-200 group"
+                className="flex items-center justify-between p-3 rounded-2xl border border-white/5 hover:bg-[#131313] transition-all duration-200 group"
               >
                 <div className="space-y-1 min-w-0 flex-1 pr-3">
                   <Link
                     href={`/problems/${sub.problemSlug}`}
-                    className="font-semibold text-xs hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center gap-1"
+                    className="font-bold text-[#ffffff] text-xs hover:text-[#479ffa] transition-colors flex items-center gap-1"
                   >
                     {sub.problemTitle}
                     <ExternalLink
@@ -66,7 +63,7 @@ export function RecentSubmissions({ recent }: RecentSubmissionsProps) {
                       className="opacity-0 group-hover:opacity-100 transition-opacity"
                     />
                   </Link>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-[10px] text-[#868f97] font-medium">
                     {new Date(sub.createdAt).toLocaleDateString(undefined, {
                       month: 'short',
                       day: 'numeric',

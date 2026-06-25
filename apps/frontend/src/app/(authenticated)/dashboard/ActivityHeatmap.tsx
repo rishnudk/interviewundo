@@ -13,10 +13,10 @@ interface ActivityHeatmapProps {
 }
 
 const getCellColor = (count: number) => {
-  if (count === 0) return 'bg-muted/20 dark:bg-muted/10 hover:bg-muted/40';
-  if (count <= 2) return 'bg-emerald-500/20 text-emerald-500 hover:bg-emerald-500/30';
-  if (count <= 4) return 'bg-emerald-500/50 text-emerald-400 hover:bg-emerald-500/60';
-  return 'bg-emerald-500 dark:bg-emerald-400 text-white hover:bg-emerald-600';
+  if (count === 0) return 'bg-white/5 hover:bg-white/10';
+  if (count <= 2) return 'bg-[#479ffa]/20 text-[#479ffa] hover:bg-[#479ffa]/30';
+  if (count <= 4) return 'bg-[#479ffa]/50 text-[#ffffff] hover:bg-[#479ffa]/60';
+  return 'bg-[#479ffa] text-[#ffffff] hover:opacity-80';
 };
 
 export function ActivityHeatmap({ activity }: ActivityHeatmapProps) {
@@ -70,17 +70,19 @@ export function ActivityHeatmap({ activity }: ActivityHeatmapProps) {
   }, [activity]);
 
   return (
-    <Card className="border-border bg-card/30 backdrop-blur-sm">
+    <Card className="bg-[#191919] border-white/5 rounded-[16px] shadow-[0_0_44px_rgba(0,0,0,0.8)]">
       <CardHeader>
-        <CardTitle className="text-base flex items-center gap-2">
-          <CalendarIcon className="w-5 h-5 text-indigo-500" /> Submission Activity
+        <CardTitle className="text-base font-bold text-[#ffffff] flex items-center gap-2">
+          <CalendarIcon className="w-5 h-5 text-[#479ffa]" /> Submission Activity
         </CardTitle>
-        <CardDescription>Daily coding activity over the past year</CardDescription>
+        <CardDescription className="text-xs text-[#868f97]">
+          Daily coding activity over the past year
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-col">
           {/* Month Headers */}
-          <div className="flex gap-[4.5px] text-[10px] text-muted-foreground/60 h-4 pl-6 relative">
+          <div className="flex gap-[4.5px] text-[10px] font-medium text-[#868f97] h-4 pl-6 relative">
             {calendarData.monthLabels.map((lbl, idx) => (
               <div key={idx} className="absolute" style={{ left: `${lbl.index * 13.5 + 24}px` }}>
                 {lbl.text}
@@ -90,7 +92,7 @@ export function ActivityHeatmap({ activity }: ActivityHeatmapProps) {
 
           <div className="flex gap-1.5">
             {/* Days label */}
-            <div className="flex flex-col justify-between text-[9px] text-muted-foreground/60 h-[92px] pr-1 py-1">
+            <div className="flex flex-col justify-between text-[9px] font-medium text-[#868f97] h-[92px] pr-1 py-1">
               <span>Sun</span>
               <span>Tue</span>
               <span>Thu</span>
@@ -115,7 +117,7 @@ export function ActivityHeatmap({ activity }: ActivityHeatmapProps) {
                           )}
                         >
                           {/* Tooltip */}
-                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block bg-popover text-popover-foreground text-[10px] py-1.5 px-2 rounded-lg shadow-md whitespace-nowrap z-50 pointer-events-none border border-border">
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block bg-[#131313] text-[#ffffff] font-medium text-[10px] py-1.5 px-2 rounded-lg shadow-xl whitespace-nowrap z-50 pointer-events-none border border-white/10">
                             {count} {count === 1 ? 'submission' : 'submissions'} on{' '}
                             {day.toLocaleDateString(undefined, {
                               month: 'short',
@@ -133,12 +135,12 @@ export function ActivityHeatmap({ activity }: ActivityHeatmapProps) {
           </div>
 
           {/* Legend */}
-          <div className="flex items-center justify-end gap-1.5 text-[10px] text-muted-foreground/60 pt-2">
+          <div className="flex items-center justify-end gap-1.5 text-[10px] font-medium text-[#868f97] pt-2">
             <span>Less</span>
-            <div className="w-2.5 h-2.5 rounded-[1.5px] bg-muted/20" />
-            <div className="w-2.5 h-2.5 rounded-[1.5px] bg-emerald-500/20" />
-            <div className="w-2.5 h-2.5 rounded-[1.5px] bg-emerald-500/50" />
-            <div className="w-2.5 h-2.5 rounded-[1.5px] bg-emerald-500" />
+            <div className="w-2.5 h-2.5 rounded-[1.5px] bg-white/5" />
+            <div className="w-2.5 h-2.5 rounded-[1.5px] bg-[#479ffa]/20" />
+            <div className="w-2.5 h-2.5 rounded-[1.5px] bg-[#479ffa]/50" />
+            <div className="w-2.5 h-2.5 rounded-[1.5px] bg-[#479ffa]" />
             <span>More</span>
           </div>
         </div>
