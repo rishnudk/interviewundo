@@ -97,7 +97,7 @@ npm run dev
 
 The backend validates environment variables on startup. These are the key values you need locally:
 
-```env
+````env
 DATABASE_URL=
 REDIS_URL=
 JWT_ACCESS_SECRET=
@@ -112,7 +112,7 @@ RATE_LIMIT_WINDOW_MS=900000
 RATE_LIMIT_MAX_REQUESTS=100
 GROK_API_KEY=
 GROK_MODEL=grok-2
-```
+```..
 
 ## Useful scripts
 
@@ -162,7 +162,7 @@ Run backend and integration coverage:
 
 ```bash
 npm run test
-```
+````
 
 Run browser flows:
 
