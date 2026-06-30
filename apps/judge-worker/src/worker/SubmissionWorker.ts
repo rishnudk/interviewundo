@@ -89,7 +89,7 @@ export const submissionWorker = new Worker(
       }
 
       // 3. Execute user code against all test cases
-      const formattedTestCases = testCases.map((tc) => ({
+      const formattedTestCases = testCases.map((tc: any) => ({
         id: tc.id,
         input: tc.input,
         expectedOutput: tc.expectedOutput,
