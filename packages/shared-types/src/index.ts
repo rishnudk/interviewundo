@@ -3,7 +3,7 @@
 // Single entry point — re-exports everything
 // ============================================================
 
-export * from './enums';
-export * from './entities';
-export * from './dto';
-export * from './api';
+export * from './enums/index.js';
+export * from './entities/index.js';
+export * from './dto/index.js';
+export * from './api/index.js';
