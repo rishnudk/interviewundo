@@ -22,7 +22,7 @@
     "db:seed:arrays": "npm run db:seed:arrays --workspace=apps/backend-api",
     "db:seed:other-js": "npm run db:seed:other-js --workspace=apps/backend-api",
     "db:studio": "npm run studio --workspace=apps/backend-api",
-    "prepare": "husky",
+    "prepare": "node -e \"try { require('child_process').execSync('husky', { stdio: 'inherit' }) } catch (e) {}\"",
     "postinstall": "prisma generate --schema=apps/backend-api/src/infrastructure/database/prisma/schema.prisma"
   },
   "devDependencies": {
