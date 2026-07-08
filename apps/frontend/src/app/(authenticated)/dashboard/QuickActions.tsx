@@ -10,36 +10,36 @@ export function QuickActions() {
       description: 'Resume from where you left off',
       icon: PlayCircle,
       href: '/problems',
-      color: 'text-[#479ffa]',
-      bg: 'bg-[#479ffa]/10',
-      hoverBorder: 'hover:border-[#479ffa]/50',
+      color: 'text-blue-500',
+      bg: 'bg-blue-500/10',
+      hoverBorder: 'hover:border-blue-500/50',
     },
     {
       label: 'Daily Challenge',
       description: "Solve today's problem for extra XP",
       icon: Flame,
       href: '/problems?filter=daily',
-      color: 'text-[#ffa16c]',
-      bg: 'bg-[#ffa16c]/10',
-      hoverBorder: 'hover:border-[#ffa16c]/50',
+      color: 'text-orange-500',
+      bg: 'bg-orange-500/10',
+      hoverBorder: 'hover:border-orange-500/50',
     },
     {
       label: 'Random Problem',
       description: 'Test yourself with a random challenge',
       icon: Shuffle,
       href: '/problems/random',
-      color: 'text-[#4ebe96]',
-      bg: 'bg-[#4ebe96]/10',
-      hoverBorder: 'hover:border-[#4ebe96]/50',
+      color: 'text-emerald-500',
+      bg: 'bg-emerald-500/10',
+      hoverBorder: 'hover:border-emerald-500/50',
     },
     {
       label: 'AI Assistant',
       description: 'Get help or mock an interview',
       icon: Bot,
       href: '/ai-assistant',
-      color: 'text-[#9d72ff]',
-      bg: 'bg-[#9d72ff]/10',
-      hoverBorder: 'hover:border-[#9d72ff]/50',
+      color: 'text-purple-500',
+      bg: 'bg-purple-500/10',
+      hoverBorder: 'hover:border-purple-500/50',
     },
   ];
 
@@ -50,7 +50,7 @@ export function QuickActions() {
         return (
           <Link href={action.href} key={idx} className="block group">
             <Card
-              className={`h-full bg-[#131313] border-white/5 rounded-[16px] shadow-[0_0_20px_rgba(0,0,0,0.5)] transition-all duration-300 ${action.hoverBorder} hover:-translate-y-1`}
+              className={`h-full bg-card border-border rounded-[16px] shadow-sm hover:shadow-md transition-all duration-300 ${action.hoverBorder} hover:-translate-y-1`}
             >
               <CardContent className="p-5 flex flex-col items-start gap-4">
                 <div
@@ -59,8 +59,8 @@ export function QuickActions() {
                   <Icon size={24} className="stroke-[2]" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-base font-bold text-[#ffffff]">{action.label}</h3>
-                  <p className="text-xs text-[#868f97]">{action.description}</p>
+                  <h3 className="text-base font-bold text-card-foreground">{action.label}</h3>
+                  <p className="text-xs text-muted-foreground">{action.description}</p>
                 </div>
               </CardContent>
             </Card>

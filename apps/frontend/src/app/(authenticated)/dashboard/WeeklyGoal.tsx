@@ -15,24 +15,24 @@ export function WeeklyGoal() {
     { name: 'Completed', value: current },
     { name: 'Remaining', value: remaining },
   ];
-  const COLORS = ['#4ebe96', 'rgba(255,255,255,0.05)'];
+  const COLORS = ['#10b981', 'rgba(128,128,128,0.2)']; // emerald-500 and a neutral translucent gray
 
   return (
-    <Card className="bg-[#191919] border-white/5 rounded-[16px] shadow-[0_0_44px_rgba(0,0,0,0.8)] relative overflow-hidden group">
-      <div className="absolute top-0 right-0 -mr-12 -mt-12 w-32 h-32 bg-[#4ebe96]/10 rounded-full blur-2xl pointer-events-none group-hover:scale-110 transition-transform duration-500" />
+    <Card className="bg-card border-border rounded-[16px] shadow-sm relative overflow-hidden group">
+      <div className="absolute top-0 right-0 -mr-12 -mt-12 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none group-hover:scale-110 transition-transform duration-500" />
 
       <CardHeader className="relative z-10 pb-2">
-        <CardTitle className="text-base font-bold text-[#ffffff] flex items-center gap-2">
-          <Target className="w-5 h-5 text-[#4ebe96]" /> Weekly Goal
+        <CardTitle className="text-base font-bold text-card-foreground flex items-center gap-2">
+          <Target className="w-5 h-5 text-emerald-500" /> Weekly Goal
         </CardTitle>
       </CardHeader>
       <CardContent className="relative z-10 space-y-6">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-3xl font-bold tracking-tight text-[#ffffff]">
-              {current} <span className="text-lg text-[#868f97] font-normal">/ {goal}</span>
+            <p className="text-3xl font-bold tracking-tight text-card-foreground">
+              {current} <span className="text-lg text-muted-foreground font-normal">/ {goal}</span>
             </p>
-            <p className="text-[11px] text-[#868f97]">
+            <p className="text-[11px] text-muted-foreground">
               {remaining > 0 ? `Solve ${remaining} more this week` : 'Goal completed!'}
             </p>
           </div>
@@ -57,7 +57,7 @@ export function WeeklyGoal() {
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex items-center justify-center flex-col">
-              <span className="text-sm font-bold text-[#ffffff]">
+              <span className="text-sm font-bold text-card-foreground">
                 {Math.round((current / goal) * 100)}%
               </span>
             </div>
@@ -68,7 +68,7 @@ export function WeeklyGoal() {
           href="/problems?filter=weekly"
           className={cn(
             buttonVariants({ variant: 'outline', size: 'sm' }),
-            'w-full rounded-xl bg-transparent border-white/10 text-[#ffffff] hover:bg-white/5 hover:text-[#ffffff] transition-all flex items-center justify-center gap-2',
+            'w-full rounded-xl transition-all flex items-center justify-center gap-2',
           )}
         >
           View Goal

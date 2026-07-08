@@ -114,7 +114,7 @@ export default function DashboardPage() {
         <Button
           onClick={() => window.location.reload()}
           variant="outline"
-          className="rounded-xl border-white/10 text-white hover:bg-white/5"
+          className="rounded-xl border-border text-white hover:bg-white/5"
         >
           Try Again
         </Button>
@@ -151,24 +151,24 @@ export default function DashboardPage() {
       value: `${stats.totalSolved > 0 ? 'Active' : 'Get Started'}`,
       description: 'Submit solutions to build stats',
       icon: Activity,
-      color: 'text-[#ffffff] bg-white/10',
+      color: 'text-foreground bg-white/10',
     },
   ];
 
   return (
     <div className="space-y-8 pb-12 font-sans">
       {/* Welcome Section */}
-      <div className="rounded-[16px] bg-[#191919] border border-white/5 p-8 text-white relative overflow-hidden shadow-[0_0_44px_rgba(0,0,0,0.8)]">
+      <div className="rounded-[16px] bg-card border border-border p-8 text-white relative overflow-hidden shadow-sm">
         <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-[#479ffa]/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 max-w-xl space-y-4">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#479ffa]/30 bg-[#479ffa]/10 text-xs font-semibold backdrop-blur-md text-[#479ffa]">
             <Sparkles width={12} height={12} className="animate-spin" />
             Interview Prep Dashboard Active
           </span>
-          <h2 className="text-3xl font-bold tracking-[-0.05em] md:text-4xl text-[#ffffff]">
+          <h2 className="text-3xl font-bold tracking-[-0.05em] md:text-4xl text-foreground">
             Welcome back, {user?.name || 'Developer'}!
           </h2>
-          <p className="text-[#868f97] text-sm md:text-base leading-relaxed">
+          <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
             Enhance your problem-solving capabilities, master JavaScript/React, and ace your
             technical interviews with real-time feedback.
           </p>
@@ -177,7 +177,7 @@ export default function DashboardPage() {
               href="/problems"
               className={cn(
                 buttonVariants({ variant: 'default' }),
-                'rounded-full bg-[#0b0b0b] hover:bg-[#131313] text-[#ffffff] font-medium border border-white/10 shadow-[0_0_14px_rgba(255,255,255,0.15)] transition-all flex items-center gap-2',
+                'rounded-full font-medium shadow-md transition-all flex items-center gap-2',
               )}
             >
               <PlayCircle size={16} />
@@ -192,18 +192,18 @@ export default function DashboardPage() {
 
       {/* Daily Challenge Banner */}
       {isDailyLoading ? (
-        <div className="w-full bg-[#131313] border border-white/5 rounded-[16px] p-6 md:p-8 animate-pulse space-y-4">
+        <div className="w-full bg-secondary border border-border rounded-[16px] p-6 md:p-8 animate-pulse space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-3 flex-1">
-              <div className="h-5 w-32 bg-[#191919] rounded-full" />
-              <div className="h-7 w-1/3 bg-[#191919] rounded" />
-              <div className="h-4 w-2/3 bg-[#191919] rounded" />
+              <div className="h-5 w-32 bg-card rounded-full" />
+              <div className="h-7 w-1/3 bg-card rounded" />
+              <div className="h-4 w-2/3 bg-card rounded" />
             </div>
-            <div className="h-10 w-32 bg-[#191919] rounded-full" />
+            <div className="h-10 w-32 bg-card rounded-full" />
           </div>
         </div>
       ) : dailyChallenge?.data ? (
-        <div className="w-full relative overflow-hidden rounded-[16px] border border-[#ffa16c]/20 bg-[#131313] shadow-[0_0_44px_rgba(0,0,0,0.8)] transition-all duration-300 hover:border-[#ffa16c]/40 group">
+        <div className="w-full relative overflow-hidden rounded-[16px] border border-[#ffa16c]/20 bg-secondary shadow-sm transition-all duration-300 hover:border-[#ffa16c]/40 group">
           {/* Decorative glowing blobs */}
           <div className="absolute -top-12 -right-12 w-48 h-48 bg-[#ffa16c]/10 rounded-full blur-3xl pointer-events-none group-hover:scale-110 transition-transform duration-500" />
           <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-[#479ffa]/5 rounded-full blur-3xl pointer-events-none group-hover:scale-110 transition-transform duration-500" />
@@ -215,34 +215,34 @@ export default function DashboardPage() {
                   <Flame size={12} className="animate-pulse fill-[#ffa16c]" />
                   Daily Challenge
                 </span>
-                <span className="text-xs text-[#525252]">•</span>
+                <span className="text-xs text-muted-foreground">•</span>
                 <DifficultyBadge difficulty={dailyChallenge.data.difficulty} />
-                <span className="text-xs text-[#525252]">•</span>
-                <span className="text-xs font-medium text-[#868f97] bg-[#191919] border border-white/5 px-2.5 py-0.5 rounded-md">
+                <span className="text-xs text-muted-foreground">•</span>
+                <span className="text-xs font-medium text-muted-foreground bg-card border border-border px-2.5 py-0.5 rounded-md">
                   {dailyChallenge.data.category}
                 </span>
               </div>
 
               <div className="space-y-1">
-                <h3 className="text-xl md:text-2xl font-bold tracking-[-0.05em] text-[#ffffff] group-hover:text-[#ffa16c] transition-colors">
+                <h3 className="text-xl md:text-2xl font-bold tracking-[-0.05em] text-foreground group-hover:text-[#ffa16c] transition-colors">
                   {dailyChallenge.data.title}
                 </h3>
-                <p className="text-sm text-[#868f97] line-clamp-2 leading-relaxed">
+                <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                   {dailyChallenge.data.description.replace(/[#*`]/g, '')}
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 pt-1 text-xs text-[#868f97]">
+              <div className="flex flex-wrap items-center gap-4 pt-1 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1.5">
                   <CheckCircle2 size={14} className="text-[#4ebe96]" />
-                  <span className="font-semibold text-[#ffffff]">
+                  <span className="font-semibold text-foreground">
                     {dailyChallenge.data.solvedCount}
                   </span>{' '}
                   Solved
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Activity size={14} className="text-[#479ffa]" />
-                  <span className="font-semibold text-[#ffffff]">
+                  <span className="font-semibold text-foreground">
                     {dailyChallenge.data.attemptCount > 0
                       ? Math.round(
                           (dailyChallenge.data.solvedCount / dailyChallenge.data.attemptCount) *
@@ -261,7 +261,7 @@ export default function DashboardPage() {
                 href={`/problems/${dailyChallenge.data.slug}`}
                 className={cn(
                   buttonVariants({ size: 'lg', variant: 'default' }),
-                  'rounded-full bg-[#0b0b0b] hover:bg-[#191919] text-[#ffffff] font-medium border border-white/10 shadow-[0_0_14px_rgba(255,255,255,0.15)] transition-all flex items-center gap-2',
+                  'rounded-full font-medium shadow-md transition-all flex items-center gap-2',
                 )}
               >
                 Solve Challenge
@@ -279,15 +279,15 @@ export default function DashboardPage() {
           return (
             <Card
               key={idx}
-              className="bg-[#191919] border-white/5 rounded-[16px] shadow-[0_0_44px_rgba(0,0,0,0.8)] hover:border-white/10 transition-all duration-300"
+              className="bg-card border-border rounded-[16px] shadow-sm hover:border-border transition-all duration-300"
             >
               <CardContent className="p-6 flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-[10px] font-semibold text-[#868f97] uppercase tracking-wider">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                     {stat.label}
                   </p>
-                  <p className="text-2xl font-bold tracking-tight text-[#ffffff]">{stat.value}</p>
-                  <p className="text-[11px] text-[#868f97]/80">{stat.description}</p>
+                  <p className="text-2xl font-bold tracking-tight text-foreground">{stat.value}</p>
+                  <p className="text-[11px] text-muted-foreground/80">{stat.description}</p>
                 </div>
                 <div className={`p-3 rounded-2xl ${stat.color}`}>
                   <Icon size={22} className="stroke-[2.5]" />
@@ -308,12 +308,12 @@ export default function DashboardPage() {
           <DifficultyProgress difficultyBreakdown={stats.difficultyBreakdown} />
 
           {/* Category progress bar chart (Recharts) */}
-          <Card className="bg-[#191919] border-white/5 rounded-[16px] shadow-[0_0_44px_rgba(0,0,0,0.8)]">
+          <Card className="bg-card border-border rounded-[16px] shadow-sm">
             <CardHeader>
-              <CardTitle className="text-base font-bold text-[#ffffff] flex items-center gap-2">
+              <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-[#4ebe96]" /> Category Progress
               </CardTitle>
-              <CardDescription className="text-[#868f97] text-xs">
+              <CardDescription className="text-muted-foreground text-xs">
                 Completion percentages across technical subjects
               </CardDescription>
             </CardHeader>
@@ -332,15 +332,15 @@ export default function DashboardPage() {
                       if (active && payload && payload.length) {
                         const data = payload[0].payload;
                         return (
-                          <div className="bg-[#131313] text-[#ffffff] p-3 rounded-xl border border-white/10 shadow-xl text-xs space-y-1">
+                          <div className="bg-secondary text-foreground p-3 rounded-xl border border-border shadow-xl text-xs space-y-1">
                             <p className="font-bold">{data.name}</p>
-                            <p className="text-[#868f97]">
+                            <p className="text-muted-foreground">
                               Solved:{' '}
-                              <span className="font-semibold text-[#ffffff]">
+                              <span className="font-semibold text-foreground">
                                 {data.solved} / {data.total}
                               </span>
                             </p>
-                            <p className="text-[#868f97]">
+                            <p className="text-muted-foreground">
                               Completion:{' '}
                               <span className="font-semibold text-[#479ffa]">
                                 {data.percentage}%
@@ -391,12 +391,12 @@ function DashboardSkeleton() {
   return (
     <div className="space-y-8 pb-12 animate-pulse">
       {/* Welcome Banner Skeleton */}
-      <div className="h-44 bg-[#191919] border border-white/5 rounded-[16px]" />
+      <div className="h-44 bg-card border border-border rounded-[16px]" />
 
       {/* Stats Cards Skeleton */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-24 bg-[#191919] border border-white/5 rounded-[16px]" />
+          <div key={i} className="h-24 bg-card border border-border rounded-[16px]" />
         ))}
       </div>
 

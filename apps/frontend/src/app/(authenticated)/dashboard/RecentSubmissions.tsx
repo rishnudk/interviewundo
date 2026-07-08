@@ -21,41 +21,43 @@ interface RecentSubmissionsProps {
 
 export function RecentSubmissions({ recent }: RecentSubmissionsProps) {
   return (
-    <Card className="bg-[#191919] border-white/5 rounded-[16px] shadow-[0_0_44px_rgba(0,0,0,0.8)]">
+    <Card className="bg-card border-border shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle className="text-base font-bold text-[#ffffff]">Recent Submissions</CardTitle>
-          <CardDescription className="text-xs text-[#868f97]">
+          <CardTitle className="text-base font-bold text-card-foreground">
+            Recent Submissions
+          </CardTitle>
+          <CardDescription className="text-xs text-muted-foreground">
             Your latest submissions on problems
           </CardDescription>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {recent.length === 0 ? (
-          <div className="text-center py-6 text-sm text-[#868f97]">
+          <div className="text-center py-6 text-sm text-muted-foreground">
             No submissions yet. Start coding to build history!
           </div>
         ) : (
           recent.map((sub, idx) => {
             const statusColors = {
-              ACCEPTED: 'text-[#4ebe96] border-[#4ebe96]/20 bg-[#4ebe96]/10',
-              WRONG_ANSWER: 'text-[#eb5757] border-[#eb5757]/20 bg-[#eb5757]/10',
-              TIME_LIMIT_EXCEEDED: 'text-[#ffa16c] border-[#ffa16c]/20 bg-[#ffa16c]/10',
-              RUNTIME_ERROR: 'text-[#cccccc] border-white/20 bg-white/5',
-              COMPILATION_ERROR: 'text-[#868f97] border-white/20 bg-white/5',
-              PENDING: 'text-[#868f97] border-white/10 bg-white/5',
-              PROCESSING: 'text-[#479ffa] border-[#479ffa]/20 bg-[#479ffa]/10 animate-pulse',
+              ACCEPTED: 'text-emerald-500 border-emerald-500/20 bg-emerald-500/10',
+              WRONG_ANSWER: 'text-red-500 border-red-500/20 bg-red-500/10',
+              TIME_LIMIT_EXCEEDED: 'text-orange-500 border-orange-500/20 bg-orange-500/10',
+              RUNTIME_ERROR: 'text-muted-foreground border-border bg-muted',
+              COMPILATION_ERROR: 'text-muted-foreground border-border bg-muted',
+              PENDING: 'text-muted-foreground border-border bg-muted',
+              PROCESSING: 'text-blue-500 border-blue-500/20 bg-blue-500/10 animate-pulse',
             };
 
             return (
               <div
                 key={idx}
-                className="flex items-center justify-between p-3 rounded-2xl border border-white/5 hover:bg-[#131313] transition-all duration-200 group"
+                className="flex items-center justify-between p-3 rounded-2xl border border-border hover:bg-secondary transition-all duration-200 group"
               >
                 <div className="space-y-1 min-w-0 flex-1 pr-3">
                   <Link
                     href={`/problems/${sub.problemSlug}`}
-                    className="font-bold text-[#ffffff] text-xs hover:text-[#479ffa] transition-colors flex items-center gap-1"
+                    className="font-bold text-card-foreground text-xs hover:text-blue-500 transition-colors flex items-center gap-1"
                   >
                     {sub.problemTitle}
                     <ExternalLink
@@ -63,7 +65,7 @@ export function RecentSubmissions({ recent }: RecentSubmissionsProps) {
                       className="opacity-0 group-hover:opacity-100 transition-opacity"
                     />
                   </Link>
-                  <p className="text-[10px] text-[#868f97] font-medium">
+                  <p className="text-[10px] text-muted-foreground font-medium">
                     {new Date(sub.createdAt).toLocaleDateString(undefined, {
                       month: 'short',
                       day: 'numeric',
