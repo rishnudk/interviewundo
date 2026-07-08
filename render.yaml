@@ -21,3 +21,6 @@ services:
         sync: false # Set this to your frontend URL (e.g., https://interviewundo.vercel.app)
       - key: CORS_ORIGINS
         sync: false # Same as FRONTEND_URL
+      - key: AUTH_SHARED_SECRET
+        generateValue: true # Render will generate a secure key; copy this key to your frontend's environment variables (AUTH_SHARED_SECRET)
+
