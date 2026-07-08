@@ -1,20 +1,32 @@
 'use client';
 
 import React from 'react';
+import { usePathname } from 'next/navigation';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { StreakNotificationListener } from './StreakNotificationListener';
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+  const pathname = usePathname();
+  const showPermanentSidebar = pathname.startsWith('/problems');
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-background relative">
       <StreakNotificationListener />
 
+      {/* Permanent Sidebar (visible on lg screens) */}
+      {showPermanentSidebar && (
+        <div className="hidden lg:block h-full relative z-20 shrink-0">
+          <Sidebar className="h-full border-r border-border" />
+        </div>
+      )}
+
       {/* Floating absolute sidebar drawer overlay */}
       {isSidebarOpen && (
-        <div className="absolute inset-0 bg-[#0c0c0e]/30 backdrop-blur-sm z-50 transition-all duration-200">
+        <div
+          className={`absolute inset-0 bg-[#0c0c0e]/30 backdrop-blur-sm z-50 transition-all duration-200 ${showPermanentSidebar ? 'lg:hidden' : ''}`}
+        >
           <Sidebar
             className="absolute left-0 top-0 h-full w-64 shadow-2xl z-50 animate-in slide-in-from-left duration-200 border-r border-border"
             onClose={() => setIsSidebarOpen(false)}

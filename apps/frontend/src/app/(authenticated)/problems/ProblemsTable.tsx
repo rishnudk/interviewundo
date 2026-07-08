@@ -44,12 +44,10 @@ export function ProblemsTable({
       <table className="w-full border-collapse text-left text-sm">
         <thead>
           <tr className="border-b border-border/80 bg-muted/20 text-xs font-semibold text-muted-foreground uppercase tracking-wider select-none">
-            <th className="py-4 px-6 w-16">Status</th>
             <th className="py-4 px-6 min-w-[240px]">Problem Title</th>
             <th className="py-4 px-6 w-32">Difficulty</th>
             <th className="py-4 px-6 w-40">Topic Category</th>
             <th className="py-4 px-6 w-36">Acceptance</th>
-            <th className="py-4 px-6 w-28 text-right">Action</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border/60">
@@ -57,9 +55,6 @@ export function ProblemsTable({
             // Shimmer Loader Rows
             Array.from({ length: 5 }).map((_, idx) => (
               <tr key={idx} className="animate-pulse">
-                <td className="py-4.5 px-6">
-                  <div className="w-5 h-5 rounded-full bg-muted" />
-                </td>
                 <td className="py-4.5 px-6 space-y-2">
                   <div className="w-[180px] h-4 bg-muted rounded-md" />
                   <div className="w-[100px] h-3 bg-muted rounded-md opacity-60" />
@@ -73,22 +68,19 @@ export function ProblemsTable({
                 <td className="py-4.5 px-6">
                   <div className="w-[50px] h-4 bg-muted rounded-md" />
                 </td>
-                <td className="py-4.5 px-6">
-                  <div className="w-[80px] h-8 bg-muted rounded-lg ml-auto" />
-                </td>
               </tr>
             ))
           ) : isError ? (
             // Fetch failure row
             <tr>
-              <td colSpan={6} className="py-12 text-center text-rose-500 font-semibold">
+              <td colSpan={4} className="py-12 text-center text-rose-500 font-semibold">
                 Failed to retrieve coding problems. Please try refreshing.
               </td>
             </tr>
           ) : !data || data.data.length === 0 ? (
             // Empty search result screen
             <tr>
-              <td colSpan={6} className="py-16 text-center">
+              <td colSpan={4} className="py-16 text-center">
                 <div className="flex flex-col items-center justify-center gap-3">
                   <div className="p-3.5 rounded-2xl bg-muted/50 text-muted-foreground/60">
                     <BookOpen size={28} />
@@ -124,24 +116,20 @@ export function ProblemsTable({
 
               return (
                 <tr key={prob.id} className="hover:bg-accent/30 transition-all duration-150 group">
-                  {/* Status indicator */}
-                  <td className="py-4.5 px-6">
-                    {isSolved ? (
-                      <CheckCircle className="text-emerald-500 fill-current shrink-0" size={17} />
-                    ) : (
-                      <HelpCircle className="text-muted-foreground/40 shrink-0" size={17} />
-                    )}
-                  </td>
-
                   {/* Title & Slug link */}
                   <td className="py-4.5 px-6 font-semibold text-foreground">
                     <div className="flex flex-col gap-1.5">
-                      <Link
-                        href={`/problems/${prob.slug}`}
-                        className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-                      >
-                        {prob.title}
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        {isSolved && (
+                          <CheckCircle className="text-emerald-500 shrink-0" size={16} />
+                        )}
+                        <Link
+                          href={`/problems/${prob.slug}`}
+                          className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                        >
+                          {prob.title}
+                        </Link>
+                      </div>
                       {prob.tags && prob.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1">
                           {prob.tags.map((t) => (
@@ -173,19 +161,6 @@ export function ProblemsTable({
                     <span className="text-[10px] text-muted-foreground/60 font-medium">
                       ({prob.solvedCount}/{prob.attemptCount})
                     </span>
-                  </td>
-
-                  {/* Action solve link */}
-                  <td className="py-4.5 px-6 text-right">
-                    <Link
-                      href={`/problems/${prob.slug}`}
-                      className={cn(
-                        buttonVariants({ variant: 'outline', size: 'sm' }),
-                        'h-8 rounded-lg text-xs font-bold border-border/80 hover:bg-indigo-500 hover:text-white hover:border-transparent transition-all active:scale-95 inline-flex items-center justify-center',
-                      )}
-                    >
-                      Solve
-                    </Link>
                   </td>
                 </tr>
               );

@@ -49,7 +49,7 @@ export function Header({ onMenuToggle, isSidebarOpen }: HeaderProps) {
           variant="ghost"
           size="icon"
           onClick={onMenuToggle}
-          className="rounded-lg hover:bg-accent/40 active:scale-95 transition-all"
+          className={`rounded-lg hover:bg-accent/40 active:scale-95 transition-all ${pathname.startsWith('/problems') ? 'lg:hidden' : ''}`}
           aria-label="Toggle navigation menu"
         >
           <Menu size={20} />
