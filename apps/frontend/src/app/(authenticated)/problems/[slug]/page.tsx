@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth, useSocket, useToast } from '@/providers';
@@ -35,6 +35,63 @@ export default function ProblemWorkspacePage() {
   const { apiFetch } = useAuth();
   const socket = useSocket();
   const { success: showSuccess, error: showError, info: showInfo } = useToast();
+
+  // Resizable layout ref & states
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [splitPercent, setSplitPercent] = useState<number>(50);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [isMd, setIsMd] = useState<boolean>(true);
+
+  // Monitor screen width for media query breakpoints
+  useEffect(() => {
+    const checkWidth = () => {
+      setIsMd(window.innerWidth >= 768);
+    };
+    checkWidth();
+    window.addEventListener('resize', checkWidth);
+    return () => window.removeEventListener('resize', checkWidth);
+  }, []);
+
+  // Handle global mouse/touch events during divider drag
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      if (rect.width <= 0) return;
+      const newSplit = ((e.clientX - rect.left) / rect.width) * 100;
+      if (newSplit >= 20 && newSplit <= 80) {
+        setSplitPercent(newSplit);
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!containerRef.current || e.touches.length === 0) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      if (rect.width <= 0) return;
+      const newSplit = ((e.touches[0].clientX - rect.left) / rect.width) * 100;
+      if (newSplit >= 20 && newSplit <= 80) {
+        setSplitPercent(newSplit);
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchend', handleMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleMouseUp);
+    };
+  }, [isDragging]);
 
   // Workspace Settings
   const [editorTheme, setEditorTheme] = useState<'vs-dark' | 'light'>('vs-dark');
@@ -422,13 +479,14 @@ export default function ProblemWorkspacePage() {
       </div>
 
       {/* Workspace Body (Split Screen) */}
-      <div className="flex-1 flex overflow-hidden min-h-0">
+      <div ref={containerRef} className="flex-1 flex overflow-hidden min-h-0 relative">
         {/* Left Side: Description Panel */}
         <div
           className={cn(
-            'w-full md:w-1/2 flex flex-col border-r border-border bg-card/15 overflow-hidden',
-            mobileTab === 'description' ? 'flex' : 'hidden md:flex',
+            'flex flex-col border-r border-border bg-card/15 overflow-hidden shrink-0',
+            mobileTab === 'description' ? 'flex w-full' : 'hidden md:flex',
           )}
+          style={isMd ? { width: `${splitPercent}%` } : undefined}
         >
           <ProblemDescriptionPanel
             description={problem.description}
@@ -436,15 +494,52 @@ export default function ProblemWorkspacePage() {
             code={code}
             solutionCode={problem.solutionCode}
             tags={problem.tags}
+            handleRunCode={handleRunCode}
+            handleSubmitCode={handleSubmitCode}
+            isRunning={isRunning}
+            isSubmitting={isSubmitting}
           />
+        </div>
+
+        {/* Resizer Divider */}
+        <div
+          onMouseDown={() => setIsDragging(true)}
+          onTouchStart={() => setIsDragging(true)}
+          className={cn(
+            'hidden md:flex w-1.5 bg-border hover:bg-indigo-500/80 active:bg-indigo-500 cursor-col-resize select-none items-center justify-center relative transition-colors duration-150 shrink-0 z-10',
+            isDragging && 'bg-indigo-500',
+          )}
+        >
+          {/* Subtle grab bar indicator */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-1.5 pointer-events-none">
+            <div
+              className={cn(
+                'w-1 h-1 rounded-full transition-colors',
+                isDragging ? 'bg-indigo-100' : 'bg-zinc-600',
+              )}
+            />
+            <div
+              className={cn(
+                'w-1 h-1 rounded-full transition-colors',
+                isDragging ? 'bg-indigo-100' : 'bg-zinc-600',
+              )}
+            />
+            <div
+              className={cn(
+                'w-1 h-1 rounded-full transition-colors',
+                isDragging ? 'bg-indigo-100' : 'bg-zinc-600',
+              )}
+            />
+          </div>
         </div>
 
         {/* Right Side: Editor & Output Panel */}
         <div
           className={cn(
-            'w-full md:w-1/2 flex flex-col overflow-hidden bg-[#1e1e1e]',
-            mobileTab === 'code' ? 'flex' : 'hidden md:flex',
+            'flex flex-col overflow-hidden bg-[#1e1e1e] shrink-0',
+            mobileTab === 'code' ? 'flex w-full' : 'hidden md:flex',
           )}
+          style={isMd ? { width: `${100 - splitPercent}%` } : undefined}
         >
           <ProblemEditorPanel
             code={code}
@@ -463,6 +558,11 @@ export default function ProblemWorkspacePage() {
             testCases={problem.testCases}
           />
         </div>
+
+        {/* Dragging Overlay to prevent Monaco from stealing events */}
+        {isDragging && (
+          <div className="absolute inset-0 bg-transparent z-[9999] cursor-col-resize select-none pointer-events-auto" />
+        )}
       </div>
     </div>
   );

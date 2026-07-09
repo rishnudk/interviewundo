@@ -499,39 +499,6 @@ export function ProblemEditorPanel({
               Result
             </button>
           </div>
-
-          {/* Console Execution Controls */}
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={handleRunCode}
-              disabled={isRunning || isSubmitting}
-              className="h-8.5 px-3 rounded-lg border-zinc-700 bg-zinc-900 text-zinc-300 hover:text-white hover:bg-zinc-800 text-xs font-bold active:scale-95 transition-all"
-            >
-              {isRunning ? (
-                <Loader2 size={13} className="animate-spin mr-1" />
-              ) : (
-                <Play size={12} className="mr-1.5 fill-current" />
-              )}
-              Run Code
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              onClick={handleSubmitCode}
-              disabled={isRunning || isSubmitting}
-              className="h-8.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold active:scale-95 shadow-sm shadow-emerald-600/10 hover:shadow-emerald-500/20 border-transparent transition-all"
-            >
-              {isSubmitting ? (
-                <Loader2 size={13} className="animate-spin mr-1" />
-              ) : (
-                <Send size={12} className="mr-1.5" />
-              )}
-              Submit
-            </Button>
-          </div>
         </div>
 
         {/* Console Content */}

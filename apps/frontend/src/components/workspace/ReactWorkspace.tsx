@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, useSocket, useToast } from '@/providers';
 import { Button } from '@/components/ui/button';
 import { DifficultyBadge } from '@/components/ui/difficulty-badge';
 import { ChevronLeft, RotateCcw, Settings } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { ReactWorkspaceDescriptionPanel } from './ReactWorkspaceDescriptionPanel';
 import { ReactWorkspaceEditorPanel } from './ReactWorkspaceEditorPanel';
 import { ReactWorkspacePreviewPanel } from './ReactWorkspacePreviewPanel';
@@ -70,7 +71,88 @@ export default function ReactWorkspace({ problem }: ReactWorkspaceProps) {
   // Preview state
   const [previewSrcdoc, setPreviewSrcdoc] = useState<string>('');
   const [consoleLogs, setConsoleLogs] = useState<ConsoleLog[]>([]);
-  const [rightTab, setRightTab] = useState<'preview' | 'console' | 'result'>('preview');
+  const [rightTab, setRightTab] = useState<'preview' | 'console' | 'result'>('console');
+
+  // Mobile Tab navigation
+  const [mobileTab, setMobileTab] = useState<'description' | 'editor' | 'preview'>('description');
+
+  // Double resizable panel states
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [split1, setSplit1] = useState<number>(25); // Left boundary percentage
+  const [split2, setSplit2] = useState<number>(65); // Right boundary percentage
+  const [activeDivider, setActiveDivider] = useState<1 | 2 | null>(null);
+  const [isMd, setIsMd] = useState<boolean>(true);
+
+  // Monitor screen width for media query breakpoints
+  useEffect(() => {
+    const checkWidth = () => {
+      setIsMd(window.innerWidth >= 768);
+    };
+    checkWidth();
+    window.addEventListener('resize', checkWidth);
+    return () => window.removeEventListener('resize', checkWidth);
+  }, []);
+
+  // Handle global mouse/touch events during divider drag
+  useEffect(() => {
+    if (activeDivider === null) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      if (rect.width <= 0) return;
+      const percentage = ((e.clientX - rect.left) / rect.width) * 100;
+
+      if (activeDivider === 1) {
+        // Divider 1 must be between 15% and 40%, and at least 15% to the left of Divider 2
+        const maxSplit1 = Math.min(40, split2 - 15);
+        if (percentage >= 15 && percentage <= maxSplit1) {
+          setSplit1(percentage);
+        }
+      } else if (activeDivider === 2) {
+        // Divider 2 must be between split1 + 15% and 85%
+        const minSplit2 = split1 + 15;
+        if (percentage >= minSplit2 && percentage <= 85) {
+          setSplit2(percentage);
+        }
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!containerRef.current || e.touches.length === 0) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      if (rect.width <= 0) return;
+      const percentage = ((e.touches[0].clientX - rect.left) / rect.width) * 100;
+
+      if (activeDivider === 1) {
+        const maxSplit1 = Math.min(40, split2 - 15);
+        if (percentage >= 15 && percentage <= maxSplit1) {
+          setSplit1(percentage);
+        }
+      } else if (activeDivider === 2) {
+        const minSplit2 = split1 + 15;
+        if (percentage >= minSplit2 && percentage <= 85) {
+          setSplit2(percentage);
+        }
+      }
+    };
+
+    const handleMouseUp = () => {
+      setActiveDivider(null);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchend', handleMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleMouseUp);
+    };
+  }, [activeDivider, split1, split2]);
 
   // Run & Submit state
   const [isRunning, setIsRunning] = useState(false);
@@ -420,19 +502,107 @@ export default function ReactWorkspace({ problem }: ReactWorkspaceProps) {
         </div>
       </div>
 
+      {/* Mobile Navigation Tabs */}
+      <div className="flex border-b border-zinc-800 md:hidden shrink-0 select-none bg-[#151515]">
+        <button
+          type="button"
+          onClick={() => setMobileTab('description')}
+          className={cn(
+            'flex-1 py-3 text-center text-xs font-bold border-b-2 transition-all cursor-pointer',
+            mobileTab === 'description'
+              ? 'border-indigo-500 text-indigo-400 font-extrabold'
+              : 'border-transparent text-zinc-500 hover:text-zinc-300',
+          )}
+        >
+          Description
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobileTab('editor')}
+          className={cn(
+            'flex-1 py-3 text-center text-xs font-bold border-b-2 transition-all cursor-pointer',
+            mobileTab === 'editor'
+              ? 'border-indigo-500 text-indigo-400 font-extrabold'
+              : 'border-transparent text-zinc-500 hover:text-zinc-300',
+          )}
+        >
+          Code Editor
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobileTab('preview')}
+          className={cn(
+            'flex-1 py-3 text-center text-xs font-bold border-b-2 transition-all cursor-pointer',
+            mobileTab === 'preview'
+              ? 'border-indigo-500 text-indigo-400 font-extrabold'
+              : 'border-transparent text-zinc-500 hover:text-zinc-300',
+          )}
+        >
+          Live Preview
+        </button>
+      </div>
+
       {/* 3-Panel Main Layout */}
-      <div className="flex-1 flex overflow-hidden min-h-0">
-        {/* Panel 1: Description (25% width) */}
-        <div className="w-[25%] flex flex-col border-r border-zinc-800 bg-[#181818] overflow-hidden">
+      <div ref={containerRef} className="flex-1 flex overflow-hidden min-h-0 relative">
+        {/* Panel 1: Description */}
+        <div
+          className={cn(
+            'flex flex-col border-r border-zinc-800 bg-[#181818] overflow-hidden shrink-0',
+            mobileTab === 'description' ? 'flex w-full' : 'hidden md:flex',
+          )}
+          style={isMd ? { width: `${split1}%` } : undefined}
+        >
           <ReactWorkspaceDescriptionPanel
             description={problem.description}
             slug={problem.slug}
             code={files[activeFile]}
+            handleRunCode={handleRunCode}
+            handleSubmitCode={handleSubmitCode}
+            isRunning={isRunning}
+            isSubmitting={isSubmitting}
           />
         </div>
 
-        {/* Panel 2: Multi-tab Monaco Editor (40% width) */}
-        <div className="w-[40%] flex flex-col border-r border-zinc-800 bg-[#1e1e1e] overflow-hidden">
+        {/* Divider 1 */}
+        <div
+          onMouseDown={() => setActiveDivider(1)}
+          onTouchStart={() => setActiveDivider(1)}
+          className={cn(
+            'hidden md:flex w-1.5 bg-zinc-800 hover:bg-indigo-500/80 active:bg-indigo-500 cursor-col-resize select-none items-center justify-center relative transition-colors duration-150 shrink-0 z-10',
+            activeDivider === 1 && 'bg-indigo-500',
+          )}
+        >
+          {/* Subtle grab bar indicator */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-1.5 pointer-events-none">
+            <div
+              className={cn(
+                'w-1 h-1 rounded-full transition-colors',
+                activeDivider === 1 ? 'bg-indigo-100' : 'bg-zinc-600',
+              )}
+            />
+            <div
+              className={cn(
+                'w-1 h-1 rounded-full transition-colors',
+                activeDivider === 1 ? 'bg-indigo-100' : 'bg-zinc-600',
+              )}
+            />
+            <div
+              className={cn(
+                'w-1 h-1 rounded-full transition-colors',
+                activeDivider === 1 ? 'bg-indigo-100' : 'bg-zinc-600',
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Panel 2: Multi-tab Monaco Editor */}
+        <div
+          className={cn(
+            'flex flex-col border-r border-zinc-800 bg-[#1e1e1e] overflow-hidden shrink-0',
+            mobileTab === 'editor' ? 'flex w-full' : 'hidden md:flex',
+          )}
+          style={isMd ? { width: `${split2 - split1}%` } : undefined}
+        >
           <ReactWorkspaceEditorPanel
             files={files}
             activeFile={activeFile}
@@ -443,8 +613,46 @@ export default function ReactWorkspace({ problem }: ReactWorkspaceProps) {
           />
         </div>
 
-        {/* Panel 3: Live Preview & Console Output (35% width) */}
-        <div className="w-[35%] flex flex-col bg-[#121212] overflow-hidden">
+        {/* Divider 2 */}
+        <div
+          onMouseDown={() => setActiveDivider(2)}
+          onTouchStart={() => setActiveDivider(2)}
+          className={cn(
+            'hidden md:flex w-1.5 bg-zinc-800 hover:bg-indigo-500/80 active:bg-indigo-500 cursor-col-resize select-none items-center justify-center relative transition-colors duration-150 shrink-0 z-10',
+            activeDivider === 2 && 'bg-indigo-500',
+          )}
+        >
+          {/* Subtle grab bar indicator */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-1.5 pointer-events-none">
+            <div
+              className={cn(
+                'w-1 h-1 rounded-full transition-colors',
+                activeDivider === 2 ? 'bg-indigo-100' : 'bg-zinc-600',
+              )}
+            />
+            <div
+              className={cn(
+                'w-1 h-1 rounded-full transition-colors',
+                activeDivider === 2 ? 'bg-indigo-100' : 'bg-zinc-600',
+              )}
+            />
+            <div
+              className={cn(
+                'w-1 h-1 rounded-full transition-colors',
+                activeDivider === 2 ? 'bg-indigo-100' : 'bg-zinc-600',
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Panel 3: Live Preview & Console Output */}
+        <div
+          className={cn(
+            'flex flex-col bg-[#121212] overflow-hidden shrink-0',
+            mobileTab === 'preview' ? 'flex w-full' : 'hidden md:flex',
+          )}
+          style={isMd ? { width: `${100 - split2}%` } : undefined}
+        >
           <ReactWorkspacePreviewPanel
             previewSrcdoc={previewSrcdoc}
             consoleLogs={consoleLogs}
@@ -454,10 +662,13 @@ export default function ReactWorkspace({ problem }: ReactWorkspaceProps) {
             isRunning={isRunning}
             isSubmitting={isSubmitting}
             consoleOutput={consoleOutput}
-            handleRunCode={handleRunCode}
-            handleSubmitCode={handleSubmitCode}
           />
         </div>
+
+        {/* Dragging Overlay to prevent iframes/Monaco from stealing events */}
+        {activeDivider !== null && (
+          <div className="absolute inset-0 bg-transparent z-[9999] cursor-col-resize select-none pointer-events-auto" />
+        )}
       </div>
     </div>
   );
