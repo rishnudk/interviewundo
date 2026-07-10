@@ -1487,6 +1487,1103 @@ If the index is negative, insert it at the beginning (index 0). If the index is 
       { input: '[[]]', expectedOutput: '[]', isHidden: true, order: 3 },
     ],
   },
+  {
+    title: 'Create an Array',
+    slug: 'create-array',
+    description: `Write a function that creates and returns a new array of a given size, filled with a specified value.
+
+### Example 1:
+**Input:** size = 3, value = "a"  
+**Output:** ["a", "a", "a"]  
+**Explanation:** An array of size 3 is created where every element is "a".
+
+### Example 2:
+**Input:** size = 4, value = 0  
+**Output:** [0, 0, 0, 0]  
+**Explanation:** An array of size 4 is created filled with 0.
+
+### Constraints:
+- 0 <= size <= 100`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function createArray(size, value) {
+  // Write your code here
+}`,
+    solutionCode: `function createArray(size, value) {
+  return Array(size).fill(value);
+}`,
+    order: 148,
+    isPublished: true,
+    testCases: [
+      { input: '[3, "a"]', expectedOutput: '["a","a","a"]', isHidden: false, order: 1 },
+      { input: '[4, 0]', expectedOutput: '[0,0,0,0]', isHidden: false, order: 2 },
+      { input: '[0, "x"]', expectedOutput: '[]', isHidden: true, order: 3 },
+      {
+        input: '[5, null]',
+        expectedOutput: '[null,null,null,null,null]',
+        isHidden: true,
+        order: 4,
+      },
+    ],
+  },
+  {
+    title: 'Find Largest Element',
+    slug: 'find-largest-element',
+    description: `Given an array of numbers, find and return the largest element. If the array is empty, return \`null\`.
+
+### Example 1:
+**Input:** arr = [1, 5, 3, 9, 2]  
+**Output:** 9  
+
+### Example 2:
+**Input:** arr = [-5, -2, -10]  
+**Output:** -2  
+
+### Constraints:
+- 0 <= arr.length <= 10^4
+- -10^9 <= arr[i] <= 10^9`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function findLargest(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function findLargest(arr) {
+  if (arr.length === 0) return null;
+  return Math.max(...arr);
+}`,
+    order: 149,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 5, 3, 9, 2]]', expectedOutput: '9', isHidden: false, order: 1 },
+      { input: '[[-5, -2, -10]]', expectedOutput: '-2', isHidden: false, order: 2 },
+      { input: '[[]]', expectedOutput: 'null', isHidden: true, order: 3 },
+      { input: '[[42]]', expectedOutput: '42', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Find Smallest Element',
+    slug: 'find-smallest-element',
+    description: `Given an array of numbers, find and return the smallest element. If the array is empty, return \`null\`.
+
+### Example 1:
+**Input:** arr = [1, 5, 3, 9, 2]  
+**Output:** 1  
+
+### Example 2:
+**Input:** arr = [-5, -2, -10]  
+**Output:** -10  
+
+### Constraints:
+- 0 <= arr.length <= 10^4
+- -10^9 <= arr[i] <= 10^9`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function findSmallest(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function findSmallest(arr) {
+  if (arr.length === 0) return null;
+  return Math.min(...arr);
+}`,
+    order: 150,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 5, 3, 9, 2]]', expectedOutput: '1', isHidden: false, order: 1 },
+      { input: '[[-5, -2, -10]]', expectedOutput: '-10', isHidden: false, order: 2 },
+      { input: '[[]]', expectedOutput: 'null', isHidden: true, order: 3 },
+      { input: '[[42]]', expectedOutput: '42', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Find First Even Number',
+    slug: 'find-first-even-number',
+    description: `Given an array of numbers, find and return the first even number. If there is no even number, return \`null\`.
+
+### Example 1:
+**Input:** arr = [1, 3, 5, 4, 7, 8]  
+**Output:** 4  
+
+### Example 2:
+**Input:** arr = [1, 3, 5, 7]  
+**Output:** null  
+
+### Constraints:
+- 0 <= arr.length <= 10^4`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function findFirstEven(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function findFirstEven(arr) {
+  for (const num of arr) {
+    if (num % 2 === 0) return num;
+  }
+  return null;
+}`,
+    order: 151,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 3, 5, 4, 7, 8]]', expectedOutput: '4', isHidden: false, order: 1 },
+      { input: '[[1, 3, 5, 7]]', expectedOutput: 'null', isHidden: false, order: 2 },
+      { input: '[[2, 4, 6]]', expectedOutput: '2', isHidden: true, order: 3 },
+      { input: '[[]]', expectedOutput: 'null', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Find Average of Numbers',
+    slug: 'find-average-of-numbers',
+    description: `Given an array of numbers, find and return their average value. If the array is empty, return 0.
+
+### Example 1:
+**Input:** arr = [1, 2, 3, 4, 5]  
+**Output:** 3  
+
+### Example 2:
+**Input:** arr = [10, 20]  
+**Output:** 15  
+
+### Constraints:
+- 0 <= arr.length <= 10^4`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays', 'math'],
+    starterCode: `function findAverage(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function findAverage(arr) {
+  if (arr.length === 0) return 0;
+  return arr.reduce((sum, num) => sum + num, 0) / arr.length;
+}`,
+    order: 152,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 2, 3, 4, 5]]', expectedOutput: '3', isHidden: false, order: 1 },
+      { input: '[[10, 20]]', expectedOutput: '15', isHidden: false, order: 2 },
+      { input: '[[]]', expectedOutput: '0', isHidden: true, order: 3 },
+      { input: '[[-5, 5]]', expectedOutput: '0', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Find Middle Element',
+    slug: 'find-middle-element',
+    description: `Given an array, return the middle element. For arrays with an even number of elements, return the element at the index \`(length / 2) - 1\` (the left-middle element). If the array is empty, return \`null\`.
+
+### Example 1:
+**Input:** arr = [1, 2, 3, 4, 5]  
+**Output:** 3  
+**Explanation:** The middle element is 3 at index 2.
+
+### Example 2:
+**Input:** arr = [10, 20, 30, 40]  
+**Output:** 20  
+**Explanation:** Even length. The middle elements are 20 and 30. The left-middle element 20 is returned.
+
+### Constraints:
+- 0 <= arr.length <= 10^4`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function findMiddleElement(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function findMiddleElement(arr) {
+  if (arr.length === 0) return null;
+  const mid = Math.floor((arr.length - 1) / 2);
+  return arr[mid];
+}`,
+    order: 153,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 2, 3, 4, 5]]', expectedOutput: '3', isHidden: false, order: 1 },
+      { input: '[[10, 20, 30, 40]]', expectedOutput: '20', isHidden: false, order: 2 },
+      { input: '[[]]', expectedOutput: 'null', isHidden: true, order: 3 },
+      { input: '[["a", "b"]]', expectedOutput: '"a"', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Find Square of Numbers',
+    slug: 'find-square-of-numbers',
+    description: `Given an array of numbers, return a new array containing the square of each number.
+
+### Example 1:
+**Input:** arr = [1, 2, 3]  
+**Output:** [1, 4, 9]  
+
+### Example 2:
+**Input:** arr = [-2, 0, 4]  
+**Output:** [4, 0, 16]  
+
+### Constraints:
+- 0 <= arr.length <= 10^4`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function squareNumbers(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function squareNumbers(arr) {
+  return arr.map(x => x * x);
+}`,
+    order: 154,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 2, 3]]', expectedOutput: '[1,4,9]', isHidden: false, order: 1 },
+      { input: '[[-2, 0, 4]]', expectedOutput: '[4,0,16]', isHidden: false, order: 2 },
+      { input: '[[]]', expectedOutput: '[]', isHidden: true, order: 3 },
+      { input: '[[10]]', expectedOutput: '[100]', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Find Unique Elements',
+    slug: 'find-unique-elements',
+    description: `Given an array, return a new array containing only the unique elements. The elements must appear in the same order as their first appearance in the input array.
+
+### Example 1:
+**Input:** arr = [1, 2, 2, 3, 4, 4, 1]  
+**Output:** [1, 2, 3, 4]  
+
+### Example 2:
+**Input:** arr = ["a", "b", "a", "c"]  
+**Output:** ["a", "b", "c"]  
+
+### Constraints:
+- 0 <= arr.length <= 10^4`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function findUniqueElements(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function findUniqueElements(arr) {
+  return [...new Set(arr)];
+}`,
+    order: 155,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 2, 2, 3, 4, 4, 1]]', expectedOutput: '[1,2,3,4]', isHidden: false, order: 1 },
+      {
+        input: '[["a", "b", "a", "c"]]',
+        expectedOutput: '["a","b","c"]',
+        isHidden: false,
+        order: 2,
+      },
+      { input: '[[]]', expectedOutput: '[]', isHidden: true, order: 3 },
+      { input: '[[1, 1, 1]]', expectedOutput: '[1]', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Find Unique Number',
+    slug: 'find-unique-number',
+    description: `Given a non-empty array of integers where every element appears twice except for one, find and return that single unique number.
+
+### Example 1:
+**Input:** arr = [2, 2, 1]  
+**Output:** 1  
+
+### Example 2:
+**Input:** arr = [4, 1, 2, 1, 2]  
+**Output:** 4  
+
+### Constraints:
+- 1 <= arr.length <= 3 * 10^4
+- Each element in the array appears twice except for one element which appears only once.`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function findUniqueNumber(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function findUniqueNumber(arr) {
+  return arr.reduce((acc, num) => acc ^ num, 0);
+}`,
+    order: 156,
+    isPublished: true,
+    testCases: [
+      { input: '[[2, 2, 1]]', expectedOutput: '1', isHidden: false, order: 1 },
+      { input: '[[4, 1, 2, 1, 2]]', expectedOutput: '4', isHidden: false, order: 2 },
+      { input: '[[1]]', expectedOutput: '1', isHidden: true, order: 3 },
+      { input: '[[10, 20, 30, 20, 10]]', expectedOutput: '30', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Find Duplicate Elements',
+    slug: 'find-duplicate-elements',
+    description: `Given an array, find and return all elements that appear more than once. The resulting array should contain unique values and maintain their order of first duplication.
+
+### Example 1:
+**Input:** arr = [1, 2, 3, 2, 1, 4]  
+**Output:** [2, 1]  
+
+### Example 2:
+**Input:** arr = [1, 2, 3, 4]  
+**Output:** []  
+
+### Constraints:
+- 0 <= arr.length <= 10^4`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function findDuplicates(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function findDuplicates(arr) {
+  const seen = new Set();
+  const duplicates = new Set();
+  for (const val of arr) {
+    if (seen.has(val)) {
+      duplicates.add(val);
+    } else {
+      seen.add(val);
+    }
+  }
+  return [...duplicates];
+}`,
+    order: 157,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 2, 3, 2, 1, 4]]', expectedOutput: '[2,1]', isHidden: false, order: 1 },
+      { input: '[[1, 2, 3, 4]]', expectedOutput: '[]', isHidden: false, order: 2 },
+      { input: '[[1, 1, 1, 1]]', expectedOutput: '[1]', isHidden: true, order: 3 },
+      { input: '[[]]', expectedOutput: '[]', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Find Missing Numbers in Sorted Array',
+    slug: 'find-missing-numbers',
+    description: `Given a sorted array of unique integers representing a sequential range with some numbers missing, return a new array containing all the missing numbers.
+
+### Example 1:
+**Input:** arr = [1, 2, 4, 6]  
+**Output:** [3, 5]  
+
+### Example 2:
+**Input:** arr = [10, 11, 15]  
+**Output:** [12, 13, 14]  
+
+### Constraints:
+- 0 <= arr.length <= 10^3`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function findMissingNumbers(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function findMissingNumbers(arr) {
+  if (arr.length <= 1) return [];
+  const missing = [];
+  for (let i = 0; i < arr.length - 1; i++) {
+    let curr = arr[i] + 1;
+    while (curr < arr[i + 1]) {
+      missing.push(curr);
+      curr++;
+    }
+  }
+  return missing;
+}`,
+    order: 158,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 2, 4, 6]]', expectedOutput: '[3,5]', isHidden: false, order: 1 },
+      { input: '[[10, 11, 15]]', expectedOutput: '[12,13,14]', isHidden: false, order: 2 },
+      { input: '[[1, 5]]', expectedOutput: '[2,3,4]', isHidden: true, order: 3 },
+      { input: '[[1, 2, 3]]', expectedOutput: '[]', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Sum of Two Numbers Equals Target',
+    slug: 'sum-of-two-numbers-equals-target',
+    description: `Given an array of integers \`nums\` and an integer \`target\`, return the indices of the two numbers that add up to \`target\`. If no such pair exists, return \`null\`.
+Assume each input would have at most one solution. Return indices as \`[index1, index2]\` where \`index1 < index2\`.
+
+### Example 1:
+**Input:** nums = [2, 7, 11, 15], target = 9  
+**Output:** [0, 1]  
+**Explanation:** nums[0] + nums[1] = 2 + 7 = 9.
+
+### Example 2:
+**Input:** nums = [3, 2, 4], target = 6  
+**Output:** [1, 2]  
+
+### Constraints:
+- 2 <= nums.length <= 10^4
+- -10^9 <= nums[i], target <= 10^9`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function twoSum(nums, target) {
+  // Write your code here
+}`,
+    solutionCode: `function twoSum(nums, target) {
+  const map = new Map();
+  for (let i = 0; i < nums.length; i++) {
+    const complement = target - nums[i];
+    if (map.has(complement)) {
+      return [map.get(complement), i];
+    }
+    map.set(nums[i], i);
+  }
+  return null;
+}`,
+    order: 159,
+    isPublished: true,
+    testCases: [
+      { input: '[[2, 7, 11, 15], 9]', expectedOutput: '[0,1]', isHidden: false, order: 1 },
+      { input: '[[3, 2, 4], 6]', expectedOutput: '[1,2]', isHidden: false, order: 2 },
+      { input: '[[3, 3], 6]', expectedOutput: '[0,1]', isHidden: true, order: 3 },
+      { input: '[[1, 2, 3], 10]', expectedOutput: 'null', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Sort Array Descending',
+    slug: 'sort-array-descending',
+    description: `Given an array of numbers, return a new array containing the elements sorted in descending order. Do not modify the original array.
+
+### Example 1:
+**Input:** arr = [3, 1, 4, 1, 5, 9]  
+**Output:** [9, 5, 4, 3, 1, 1]  
+
+### Example 2:
+**Input:** arr = [10, -5, 20]  
+**Output:** [20, 10, -5]  
+
+### Constraints:
+- 0 <= arr.length <= 10^4`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function sortDescending(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function sortDescending(arr) {
+  return arr.slice().sort((a, b) => b - a);
+}`,
+    order: 160,
+    isPublished: true,
+    testCases: [
+      { input: '[[3, 1, 4, 1, 5, 9]]', expectedOutput: '[9,5,4,3,1,1]', isHidden: false, order: 1 },
+      { input: '[[10, -5, 20]]', expectedOutput: '[20,10,-5]', isHidden: false, order: 2 },
+      { input: '[[]]', expectedOutput: '[]', isHidden: true, order: 3 },
+      { input: '[[42]]', expectedOutput: '[42]', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Sort Using While Loop',
+    slug: 'sort-using-while-loop',
+    description: `Given an array of numbers, sort the elements in ascending order in-place using a \`while\` loop (instead of a \`for\` loop or the built-in \`.sort()\` method). Return the sorted array.
+
+### Example 1:
+**Input:** arr = [5, 3, 8, 1, 2]  
+**Output:** [1, 2, 3, 5, 8]  
+
+### Constraints:
+- 0 <= arr.length <= 10^3`,
+    difficulty: 'MEDIUM',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function sortWithWhile(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function sortWithWhile(arr) {
+  let swapped = true;
+  while (swapped) {
+    swapped = false;
+    let i = 0;
+    while (i < arr.length - 1) {
+      if (arr[i] > arr[i + 1]) {
+        const temp = arr[i];
+        arr[i] = arr[i + 1];
+        arr[i + 1] = temp;
+        swapped = true;
+      }
+      i++;
+    }
+  }
+  return arr;
+}`,
+    order: 161,
+    isPublished: true,
+    testCases: [
+      { input: '[[5, 3, 8, 1, 2]]', expectedOutput: '[1,2,3,5,8]', isHidden: false, order: 1 },
+      { input: '[[10, -2, 5]]', expectedOutput: '[-2,5,10]', isHidden: false, order: 2 },
+      { input: '[[]]', expectedOutput: '[]', isHidden: true, order: 3 },
+      { input: '[[1]]', expectedOutput: '[1]', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Sort Prime Numbers from an Unsorted Array',
+    slug: 'sort-primes-unsorted-array',
+    description: `Given an unsorted array of positive integers, return a new array containing only the prime numbers sorted in ascending order. A prime number is a positive integer greater than 1 that has no positive divisors other than 1 and itself.
+
+### Example 1:
+**Input:** nums = [10, 3, 7, 1, 4, 5, 2]  
+**Output:** [2, 3, 5, 7]  
+**Explanation:** The primes in the array are 2, 3, 5, and 7. Sorted ascending: [2, 3, 5, 7].
+
+### Example 2:
+**Input:** nums = [4, 6, 8, 9, 10]  
+**Output:** []  
+
+### Constraints:
+- 0 <= nums.length <= 10^4
+- 1 <= nums[i] <= 10^6`,
+    difficulty: 'MEDIUM',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function sortPrimes(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function sortPrimes(arr) {
+  const isPrime = num => {
+    if (num <= 1) return false;
+    for (let i = 2; i <= Math.sqrt(num); i++) {
+      if (num % i === 0) return false;
+    }
+    return true;
+  };
+  return arr.filter(isPrime).sort((a, b) => a - b);
+}`,
+    order: 162,
+    isPublished: true,
+    testCases: [
+      { input: '[[10, 3, 7, 1, 4, 5, 2]]', expectedOutput: '[2,3,5,7]', isHidden: false, order: 1 },
+      { input: '[[4, 6, 8, 9, 10]]', expectedOutput: '[]', isHidden: false, order: 2 },
+      {
+        input: '[[29, 11, 2, 17, 23, 13]]',
+        expectedOutput: '[2,11,13,17,23,29]',
+        isHidden: true,
+        order: 3,
+      },
+      { input: '[[]]', expectedOutput: '[]', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Reverse Array Using For Loop',
+    slug: 'reverse-array-using-for-loop',
+    description: `Given an array, return a new array with elements in reverse order. You must construct the reversed array using a \`for\` loop (do not use the built-in \`.reverse()\` method). Do not modify the original array.
+
+### Example 1:
+**Input:** arr = [1, 2, 3]  
+**Output:** [3, 2, 1]  
+
+### Constraints:
+- 0 <= arr.length <= 10^4`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function reverseWithFor(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function reverseWithFor(arr) {
+  const result = [];
+  for (let i = arr.length - 1; i >= 0; i--) {
+    result.push(arr[i]);
+  }
+  return result;
+}`,
+    order: 163,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 2, 3]]', expectedOutput: '[3,2,1]', isHidden: false, order: 1 },
+      { input: '[["a", "b"]]', expectedOutput: '["b","a"]', isHidden: false, order: 2 },
+      { input: '[[]]', expectedOutput: '[]', isHidden: true, order: 3 },
+      { input: '[[100]]', expectedOutput: '[100]', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Reverse Array Using While Loop',
+    slug: 'reverse-array-using-while-loop',
+    description: `Given an array, return a new array with elements in reverse order. You must construct the reversed array using a \`while\` loop (do not use the built-in \`.reverse()\` method). Do not modify the original array.
+
+### Example 1:
+**Input:** arr = [1, 2, 3]  
+**Output:** [3, 2, 1]  
+
+### Constraints:
+- 0 <= arr.length <= 10^4`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function reverseWithWhile(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function reverseWithWhile(arr) {
+  const result = [];
+  let i = arr.length - 1;
+  while (i >= 0) {
+    result.push(arr[i]);
+    i--;
+  }
+  return result;
+}`,
+    order: 164,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 2, 3]]', expectedOutput: '[3,2,1]', isHidden: false, order: 1 },
+      { input: '[["a", "b"]]', expectedOutput: '["b","a"]', isHidden: false, order: 2 },
+      { input: '[[]]', expectedOutput: '[]', isHidden: true, order: 3 },
+      { input: '[[100]]', expectedOutput: '[100]', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Swap Two Arrays Without Extra Array',
+    slug: 'swap-two-arrays-without-extra-array',
+    description: `Given two arrays of the same length \`arr1\` and \`arr2\`, swap all their elements in-place without creating a new helper array (i.e. you can swap index-by-index in-place). Return a 2D array \`[arr1, arr2]\` representing the modified arrays.
+
+### Example 1:
+**Input:** arr1 = [1, 2, 3], arr2 = [4, 5, 6]  
+**Output:** [[4, 5, 6], [1, 2, 3]]  
+
+### Constraints:
+- arr1.length === arr2.length
+- 0 <= arr1.length <= 10^3`,
+    difficulty: 'MEDIUM',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function swapWithoutExtraArray(arr1, arr2) {
+  // Write your code here
+}`,
+    solutionCode: `function swapWithoutExtraArray(arr1, arr2) {
+  for (let i = 0; i < arr1.length; i++) {
+    const temp = arr1[i];
+    arr1[i] = arr2[i];
+    arr2[i] = temp;
+  }
+  return [arr1, arr2];
+}`,
+    order: 165,
+    isPublished: true,
+    testCases: [
+      {
+        input: '[[1, 2, 3], [4, 5, 6]]',
+        expectedOutput: '[[4,5,6],[1,2,3]]',
+        isHidden: false,
+        order: 1,
+      },
+      { input: '[["a"], ["b"]]', expectedOutput: '[["b"],["a"]]', isHidden: false, order: 2 },
+      { input: '[[], []]', expectedOutput: '[[],[]]', isHidden: true, order: 3 },
+      { input: '[[1, 1], [2, 2]]', expectedOutput: '[[2,2],[1,1]]', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Swap All Elements Between Two Arrays',
+    slug: 'swap-all-elements-between-two-arrays',
+    description: `Given two arrays of potentially different lengths \`arr1\` and \`arr2\`, swap their entire contents in-place so that \`arr1\` gets the original contents of \`arr2\` and vice versa. Modify the original arrays in-place and return a 2D array \`[arr1, arr2]\` containing the modified arrays.
+Note: You can use array manipulation methods like \`.splice()\` to change the lengths of the arrays in-place.
+
+### Example 1:
+**Input:** arr1 = [1, 2, 3], arr2 = [4, 5]  
+**Output:** [[4, 5], [1, 2, 3]]  
+
+### Constraints:
+- 0 <= arr1.length, arr2.length <= 10^3`,
+    difficulty: 'MEDIUM',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function swapAllElements(arr1, arr2) {
+  // Write your code here
+}`,
+    solutionCode: `function swapAllElements(arr1, arr2) {
+  const temp = arr1.slice();
+  arr1.length = 0;
+  arr1.push(...arr2);
+  arr2.length = 0;
+  arr2.push(...temp);
+  return [arr1, arr2];
+}`,
+    order: 166,
+    isPublished: true,
+    testCases: [
+      {
+        input: '[[1, 2, 3], [4, 5]]',
+        expectedOutput: '[[4,5],[1,2,3]]',
+        isHidden: false,
+        order: 1,
+      },
+      { input: '[[10], []]', expectedOutput: '[[],[10]]', isHidden: false, order: 2 },
+      { input: '[[], []]', expectedOutput: '[[],[]]', isHidden: true, order: 3 },
+      {
+        input: '[["x","y"], ["z"]]',
+        expectedOutput: '[["z"],["x","y"]]',
+        isHidden: true,
+        order: 4,
+      },
+    ],
+  },
+  {
+    title: 'Store Odd Numbers in One Array and Even Numbers in Another Without New Array',
+    slug: 'store-odd-even-without-new-array',
+    description: `Given a source array \`arr\` and two target arrays \`odds\` and \`evens\`, distribute the odd and even numbers from \`arr\` into \`odds\` and \`evens\` respectively in-place without declaring any new arrays inside the function. Modify \`odds\` and \`evens\` and return a 2D array \`[odds, evens]\`.
+
+### Example 1:
+**Input:** arr = [1, 2, 3, 4, 5], odds = [], evens = []  
+**Output:** [[1, 3, 5], [2, 4]]  
+
+### Constraints:
+- 0 <= arr.length <= 10^3`,
+    difficulty: 'MEDIUM',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function storeOddEven(arr, odds, evens) {
+  // Write your code here
+}`,
+    solutionCode: `function storeOddEven(arr, odds, evens) {
+  for (const num of arr) {
+    if (num % 2 === 0) {
+      evens.push(num);
+    } else {
+      odds.push(num);
+    }
+  }
+  return [odds, evens];
+}`,
+    order: 167,
+    isPublished: true,
+    testCases: [
+      {
+        input: '[[1, 2, 3, 4, 5], [], []]',
+        expectedOutput: '[[1,3,5],[2,4]]',
+        isHidden: false,
+        order: 1,
+      },
+      { input: '[[2, 4, 6], [], []]', expectedOutput: '[[],[2,4,6]]', isHidden: false, order: 2 },
+      {
+        input: '[[1, 3], [10], [20]]',
+        expectedOutput: '[[10,1,3],[20]]',
+        isHidden: true,
+        order: 3,
+      },
+      { input: '[[], [], []]', expectedOutput: '[[],[]]', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Delete Duplicate Without Built-in Methods',
+    slug: 'delete-duplicate-without-builtin-methods',
+    description: `Given an array, remove all duplicate elements in-place and return the modified array. You must do this manually without using built-in methods like \`Set\`, \`filter\`, \`indexOf\`, \`includes\`, or allocating a new array.
+
+### Example 1:
+**Input:** arr = [1, 2, 2, 3, 1, 4]  
+**Output:** [1, 2, 3, 4]  
+
+### Constraints:
+- 0 <= arr.length <= 10^3`,
+    difficulty: 'MEDIUM',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function deleteDuplicatesManual(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function deleteDuplicatesManual(arr) {
+  let uniqueCount = 0;
+  for (let i = 0; i < arr.length; i++) {
+    let isDuplicate = false;
+    for (let j = 0; j < uniqueCount; j++) {
+      if (arr[i] === arr[j]) {
+        isDuplicate = true;
+        break;
+      }
+    }
+    if (!isDuplicate) {
+      arr[uniqueCount] = arr[i];
+      uniqueCount++;
+    }
+  }
+  arr.length = uniqueCount;
+  return arr;
+}`,
+    order: 168,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 2, 2, 3, 1, 4]]', expectedOutput: '[1,2,3,4]', isHidden: false, order: 1 },
+      { input: '[[1, 1, 1]]', expectedOutput: '[1]', isHidden: false, order: 2 },
+      { input: '[[]]', expectedOutput: '[]', isHidden: true, order: 3 },
+      { input: '[["a", "b", "a"]]', expectedOutput: '["a","b"]', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Delete Odd Numbers Without New Array',
+    slug: 'delete-odd-numbers-without-new-array',
+    description: `Given an array of numbers, remove all odd numbers in-place (modifying the array directly) without allocating a new array or using \`.filter()\`. Return the modified array.
+
+### Example 1:
+**Input:** arr = [1, 2, 3, 4, 5]  
+**Output:** [2, 4]  
+
+### Constraints:
+- 0 <= arr.length <= 10^3`,
+    difficulty: 'MEDIUM',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function deleteOddsInPlace(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function deleteOddsInPlace(arr) {
+  let writePointer = 0;
+  for (let readPointer = 0; readPointer < arr.length; readPointer++) {
+    if (arr[readPointer] % 2 === 0) {
+      arr[writePointer] = arr[readPointer];
+      writePointer++;
+    }
+  }
+  arr.length = writePointer;
+  return arr;
+}`,
+    order: 169,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 2, 3, 4, 5]]', expectedOutput: '[2,4]', isHidden: false, order: 1 },
+      { input: '[[1, 3, 5]]', expectedOutput: '[]', isHidden: false, order: 2 },
+      { input: '[[2, 4, 6]]', expectedOutput: '[2,4,6]', isHidden: true, order: 3 },
+      { input: '[[]]', expectedOutput: '[]', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Remove Elements Between Two Indexes',
+    slug: 'remove-elements-between-indexes',
+    description: `Given an array, a start index \`start\`, and an end index \`end\`, return a new array with all elements between \`start\` and \`end\` inclusive removed. Do not modify the original array.
+
+### Example 1:
+**Input:** arr = [1, 2, 3, 4, 5], start = 1, end = 3  
+**Output:** [1, 5]  
+**Explanation:** Elements at index 1, 2, and 3 (2, 3, and 4) are removed.
+
+### Constraints:
+- 0 <= start <= end < arr.length`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function removeBetweenIndexes(arr, start, end) {
+  // Write your code here
+}`,
+    solutionCode: `function removeBetweenIndexes(arr, start, end) {
+  const result = arr.slice();
+  result.splice(start, end - start + 1);
+  return result;
+}`,
+    order: 170,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 2, 3, 4, 5], 1, 3]', expectedOutput: '[1,5]', isHidden: false, order: 1 },
+      { input: '[[10, 20], 0, 0]', expectedOutput: '[20]', isHidden: false, order: 2 },
+      { input: '[[1, 2], 0, 1]', expectedOutput: '[]', isHidden: true, order: 3 },
+      { input: '[["a", "b", "c"], 1, 1]', expectedOutput: '["a","c"]', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Delete Middle Element',
+    slug: 'delete-middle-element',
+    description: `Given an array, remove the middle element of the array in-place. If the array has an even number of elements, remove the left-middle element (at index \`(length / 2) - 1\`). Return the modified array.
+If the array is empty, return it unchanged.
+
+### Example 1:
+**Input:** arr = [1, 2, 3, 4, 5]  
+**Output:** [1, 2, 4, 5]  
+**Explanation:** Middle element is 3 (index 2), which is removed.
+
+### Example 2:
+**Input:** arr = [10, 20, 30, 40]  
+**Output:** [10, 30, 40]  
+**Explanation:** Even length. The left-middle element is 20 (index 1), which is removed.
+
+### Constraints:
+- 0 <= arr.length <= 10^3`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function deleteMiddle(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function deleteMiddle(arr) {
+  if (arr.length === 0) return arr;
+  const mid = Math.floor((arr.length - 1) / 2);
+  arr.splice(mid, 1);
+  return arr;
+}`,
+    order: 171,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 2, 3, 4, 5]]', expectedOutput: '[1,2,4,5]', isHidden: false, order: 1 },
+      { input: '[[10, 20, 30, 40]]', expectedOutput: '[10,30,40]', isHidden: false, order: 2 },
+      { input: '[[]]', expectedOutput: '[]', isHidden: true, order: 3 },
+      { input: '[[42]]', expectedOutput: '[]', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Insert into Same Array Without Built-in Methods',
+    slug: 'insert-into-same-array-without-builtins',
+    description: `Given an array, a target index, and an element, insert the element at the specified index in-place (modifying the original array) without using any built-in array methods (like \`.splice()\`, \`.push()\`, or \`.unshift()\`). Return the modified array.
+If the index is out of bounds (negative or greater than array length), you should cap it to 0 or array length.
+
+### Example 1:
+**Input:** arr = [1, 2, 4], index = 2, element = 3  
+**Output:** [1, 2, 3, 4]  
+
+### Constraints:
+- 0 <= arr.length <= 1000`,
+    difficulty: 'MEDIUM',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function insertInPlaceManual(arr, index, element) {
+  // Write your code here
+}`,
+    solutionCode: `function insertInPlaceManual(arr, index, element) {
+  const cappedIndex = Math.max(0, Math.min(index, arr.length));
+  for (let i = arr.length; i > cappedIndex; i--) {
+    arr[i] = arr[i - 1];
+  }
+  arr[cappedIndex] = element;
+  return arr;
+}`,
+    order: 172,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 2, 4], 2, 3]', expectedOutput: '[1,2,3,4]', isHidden: false, order: 1 },
+      { input: '[[10, 20], 0, 5]', expectedOutput: '[5,10,20]', isHidden: false, order: 2 },
+      { input: '[[], 5, "a"]', expectedOutput: '["a"]', isHidden: true, order: 3 },
+      { input: '[[1, 2], 2, 3]', expectedOutput: '[1,2,3]', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Push Elements into Another Array Without push()',
+    slug: 'push-elements-without-push-method',
+    description: `Given two arrays \`arr\` and \`elements\`, append all elements from the \`elements\` array to the end of \`arr\` in-place without using the built-in \`.push()\` method. Return the modified \`arr\`.
+
+### Example 1:
+**Input:** arr = [1, 2], elements = [3, 4]  
+**Output:** [1, 2, 3, 4]  
+
+### Constraints:
+- 0 <= arr.length, elements.length <= 10^3`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function pushManual(arr, elements) {
+  // Write your code here
+}`,
+    solutionCode: `function pushManual(arr, elements) {
+  for (let i = 0; i < elements.length; i++) {
+    arr[arr.length] = elements[i];
+  }
+  return arr;
+}`,
+    order: 173,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 2], [3, 4]]', expectedOutput: '[1,2,3,4]', isHidden: false, order: 1 },
+      { input: '[[], ["a"]]', expectedOutput: '["a"]', isHidden: false, order: 2 },
+      { input: '[[10], []]', expectedOutput: '[10]', isHidden: true, order: 3 },
+      { input: '[[], []]', expectedOutput: '[]', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Multiply Every Element by 2',
+    slug: 'multiply-every-element-by-two',
+    description: `Given an array of numbers, return a new array containing each element multiplied by 2. Do not modify the original array.
+
+### Example 1:
+**Input:** arr = [1, 2, 3]  
+**Output:** [2, 4, 6]  
+
+### Constraints:
+- 0 <= arr.length <= 10^4`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function multiplyByTwo(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function multiplyByTwo(arr) {
+  return arr.map(x => x * 2);
+}`,
+    order: 174,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 2, 3]]', expectedOutput: '[2,4,6]', isHidden: false, order: 1 },
+      { input: '[[-2, 0, 4]]', expectedOutput: '[-4,0,8]', isHidden: false, order: 2 },
+      { input: '[[]]', expectedOutput: '[]', isHidden: true, order: 3 },
+      { input: '[[1.5]]', expectedOutput: '[3]', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Multiply Even Numbers and Store in Another Array',
+    slug: 'multiply-evens-and-store',
+    description: `Given an array of numbers \`arr\` and a target array \`target\`, multiply all even numbers in \`arr\` by 2 and store them at the end of the \`target\` array in-place. Return the modified \`target\` array. Do not allocate any new arrays.
+
+### Example 1:
+**Input:** arr = [1, 2, 3, 4], target = [10]  
+**Output:** [10, 4, 8]  
+**Explanation:** Even numbers in arr are 2 and 4. Multiplied by 2: 4 and 8. Appended to [10]: [10, 4, 8].
+
+### Constraints:
+- 0 <= arr.length, target.length <= 10^3`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function multiplyEvens(arr, target) {
+  // Write your code here
+}`,
+    solutionCode: `function multiplyEvens(arr, target) {
+  for (const num of arr) {
+    if (num % 2 === 0) {
+      target.push(num * 2);
+    }
+  }
+  return target;
+}`,
+    order: 175,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 2, 3, 4], [10]]', expectedOutput: '[10,4,8]', isHidden: false, order: 1 },
+      { input: '[[1, 3], []]', expectedOutput: '[]', isHidden: false, order: 2 },
+      { input: '[[2], [5, 6]]', expectedOutput: '[5,6,4]', isHidden: true, order: 3 },
+      { input: '[[], []]', expectedOutput: '[]', isHidden: true, order: 4 },
+    ],
+  },
+  {
+    title: 'Filter Prime Numbers',
+    slug: 'filter-prime-numbers',
+    description: `Given an array of numbers, return a new array containing only the prime numbers. A prime number is a positive integer greater than 1 that has no positive divisors other than 1 and itself.
+
+### Example 1:
+**Input:** arr = [1, 2, 3, 4, 5, 6, 7]  
+**Output:** [2, 3, 5, 7]  
+
+### Constraints:
+- 0 <= arr.length <= 10^4
+- -10^6 <= arr[i] <= 10^6`,
+    difficulty: 'EASY',
+    category: 'JAVASCRIPT',
+    tags: ['arrays'],
+    starterCode: `function filterPrimes(arr) {
+  // Write your code here
+}`,
+    solutionCode: `function filterPrimes(arr) {
+  const isPrime = num => {
+    if (num <= 1) return false;
+    for (let i = 2; i <= Math.sqrt(num); i++) {
+      if (num % i === 0) return false;
+    }
+    return true;
+  };
+  return arr.filter(isPrime);
+}`,
+    order: 176,
+    isPublished: true,
+    testCases: [
+      { input: '[[1, 2, 3, 4, 5, 6, 7]]', expectedOutput: '[2,3,5,7]', isHidden: false, order: 1 },
+      { input: '[[4, 6, 8, 9, 10]]', expectedOutput: '[]', isHidden: false, order: 2 },
+      {
+        input: '[[29, 11, 2, 17, 23, 13]]',
+        expectedOutput: '[29,11,2,17,23,13]',
+        isHidden: true,
+        order: 3,
+      },
+      { input: '[[]]', expectedOutput: '[]', isHidden: true, order: 4 },
+    ],
+  },
 ];
 
 async function main() {
