@@ -1,0 +1,483 @@
+# Real-Time 1v1 Competitive Coding Arena
+
+Build a **real-time 1v1 coding battle** feature where two random users are matched, share the same problem, timer, and constraints — and can see each other typing and chat live.
+
+---
+
+## Your Current Stack (for reference)
+
+| Layer | Technology |
+|---|---|
+| **Monorepo** | npm workspaces + Turborepo |
+| **Frontend** | Next.js 16 (App Router), React 19, TailwindCSS 4, Monaco Editor, Socket.io-client, TanStack Query, shadcn/ui |
+| **Backend API** | Express 5, Clean Architecture (Ports & Adapters), Zod validation |
+| **Database** | PostgreSQL via Prisma 7 |
+| **Cache / Pub-Sub** | Redis (ioredis), BullMQ |
+| **Real-time** | Socket.io 4 (already integrated — JWT auth middleware, Redis pub/sub subscriber) |
+| **Code Execution** | Judge Worker (BullMQ consumer, Dockerode sandboxed execution) |
+| **Auth** | JWT (jose), Argon2, GitHub/Google OAuth |
+| **Shared Packages** | `@interviewprep/shared-types`, `@interviewprep/shared-utils` |
+
+---
+
+## High-Level Architecture
+
+```mermaid
+graph TB
+    subgraph "Frontend — Next.js"
+        UI_LOBBY["🏠 Battle Lobby Page<br/>/battle"]
+        UI_ARENA["⚔️ Battle Arena Page<br/>/battle/[battleId]"]
+        UI_RESULT["🏆 Battle Result Page<br/>/battle/[battleId]/result"]
+        SOCKET_HOOK["useBattle() Hook<br/>Socket.io client"]
+    end
+
+    subgraph "Backend API — Express + Socket.io"
+        REST["REST API<br/>/api/battles/*"]
+        SOCK_NS["Socket.io Namespace<br/>/battle"]
+        MM["Matchmaking Engine<br/>(Redis Sorted Set Queue)"]
+        TIMER["Battle Timer<br/>(Server-authoritative)"]
+    end
+
+    subgraph "Infrastructure"
+        PG["PostgreSQL<br/>(Battle, BattleParticipant)"]
+        REDIS["Redis<br/>(Matchmaking Queue,<br/>Battle State, Pub/Sub)"]
+        BULL["BullMQ<br/>(Judge Worker)"]
+        DOCKER["Dockerode<br/>(Sandboxed Execution)"]
+    end
+
+    UI_LOBBY -- "Join Queue" --> SOCK_NS
+    SOCK_NS -- "Match Found" --> UI_ARENA
+    UI_ARENA -- "Code Changes / Chat" --> SOCK_NS
+    SOCK_NS <--> MM
+    MM <--> REDIS
+    SOCK_NS -- "Submit Solution" --> REST
+    REST --> BULL
+    BULL --> DOCKER
+    DOCKER -- "Result" --> REDIS
+    REDIS -- "Pub/Sub" --> SOCK_NS
+    SOCK_NS -- "Opponent Result / Battle End" --> UI_ARENA
+    REST <--> PG
+    SOCK_NS --> TIMER
+    UI_ARENA --> UI_RESULT
+```
+
+---
+
+## Real-Time Event Flow (Sequence)
+
+```mermaid
+sequenceDiagram
+    participant P1 as Player 1 (Browser)
+    participant SIO as Socket.io /battle
+    participant MM as Matchmaking (Redis)
+    participant DB as PostgreSQL
+    participant BQ as BullMQ
+    participant JW as Judge Worker
+
+    P1->>SIO: battle:join_queue {difficulty, category}
+    SIO->>MM: Add to sorted set (score = timestamp)
+    Note over MM: Another player P2 joins same filters
+    MM-->>SIO: Match found! (P1 + P2)
+    SIO->>DB: Create Battle + 2 BattleParticipants
+    SIO->>DB: Pick random Problem matching filters
+    SIO-->>P1: battle:matched {battleId, problem, opponent, timer}
+    SIO-->>P1: Join Socket room "battle:{battleId}"
+
+    loop Every keystroke (throttled ~300ms)
+        P1->>SIO: battle:code_change {battleId, code, cursor}
+        SIO-->>P1: battle:opponent_typing {code snippet preview, cursor}
+    end
+
+    loop Chat messages
+        P1->>SIO: battle:chat {battleId, message}
+        SIO-->>P1: battle:chat_message {from, message, timestamp}
+    end
+
+    P1->>SIO: battle:submit {battleId, code}
+    SIO->>DB: Create Submission
+    SIO->>BQ: Enqueue judge job
+    BQ->>JW: Execute in sandbox
+    JW-->>BQ: Result
+    BQ-->>SIO: (Redis Pub/Sub) battle:submission_result
+    SIO-->>P1: battle:submission_result {passed, total, runtime}
+
+    Note over SIO: Timer expires OR both submit
+    SIO-->>P1: battle:ended {winner, scores}
+    SIO->>DB: Update Battle status, winner
+```
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Matchmaking Filters**: The plan assumes matching by `difficulty` + `category`. Should we also support matching by specific language preference, or let both players use whatever language they want on the shared problem?
+
+> [!IMPORTANT]
+> **Code Visibility**: Two options for "can see other guy is typing":
+> 1. **Full mirror** — opponent sees your exact code in a read-only Monaco editor pane (like Google Docs)
+> 2. **Blurred preview** — opponent sees a blurred/obfuscated version of your code (line count, typing indicator, progress bar) but not the actual logic
+> 
+> Option 2 is recommended for competitive integrity. Option 1 is better for learning/collaboration mode.
+
+> [!WARNING]
+> **Timer Authority**: The timer MUST be server-authoritative (not client-side). The server tracks `battle.startedAt` + `battle.durationSeconds` and broadcasts `battle:tick` events. Clients display the server's remaining time. This prevents cheating.
+
+---
+
+## Open Questions
+
+> [!IMPORTANT]
+> 1. **Battle Duration**: What should the default timer be? (e.g., 15 min for Easy, 25 min for Medium, 40 min for Hard?)
+> 2. **Rating System**: Should we implement an ELO/rating system for competitive matchmaking, or keep it casual for V1?
+> 3. **Reconnection**: If a player disconnects mid-battle, should they get a grace period (e.g., 60s) to reconnect, or auto-forfeit?
+> 4. **Battle History**: Should completed battles appear on the user's dashboard/profile?
+
+---
+
+## Proposed Changes
+
+### Database Schema (Prisma)
+
+#### [MODIFY] [schema.prisma](file:///d:/interviewUndo/apps/backend-api/src/infrastructure/database/prisma/schema.prisma)
+
+Add new enums and models:
+
+```prisma
+enum BattleStatus {
+  WAITING        // Matchmaking, waiting for opponent
+  IN_PROGRESS    // Both players coding
+  COMPLETED      // Timer expired or both submitted
+  CANCELLED      // Player left during waiting
+  FORFEITED      // Player disconnected mid-battle
+}
+
+model Battle {
+  id              String       @id @default(cuid())
+  status          BattleStatus @default(WAITING)
+  problemId       String
+  difficulty      Difficulty
+  category        Category
+  durationSeconds Int          @default(900)  // 15 min default
+  startedAt       DateTime?
+  endedAt         DateTime?
+  winnerId        String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  problem         Problem      @relation(fields: [problemId], references: [id])
+  participants    BattleParticipant[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("battles")
+}
+
+model BattleParticipant {
+  id           String   @id @default(cuid())
+  battleId     String
+  userId       String
+  code         String   @db.Text @default("")
+  submittedAt  DateTime?
+  passedCases  Int      @default(0)
+  totalCases   Int      @default(0)
+  runtime      Int?     // ms
+  score        Int      @default(0)  // calculated score
+  createdAt    DateTime @default(now())
+
+  battle       Battle   @relation(fields: [battleId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([battleId, userId])
+  @@index([userId])
+  @@map("battle_participants")
+}
+
+model BattleChat {
+  id        String   @id @default(cuid())
+  battleId  String
+  userId    String
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([battleId, createdAt])
+  @@map("battle_chats")
+}
+```
+
+Also add reverse relations to `User` and `Problem`:
+```prisma
+// In User model:
+battleParticipations BattleParticipant[]
+
+// In Problem model:
+battles Battle[]
+```
+
+---
+
+### Domain Layer
+
+#### [NEW] [Battle.ts](file:///d:/interviewUndo/apps/backend-api/src/domain/entities/Battle.ts)
+Domain entity with fields: `id`, `status`, `problemId`, `difficulty`, `category`, `durationSeconds`, `startedAt`, `endedAt`, `winnerId`, `participants[]`. Include methods like `isExpired()`, `canSubmit()`, `calculateWinner()`.
+
+#### [NEW] [BattleParticipant.ts](file:///d:/interviewUndo/apps/backend-api/src/domain/entities/BattleParticipant.ts)
+Entity: `id`, `battleId`, `userId`, `code`, `submittedAt`, `passedCases`, `totalCases`, `runtime`, `score`. Method: `calculateScore(passedCases, totalCases, runtime, timeRemaining)`.
+
+#### [NEW] [IBattleRepository.ts](file:///d:/interviewUndo/apps/backend-api/src/domain/ports/repositories/IBattleRepository.ts)
+Port interface with methods:
+- `create(data): Promise<Battle>`
+- `findById(id): Promise<Battle | null>`
+- `findByIdWithParticipants(id): Promise<Battle | null>`
+- `updateStatus(id, status, winnerId?): Promise<Battle>`
+- `addParticipant(battleId, userId): Promise<BattleParticipant>`
+- `updateParticipantCode(battleId, userId, code): Promise<void>`
+- `updateParticipantResult(battleId, userId, result): Promise<void>`
+- `findActiveBattleByUserId(userId): Promise<Battle | null>`
+- `getBattleHistory(userId, pagination): Promise<Battle[]>`
+
+#### [NEW] [IMatchmakingService.ts](file:///d:/interviewUndo/apps/backend-api/src/domain/ports/services/IMatchmakingService.ts)
+Port interface:
+- `joinQueue(userId, filters): Promise<void>`
+- `leaveQueue(userId): Promise<void>`
+- `findMatch(userId, filters): Promise<{opponentId: string} | null>`
+- `getQueueSize(filters?): Promise<number>`
+
+#### [NEW] [IBattleTimerService.ts](file:///d:/interviewUndo/apps/backend-api/src/domain/ports/services/IBattleTimerService.ts)
+Port interface:
+- `startTimer(battleId, durationSeconds, onExpiry): void`
+- `cancelTimer(battleId): void`
+- `getRemainingTime(battleId): number`
+
+#### [MODIFY] [index.ts](file:///d:/interviewUndo/apps/backend-api/src/domain/ports/index.ts)
+Export the three new port interfaces.
+
+---
+
+### Application Layer (Use Cases)
+
+#### [NEW] [JoinMatchmaking.ts](file:///d:/interviewUndo/apps/backend-api/src/application/use-cases/battle/JoinMatchmaking.ts)
+Validates user isn't already in a battle, adds them to the matchmaking queue, attempts to find a match. If matched: creates a `Battle`, picks a random problem, creates two `BattleParticipant` records, returns the battle details.
+
+#### [NEW] [LeaveMatchmaking.ts](file:///d:/interviewUndo/apps/backend-api/src/application/use-cases/battle/LeaveMatchmaking.ts)
+Removes a user from the matchmaking queue.
+
+#### [NEW] [SubmitBattleSolution.ts](file:///d:/interviewUndo/apps/backend-api/src/application/use-cases/battle/SubmitBattleSolution.ts)
+Validates battle is in progress, user is a participant, creates a submission, enqueues it for judging. When result comes back, updates `BattleParticipant` score. If both players have submitted (or timer expired), determines winner and ends battle.
+
+#### [NEW] [GetBattleState.ts](file:///d:/interviewUndo/apps/backend-api/src/application/use-cases/battle/GetBattleState.ts)
+Returns current state of a battle (problem, timer remaining, participant statuses, chat history). Used for reconnection.
+
+#### [NEW] [ForfeitBattle.ts](file:///d:/interviewUndo/apps/backend-api/src/application/use-cases/battle/ForfeitBattle.ts)
+Player forfeits, opponent wins by default.
+
+---
+
+### Infrastructure Layer
+
+#### [NEW] [PrismaBattleRepository.ts](file:///d:/interviewUndo/apps/backend-api/src/infrastructure/database/repositories/PrismaBattleRepository.ts)
+Prisma implementation of `IBattleRepository`.
+
+#### [NEW] [RedisMatchmakingService.ts](file:///d:/interviewUndo/apps/backend-api/src/infrastructure/cache/RedisMatchmakingService.ts)
+Redis-backed matchmaking using **Sorted Sets**:
+- Key: `matchmaking:{difficulty}:{category}` — Score = join timestamp, Value = userId
+- `joinQueue`: `ZADD` the user
+- `findMatch`: `ZPOPMIN` to dequeue the oldest waiting player (if it's not yourself)
+- `leaveQueue`: `ZREM` the user
+- Atomic operations via Redis Lua scripts to prevent race conditions
+
+#### [NEW] [BattleTimerManager.ts](file:///d:/interviewUndo/apps/backend-api/src/infrastructure/cache/BattleTimerManager.ts)
+Server-side timer manager using `setTimeout` + Redis for persistence:
+- Stores `battle:{id}:startedAt` in Redis
+- On expiry, publishes to Redis pub/sub channel `battle:timer_expired`
+- Supports reconnection by recalculating remaining time from Redis
+
+#### [NEW] [BattleSocketHandler.ts](file:///d:/interviewUndo/apps/backend-api/src/infrastructure/websocket/BattleSocketHandler.ts)
+The core real-time handler — registered as a Socket.io **namespace** (`/battle`). Handles:
+
+| Event (Client → Server) | Handler Logic |
+|---|---|
+| `battle:join_queue` | Calls `JoinMatchmaking` use case |
+| `battle:leave_queue` | Calls `LeaveMatchmaking` use case |
+| `battle:code_change` | Throttled broadcast of code snippet to opponent in room |
+| `battle:cursor_move` | Broadcast cursor position to opponent |
+| `battle:chat` | Persist to `BattleChat`, broadcast to room |
+| `battle:submit` | Calls `SubmitBattleSolution` use case |
+| `battle:forfeit` | Calls `ForfeitBattle` use case |
+| `disconnect` | Grace period logic, or forfeit if timer expires |
+
+| Event (Server → Client) | Payload |
+|---|---|
+| `battle:matched` | `{battleId, problem, opponent, durationSeconds}` |
+| `battle:opponent_typing` | `{codePreview, cursorPosition, lineCount}` |
+| `battle:chat_message` | `{from, message, timestamp}` |
+| `battle:tick` | `{remainingSeconds}` (every 1s) |
+| `battle:opponent_submitted` | `{submittedAt}` |
+| `battle:submission_result` | `{passedCases, totalCases, runtime, status}` |
+| `battle:ended` | `{winner, yourScore, opponentScore, results}` |
+| `battle:opponent_disconnected` | `{gracePeriodSeconds}` |
+| `battle:opponent_reconnected` | `{}` |
+
+#### [MODIFY] [SocketIOService.ts](file:///d:/interviewUndo/apps/backend-api/src/infrastructure/notification/SocketIOService.ts)
+Add a method `getIO()` to expose the Socket.io server instance so the battle namespace can be registered separately. Subscribe to additional Redis pub/sub channels: `battle:timer_expired`, `battle:submission_result`.
+
+---
+
+### Presentation Layer
+
+#### [NEW] [battle.routes.ts](file:///d:/interviewUndo/apps/backend-api/src/presentation/routes/battle.routes.ts)
+REST endpoints (for non-realtime operations):
+- `GET /api/battles/:id` — Get battle state (for reconnection, history)
+- `GET /api/battles/history` — User's battle history
+- `GET /api/battles/leaderboard` — Top players by win count
+
+#### [NEW] [BattleController.ts](file:///d:/interviewUndo/apps/backend-api/src/presentation/controllers/BattleController.ts)
+Controller for the REST routes above.
+
+---
+
+### DI Container
+
+#### [MODIFY] [index.ts](file:///d:/interviewUndo/apps/backend-api/src/container/index.ts)
+Wire up:
+- `PrismaBattleRepository`
+- `RedisMatchmakingService`
+- `BattleTimerManager`
+- All battle use cases
+- `BattleController`
+
+---
+
+### Server Entry Point
+
+#### [MODIFY] [server.ts](file:///d:/interviewUndo/apps/backend-api/src/server.ts)
+After Socket.io initialization, register the `/battle` namespace by importing and initializing `BattleSocketHandler`.
+
+---
+
+### Frontend — New Pages & Components
+
+#### [NEW] `/battle/page.tsx` — Battle Lobby
+- Shows a "Find Match" button with filter dropdowns (difficulty, category)
+- Animated matchmaking queue UI (searching animation, queue position)
+- Cancel matchmaking button
+
+#### [NEW] `/battle/[battleId]/page.tsx` — Battle Arena
+Split-pane layout with 4 panels:
+
+```
+┌──────────────────────────────────────────────┐
+│  Timer Bar (countdown) + Opponent Info        │
+├─────────────────────┬────────────────────────┤
+│  Problem            │  Your Code Editor      │
+│  Description        │  (Monaco)              │
+│  (read-only)        │                        │
+│                     │                        │
+├─────────────────────┼────────────────────────┤
+│  Chat Panel         │  Opponent's Code       │
+│  (live messaging)   │  (blurred/preview)     │
+└─────────────────────┴────────────────────────┘
+```
+
+#### [NEW] `/battle/[battleId]/result/page.tsx` — Battle Result
+- Winner/loser announcement with animations
+- Side-by-side comparison of both solutions
+- Stats: time taken, test cases passed, runtime
+
+#### [NEW] `useBattle.ts` — Custom Hook (`/src/lib/hooks/useBattle.ts`)
+Manages all battle Socket.io events. Returns:
+```typescript
+{
+  battleState, // current battle data
+  opponentCode, // blurred preview
+  chatMessages,
+  remainingTime,
+  joinQueue(filters),
+  leaveQueue(),
+  sendCode(code),
+  sendChat(message),
+  submitSolution(code),
+  forfeit(),
+  isMatching, isInBattle, isBattleEnded
+}
+```
+
+#### [NEW] Components:
+- `BattleTimer.tsx` — Animated countdown ring/bar
+- `MatchmakingOverlay.tsx` — Searching animation with cancel
+- `BattleChatPanel.tsx` — Live chat with opponent
+- `OpponentCodePreview.tsx` — Blurred/obfuscated code view
+- `BattleResultCard.tsx` — Winner/loser card with stats
+
+---
+
+### Shared Types
+
+#### [MODIFY] `packages/shared-types`
+Add battle-related types and Zod schemas:
+- `BattleStatus`, `BattleFilters`, `BattleState`
+- `BattleChatMessage`, `BattleMatchedPayload`
+- Socket event type maps for type-safe Socket.io
+
+---
+
+## Data Flow Diagrams
+
+### Matchmaking Flow (Redis)
+```mermaid
+graph LR
+    P1["Player 1<br/>joins queue"] --> RS["Redis Sorted Set<br/>matchmaking:MEDIUM:JAVASCRIPT"]
+    P2["Player 2<br/>joins queue"] --> RS
+    RS -->|ZPOPMIN x2| MM["Matchmaker<br/>(atomically pops 2)"]
+    MM --> BATTLE["Create Battle<br/>+ pick problem"]
+    BATTLE --> EMIT["Emit battle:matched<br/>to both players"]
+```
+
+### Battle State Machine
+```mermaid
+stateDiagram-v2
+    [*] --> WAITING: Player joins queue
+    WAITING --> IN_PROGRESS: Match found, both connected
+    WAITING --> CANCELLED: Player leaves queue
+    IN_PROGRESS --> COMPLETED: Timer expires OR both submit
+    IN_PROGRESS --> FORFEITED: Player disconnects (grace period expired)
+    COMPLETED --> [*]
+    CANCELLED --> [*]
+    FORFEITED --> [*]
+```
+
+---
+
+## Implementation Order
+
+| Phase | What | Estimated Effort |
+|---|---|---|
+| **Phase 1** | Prisma schema + migration + domain entities | Small |
+| **Phase 2** | Domain ports (IBattleRepository, IMatchmakingService, IBattleTimerService) | Small |
+| **Phase 3** | Infrastructure: PrismaBattleRepository, RedisMatchmakingService, BattleTimerManager | Medium |
+| **Phase 4** | Use cases: JoinMatchmaking, LeaveMatchmaking, SubmitBattleSolution, GetBattleState, ForfeitBattle | Medium |
+| **Phase 5** | BattleSocketHandler (core real-time logic) | Large |
+| **Phase 6** | REST routes + controller + DI wiring | Small |
+| **Phase 7** | Frontend: Battle Lobby page + matchmaking UI | Medium |
+| **Phase 8** | Frontend: Battle Arena page (editor, timer, opponent preview, chat) | Large |
+| **Phase 9** | Frontend: Battle Result page | Small |
+| **Phase 10** | Integration testing + E2E with Playwright | Medium |
+
+---
+
+## Verification Plan
+
+### Automated Tests
+- `vitest run` — Unit tests for all use cases (mocked ports)
+- `vitest run` — Integration tests for battle routes
+- `npx playwright test` — E2E test: join queue → match → code → submit → result
+
+### Manual Verification
+- Open two browser windows, log in as different users
+- Both click "Find Match" with same filters
+- Verify they get matched and see the same problem
+- Type in one window, verify the other sees typing indicator
+- Send chat messages, verify real-time delivery
+- Submit solution, verify judge results appear for both
+- Let timer expire, verify battle ends correctly
+- Test disconnection/reconnection grace period
