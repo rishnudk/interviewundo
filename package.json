@@ -20,8 +20,13 @@
     "db:migrate": "npm run migrate:dev --workspace=apps/backend-api",
     "db:seed": "npm run seed --workspace=apps/backend-api",
     "db:seed:arrays": "npm run db:seed:arrays --workspace=apps/backend-api",
+    "db:seed:arrays2": "npm run db:seed:arrays2 --workspace=apps/backend-api",
     "db:seed:other-js": "npm run db:seed:other-js --workspace=apps/backend-api",
     "db:seed:strings": "npm run db:seed:strings --workspace=apps/backend-api",
+    "db:seed:objects": "npm run db:seed:objects --workspace=apps/backend-api",
+    "db:seed:loops": "npm run db:seed:loops --workspace=apps/backend-api",
+    "db:seed:nodejs": "npm run db:seed:nodejs --workspace=apps/backend-api",
+    "db:seed:mongodb": "npm run db:seed:mongodb --workspace=apps/backend-api",
     "db:studio": "npm run studio --workspace=apps/backend-api",
     "prepare": "node -e \"try { require('child_process').execSync('husky', { stdio: 'inherit' }) } catch (e) {}\"",
     "postinstall": "prisma generate --schema=apps/backend-api/src/infrastructure/database/prisma/schema.prisma"
