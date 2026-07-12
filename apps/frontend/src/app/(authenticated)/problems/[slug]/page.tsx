@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -522,9 +522,7 @@ export default function ProblemWorkspacePage() {
           style={isMd ? { width: `${splitPercent}%` } : undefined}
         >
           <ProblemDescriptionPanel
-            description={problem.description}
-            slug={slug}
-            code={code}
+            problem={problem}
             solutionCode={problem.solutionCode}
             tags={problem.tags}
           />

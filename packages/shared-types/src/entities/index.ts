@@ -35,6 +35,9 @@ export interface Problem {
   isPublished: boolean;
   solvedCount: number;
   attemptCount: number;
+  likesCount: number;
+  viewsCount: number;
+  estimatedMinutes: number;
   createdAt: Date;
   updatedAt: Date;
   testCases?: TestCase[];

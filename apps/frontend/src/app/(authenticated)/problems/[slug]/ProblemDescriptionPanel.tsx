@@ -47,10 +47,11 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
+import { Problem } from '@interviewprep/shared-types';
+import { ProblemHeader } from '@/components/workspace/ProblemHeader';
+
 interface ProblemDescriptionPanelProps {
-  description: string;
-  slug: string;
-  code: string;
+  problem: Problem;
   solutionCode?: string | null;
   tags?: string[];
 }
@@ -63,13 +64,15 @@ const staticHints = [
 ];
 
 export function ProblemDescriptionPanel({
-  description,
-  slug,
+  problem,
   solutionCode,
   tags,
 }: ProblemDescriptionPanelProps) {
   const { success: showSuccess } = useToast();
   const { apiFetch } = useAuth();
+
+  const slug = problem.slug;
+  const description = problem.description;
 
   // Tab State
   const [activeTab, setActiveTab] = useState<'description' | 'solution' | 'related'>('description');
@@ -171,6 +174,7 @@ export function ProblemDescriptionPanel({
       {/* Description Tab Content */}
       {activeTab === 'description' && (
         <div className="flex-1 overflow-y-auto px-6 py-5 prose prose-indigo dark:prose-invert max-w-none scrollbar-thin">
+          <ProblemHeader problem={problem} />
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{description}</ReactMarkdown>
 
           {/* Locked Hints Section */}

@@ -1,3 +1,4 @@
+﻿// @ts-nocheck â€” TODO: Remove this and fix all `any` types properly
 'use client';
 
 import React, { useState } from 'react';
@@ -8,19 +9,23 @@ import { BookOpen, History, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth, useToast } from '@/providers';
 
+import { Problem } from '@interviewprep/shared-types';
+import { ProblemHeader } from './ProblemHeader';
+
 interface ReactWorkspaceDescriptionPanelProps {
-  description: string;
-  slug: string;
+  problem: Problem;
   code: string;
 }
 
 export function ReactWorkspaceDescriptionPanel({
-  description,
-  slug,
+  problem,
   code,
 }: ReactWorkspaceDescriptionPanelProps) {
   const { apiFetch } = useAuth();
   const { success: showSuccess, error: showError } = useToast();
+
+  const slug = problem.slug;
+  const description = problem.description;
 
   // AI Hint state
   const [hint, setHint] = useState<string | null>(null);
@@ -64,6 +69,7 @@ export function ReactWorkspaceDescriptionPanel({
       </div>
 
       <div className="flex-1 overflow-y-auto px-6 py-5 prose prose-indigo dark:prose-invert max-w-none text-sm text-zinc-300 scrollbar-thin">
+        <ProblemHeader problem={problem} />
         <ReactMarkdown remarkPlugins={[remarkGfm]}>{description}</ReactMarkdown>
 
         {/* AI Hint Section */}

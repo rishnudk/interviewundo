@@ -83,6 +83,9 @@ model Problem {
   isPublished  Boolean    @default(false)
   solvedCount  Int        @default(0)
   attemptCount Int        @default(0)
+  likesCount   Int        @default(0)
+  viewsCount   Int        @default(0)
+  estimatedMinutes Int    @default(15)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
