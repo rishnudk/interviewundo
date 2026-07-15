@@ -1,431 +1,340 @@
-# React Workspace — NamasteDevs-Style Layout
+# Landing Page — Code Typing Illusion
 
-Build a 3-panel React workspace with multi-file editor, live browser preview, and console — matching the NamasteDevs interview practice layout.
+Transform the static [product-showcase.tsx](file:///d:/interviewUndo/apps/frontend/src/components/marketing/product-showcase.tsx) into a cinematic, looping animation that simulates a developer solving coding problems in real-time.
 
----
-
-## Current vs Target Layout
-
-### Current Layout (JS/SQL/MongoDB problems)
-
-```
-┌─────────────────────┬────────────────────────┐
-│                     │    Monaco Editor        │
-│  Problem            │    (single file)        │
-│  Description        ├────────────────────────┤
-│                     │    Console / Results    │
-└─────────────────────┴────────────────────────┘
-```
-
-### Target Layout (React problems only)
-
-```
-┌──────────────┬──────────────────┬─────────────────┐
-│              │ styles.css       │                  │
-│  Problem     │ Counter.js       │  Browser Preview │
-│  Description │ App.js           │  (live iframe)   │
-│              │ (multi-tab       │                  │
-│              │  Monaco editor)  ├─────────────────┤
-│              │                  │  Console         │
-├──────────────┴──────────────────┴─────────────────┤
-│  ⏱ Timer    Attempts: 0          ▶ Run   ✈ Submit │
-└───────────────────────────────────────────────────┘
-```
-
-The existing 2-panel layout stays unchanged for JS/SQL/MongoDB problems. The 3-panel layout only activates when `problem.category === 'REACT'`.
-
----
-
-## Architecture: How It All Connects
+## Animation Flow
 
 ```mermaid
-graph TD
-    subgraph "Frontend (Browser)"
-        A["Multi-Tab Editor<br/>(styles.css, Counter.js, App.js)"]
-        B["Live Preview iframe"]
-        C["Console Panel"]
-        A -->|"debounced onChange<br/>(500ms)"| D["Babel Standalone<br/>compiles JSX → JS"]
-        D --> E["Build HTML srcdoc:<br/>CSS + compiled JS + React CDN"]
-        E -->|"iframe.srcdoc = html"| B
-        B -->|"postMessage<br/>(console.log capture)"| C
+stateDiagram-v2
+    [*] --> TYPING: IntersectionObserver triggers
+    TYPING --> PAUSE_AFTER_TYPE: Code fully typed
+    PAUSE_AFTER_TYPE --> RUNNING: 800ms pause
+    RUNNING --> RESULT_LOADING: "Running..." appears
+    RESULT_LOADING --> RESULT_ACCEPTED: 1200ms spinner
+    RESULT_ACCEPTED --> PAUSE_AFTER_RESULT: Card shows ✅ Accepted
+    PAUSE_AFTER_RESULT --> ERASING: 2500ms hold
+    ERASING --> TRANSITION: Code erased
+    TRANSITION --> TYPING: Next problem loads
+```
+
+## Library Responsibilities
+
+Each library handles what it does best — no overlap:
+
+| Library      | Role                                              | What It Controls                                                                      |
+| ------------ | ------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **Typed.js** | Character-by-character typing + backspace erasing | Code text appearing/disappearing in the editor panel                                  |
+| **Shiki**    | Syntax highlighting                               | Pre-rendering code strings to highlighted HTML tokens at build time                   |
+| **GSAP**     | Master timeline orchestration                     | Sequencing all phases, coordinating timing between typing, card, and UI states        |
+| **Motion**   | Micro-animations + presence transitions           | Submission card mount/unmount, result reveal, difficulty badge entrance, glow effects |
+
+```mermaid
+flowchart LR
+    subgraph "Build Time"
+        A["Problem Code Strings"] --> B["Shiki Highlighter"]
+        B --> C["Pre-highlighted HTML"]
     end
-
-    subgraph "Submit/Run Flow"
-        A -->|"Run/Submit click"| F["POST /api/submissions<br/>body: { code: JSON multi-file }"]
-        F --> G["BullMQ Queue"]
-        G --> H["ReactExecutor<br/>(judge-worker)"]
-        H --> I["Docker: node-react-runner<br/>esbuild + jsdom + react"]
-        I --> J["Render component in JSDOM<br/>simulate clicks/typing<br/>assert DOM state"]
-        J -->|"WebSocket"| C
+    subgraph "Runtime - GSAP Timeline"
+        C --> D["Typed.js types into editor"]
+        D --> E["GSAP triggers pause"]
+        E --> F["Motion animates card states"]
+        F --> G["Typed.js backspaces"]
+        G --> H["GSAP advances to next problem"]
     end
 ```
-
----
-
-## Proposed Changes
-
-### 1. Database — Multi-File Starter Code
-
-#### [MODIFY] [schema.prisma](file:///d:/interview-prep-platform/apps/backend-api/src/infrastructure/database/prisma/schema.prisma)
-
-Add an optional `starterFiles` JSON field to the Problem model. This stores multi-file starter code for React problems while keeping `starterCode` backward compatible for all other categories.
-
-```diff
- model Problem {
-   id           String     @id @default(cuid())
-   title        String
-   slug         String     @unique
-   description  String     @db.Text
-   difficulty   Difficulty
-   category     Category
-   starterCode  String     @db.Text
-+  starterFiles Json?      // Multi-file starter code for React: {"styles.css": "...", "App.js": "...", "Counter.js": "..."}
-   solutionCode String?    @db.Text
-```
-
-> [!NOTE]
-> `starterCode` still stores the main component code (the primary file the user edits). `starterFiles` stores ALL files as a JSON object. For React problems, the frontend reads `starterFiles`; for all other categories, it uses `starterCode` as before.
-
----
-
-### 2. Backend API — Pass Multi-File Code
-
-#### [MODIFY] [IQueueService.ts](file:///d:/interview-prep-platform/apps/backend-api/src/domain/ports/services/IQueueService.ts)
-
-Update `SubmissionJob` to support multi-file code:
-
-```diff
- export interface SubmissionJob {
-   submissionId: string;
-   userId: string;
-   problemId: string;
-   code: string;
-+  files?: Record<string, string>;  // Optional multi-file map for React problems
-   language: string;
- }
-```
-
-#### [MODIFY] [RunCode.ts](file:///d:/interview-prep-platform/apps/backend-api/src/application/use-cases/submission/RunCode.ts) & [SubmitSolution.ts](file:///d:/interview-prep-platform/apps/backend-api/src/application/use-cases/submission/SubmitSolution.ts)
-
-Pass `files` through to the queue when the problem category is `REACT`.
-
-#### [MODIFY] Problem API response
-
-Include `starterFiles` in the problem detail response so the frontend can load multi-file tabs.
-
----
-
-### 3. Judge Worker — ReactExecutor
-
-#### [NEW] [Dockerfile.react-runner](file:///d:/interview-prep-platform/infrastructure/docker/Dockerfile.react-runner)
-
-```dockerfile
-FROM node:22-slim
-WORKDIR /app
-RUN npm init -y && npm install react@19 react-dom@19 esbuild jsdom
-USER node
-```
-
-#### [NEW] [ReactExecutor.ts](file:///d:/interview-prep-platform/apps/judge-worker/src/executor/ReactExecutor.ts)
-
-Implements `IExecutor`. Key differences from `JavascriptExecutor`:
-
-- Uses `node-react-runner` Docker image
-- Copies ALL files (styles.css, Component.js, App.js) into the container
-- Runner script (`react-runner.js`) does:
-  1. **Compile JSX**: Uses esbuild to transform JSX → JS
-  2. **Setup JSDOM**: Creates a virtual DOM environment with `window`, `document`
-  3. **Render**: Uses `ReactDOM.createRoot()` to render the component
-  4. **Interact**: Simulates user actions (click, type) from test case `steps`
-  5. **Assert**: Checks DOM state against test case `assertions`
-
-**Test case format:**
-
-```json
-{
-  "input": "{\"steps\":[{\"action\":\"click\",\"testId\":\"increment-btn\"},{\"action\":\"click\",\"testId\":\"increment-btn\"}],\"assertions\":[{\"testId\":\"count-display\",\"text\":\"2\"}]}",
-  "expectedOutput": "\"passed\""
-}
-```
-
-#### [MODIFY] [SubmissionWorker.ts](file:///d:/interview-prep-platform/apps/judge-worker/src/worker/SubmissionWorker.ts)
-
-```diff
-+import { ReactExecutor } from '../executor/ReactExecutor';
-+const reactExecutor = new ReactExecutor();
-
- function getExecutorForCategory(category: string): IExecutor {
-   switch (category) {
-     case 'JAVASCRIPT':
-     case 'NODEJS':
--    case 'REACT':
-       return jsExecutor;
-+    case 'REACT':
-+      return reactExecutor;
-```
-
-The worker also needs to pass `files` from the job data to the ReactExecutor.
-
----
-
-### 4. Frontend — 3-Panel React Workspace
-
-This is the biggest change. Create a separate workspace component for React problems.
-
-#### [NEW] `apps/frontend/src/components/workspace/ReactWorkspace.tsx`
-
-The main 3-panel layout component. Rendered by [page.tsx](<file:///d:/interview-prep-platform/apps/frontend/src/app/(authenticated)/problems/[slug]/page.tsx>) when `problem.category === 'REACT'`.
-
-**State management:**
-
-```typescript
-// Multi-file state
-const [files, setFiles] = useState<Record<string, string>>({
-  'styles.css': '', // CSS file
-  'Counter.js': '', // Main component (name varies by problem)
-  'App.js': '', // App wrapper that imports component
-});
-const [activeFile, setActiveFile] = useState<string>('Counter.js');
-
-// Preview state
-const [previewHtml, setPreviewHtml] = useState<string>('');
-const [consoleLogs, setConsoleLogs] = useState<ConsoleEntry[]>([]);
-```
-
-**Layout structure:**
-
-```
-┌──────────────┬──────────────────┬─────────────────┐
-│  DescPanel   │  EditorPanel     │  PreviewPanel   │
-│  (25% width) │  (40% width)     │  (35% width)    │
-│              │                  │                 │
-│  - Problem   │  - Tab bar       │  - iframe       │
-│  - Solution  │    (file tabs)   │    (srcdoc)     │
-│  - Notes     │  - Monaco Editor │                 │
-│              │                  ├─────────────────┤
-│              │                  │  ConsolePanel   │
-│              │                  │  (30% height)   │
-└──────────────┴──────────────────┴─────────────────┘
-│              Bottom Bar: Timer, Run, Submit        │
-└───────────────────────────────────────────────────┘
-```
-
-#### [NEW] `apps/frontend/src/components/workspace/LivePreview.tsx`
-
-The live browser preview component using an `<iframe>`.
-
-**How the live preview works:**
-
-1. User edits a file in the multi-tab editor
-2. After 500ms debounce, `buildPreview()` runs:
-
-   ```typescript
-   function buildPreview(files: Record<string, string>): string {
-     return `
-       <!DOCTYPE html>
-       <html>
-       <head>
-         <style>${files['styles.css']}</style>
-         <script src="https://unpkg.com/react@19/umd/react.development.js"></script>
-         <script src="https://unpkg.com/react-dom@19/umd/react-dom.development.js"></script>
-         <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-       </head>
-       <body>
-         <div id="root"></div>
-         <script>
-           // Capture console.log and send to parent
-           const origLog = console.log;
-           console.log = (...args) => {
-             origLog(...args);
-             window.parent.postMessage({ type: 'console', level: 'log', args: args.map(String) }, '*');
-           };
-           // Same for console.error, console.warn
-         </script>
-         <script type="text/babel" data-type="module">
-           ${files['Counter.js']}
-           ${files['App.js']}
-   
-           const root = ReactDOM.createRoot(document.getElementById('root'));
-           root.render(React.createElement(App));
-         </script>
-       </body>
-       </html>
-     `;
-   }
-   ```
-
-3. Set `iframe.srcdoc = html`
-4. iframe renders the React component live
-
-> [!IMPORTANT]
-> **Babel Standalone** is loaded from CDN inside the iframe. It compiles JSX in-browser for the live preview. This is separate from the judge-worker which uses esbuild for server-side compilation.
-
-#### [NEW] `apps/frontend/src/components/workspace/ConsolePanel.tsx`
-
-Captures `postMessage` events from the iframe to show `console.log/error/warn` output.
-
-```typescript
-useEffect(() => {
-  const handler = (event: MessageEvent) => {
-    if (event.data?.type === 'console') {
-      setConsoleLogs((prev) => [
-        ...prev,
-        {
-          level: event.data.level,
-          message: event.data.args.join(' '),
-          timestamp: Date.now(),
-        },
-      ]);
-    }
-  };
-  window.addEventListener('message', handler);
-  return () => window.removeEventListener('message', handler);
-}, []);
-```
-
-#### [MODIFY] [page.tsx](<file:///d:/interview-prep-platform/apps/frontend/src/app/(authenticated)/problems/[slug]/page.tsx>)
-
-Conditionally render the workspace based on category:
-
-```tsx
-if (problem.category === 'REACT') {
-  return <ReactWorkspace problem={problem} />;
-}
-
-// Existing 2-panel layout for JS/SQL/MongoDB...
-return <div className="flex flex-col h-[calc(100vh-5.5rem)]">{/* ... existing code ... */}</div>;
-```
-
----
-
-### 5. Seed Data — 5 React Problems
-
-#### [MODIFY] [seed.ts](file:///d:/interview-prep-platform/apps/backend-api/src/infrastructure/database/prisma/seed.ts)
-
-Each React problem has both `starterCode` (main component) and `starterFiles` (all files):
-
-**Example — Counter App (order: 24):**
-
-```typescript
-{
-  title: 'Counter App',
-  slug: 'counter-app',
-  description: `Build a Counter component with increment and decrement buttons...`,
-  difficulty: 'EASY',
-  category: 'REACT',
-  starterCode: `function Counter() {
-  // Use useState to track the count
-  // Render:
-  //   - A display showing the current count (data-testid="count-display")
-  //   - An increment button (data-testid="increment-btn")
-  //   - A decrement button (data-testid="decrement-btn")
-}`,
-  starterFiles: {
-    'styles.css': `.counter { text-align: center; padding: 20px; }
-.counter h2 { font-size: 48px; margin: 20px 0; }
-.counter button { padding: 10px 20px; margin: 0 10px; font-size: 18px; cursor: pointer; }`,
-    'Counter.js': `function Counter() {
-  // Use React.useState to track the count
-  // Render a display and two buttons
-}`,
-    'App.js': `function App() {
-  return (
-    <div className="counter">
-      <h1>Counter App</h1>
-      <Counter />
-    </div>
-  );
-}`
-  },
-  solutionCode: `function Counter() {
-  const [count, setCount] = React.useState(0);
-  return (
-    <div>
-      <h2 data-testid="count-display">{count}</h2>
-      <button data-testid="decrement-btn" onClick={() => setCount(count - 1)}>-</button>
-      <button data-testid="increment-btn" onClick={() => setCount(count + 1)}>+</button>
-    </div>
-  );
-}`,
-  tags: ['react', 'state', 'events'],
-  isPublished: true,
-  order: 24,
-  testCases: {
-    create: [
-      {
-        input: '{"steps":[{"action":"click","testId":"increment-btn"},{"action":"click","testId":"increment-btn"},{"action":"click","testId":"increment-btn"}],"assertions":[{"testId":"count-display","text":"3"}]}',
-        expectedOutput: '"passed"',
-        isHidden: false,
-        order: 1,
-      },
-      {
-        input: '{"steps":[{"action":"click","testId":"decrement-btn"},{"action":"click","testId":"decrement-btn"}],"assertions":[{"testId":"count-display","text":"-2"}]}',
-        expectedOutput: '"passed"',
-        isHidden: false,
-        order: 2,
-      },
-      {
-        input: '{"steps":[{"action":"click","testId":"increment-btn"},{"action":"click","testId":"increment-btn"},{"action":"click","testId":"decrement-btn"}],"assertions":[{"testId":"count-display","text":"1"}]}',
-        expectedOutput: '"passed"',
-        isHidden: true,
-        order: 3,
-      },
-    ],
-  },
-}
-```
-
-**All 5 problems:**
-
-| #   | Title              | Slug                 | Difficulty | Key `data-testid`s                                           | Test Scenarios                                      |
-| --- | ------------------ | -------------------- | ---------- | ------------------------------------------------------------ | --------------------------------------------------- |
-| 24  | Counter App        | `counter-app`        | EASY       | `count-display`, `increment-btn`, `decrement-btn`            | Click combos, verify count                          |
-| 25  | Toggle Button      | `toggle-button`      | EASY       | `toggle-btn`, `status-text`                                  | Toggle ON/OFF state                                 |
-| 26  | Show/Hide Password | `show-hide-password` | EASY       | `password-input`, `toggle-visibility`                        | Check input type switches between `password`/`text` |
-| 27  | Todo App           | `todo-app`           | MEDIUM     | `todo-input`, `add-btn`, `todo-item`, `toggle-0`, `delete-0` | Add, toggle, delete items                           |
-| 28  | Fetch API Data     | `fetch-api-data`     | MEDIUM     | `loading`, `user-list`, `user-item`, `error-message`         | Mock fetch success/failure                          |
 
 ---
 
 ## Open Questions
 
 > [!IMPORTANT]
-> **React CDN vs bundled:** The live preview loads React from CDN (`unpkg.com`). This means:
+> **Problem Set**: The current showcase only has "Reverse String". Should I use these 4 problems for the rotation cycle, or do you have a different set in mind?
 >
-> - ✅ No build step needed for preview
-> - ❌ Won't work offline
-> - ❌ User can't use `import` syntax — must use `React.useState` instead of `import { useState } from 'react'`
->
-> Should we accept `React.useState(...)` syntax, or bundle React into the preview HTML?
+> 1. **Reverse String** (Easy) — `str.split('').reverse().join('')`
+> 2. **Two Sum** (Medium) — hash map approach
+> 3. **Valid Parentheses** (Medium) — stack approach
+> 4. **Palindrome Check** (Easy) — two-pointer approach
 
 > [!IMPORTANT]
-> **Resizable panels:** Should we use `react-resizable-panels` for drag-to-resize between the 3 columns? Or use fixed widths (25% / 40% / 35%)?
+> **Typing Speed**: Should the typing feel like a fast developer (~40ms/char) or a more deliberate, readable pace (~70ms/char)? I'll default to **50ms/char** which balances realism and watchability.
+
+> [!IMPORTANT]
+> **Scroll Behavior**: Should the animation **only play when visible** (IntersectionObserver pauses when scrolled away), or should it **always loop** regardless of scroll position?
+
+---
+
+## Proposed Changes
+
+### Dependencies
+
+#### Install 4 new packages
+
+```bash
+cd apps/frontend
+npm install motion gsap typed.js shiki
+```
+
+| Package    | Bundle Impact (tree-shaken) |
+| ---------- | --------------------------- |
+| `motion`   | ~18KB gzipped               |
+| `gsap`     | ~25KB gzipped               |
+| `typed.js` | ~4KB gzipped                |
+| `shiki`    | ~6KB core + lazy grammars   |
+
+---
+
+### Component 1: Shiki Highlighting Utility
+
+#### [NEW] [shiki-highlighter.ts](file:///d:/interviewUndo/apps/frontend/src/lib/shiki-highlighter.ts)
+
+A utility module that pre-generates highlighted HTML from raw code strings using Shiki. Called once on component mount (client-side) to avoid blocking SSR.
+
+**Key details:**
+
+- Uses the `one-dark-pro` theme (matches the dark Fey design system)
+- Highlights all problem code strings in a single batch
+- Returns HTML strings that Typed.js will type character-by-character
+- Shiki's `codeToHtml()` produces `<span style="color:...">` tokens — these will be injected as the typing target
+
+```ts
+// Pseudocode
+import { createHighlighter } from 'shiki';
+
+const highlighter = await createHighlighter({
+  themes: ['one-dark-pro'],
+  langs: ['javascript'],
+});
+
+export function highlightCode(code: string): string {
+  return highlighter.codeToHtml(code, { lang: 'javascript', theme: 'one-dark-pro' });
+}
+```
+
+---
+
+### Component 2: Problem Data
+
+#### [NEW] [showcase-problems.ts](file:///d:/interviewUndo/apps/frontend/src/components/marketing/showcase-problems.ts)
+
+Static data file containing the problem rotation set. Each problem defines:
+
+```ts
+interface ShowcaseProblem {
+  title: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  description: string;
+  example: { input: string; output: string };
+  code: string; // raw code string
+  highlightedHtml?: string; // populated at runtime by Shiki
+  result: {
+    status: 'Accepted';
+    runtime: string; // e.g. "24 ms"
+    memory: string; // e.g. "7 MB"
+  };
+  breadcrumb: string; // e.g. "Problems → Strings → Reverse String"
+}
+```
+
+Contains 4 problems: Reverse String, Two Sum, Valid Parentheses, Palindrome Check.
+
+---
+
+### Component 3: The Animated Showcase (Main Component)
+
+#### [MODIFY] [product-showcase.tsx](file:///d:/interviewUndo/apps/frontend/src/components/marketing/product-showcase.tsx)
+
+This is the core change. The current 158-line static component becomes a `'use client'` animated component. The existing layout structure (sidebar, top bar, problem panel, code editor, stat widgets) is **preserved** — only the dynamic panels change.
+
+**What stays static (no animation):**
+
+- Sidebar with menu items and user profile (lines 24–48)
+- Top bar with traffic lights and breadcrumb (lines 7–19) — breadcrumb text updates per problem
+- Floating widgets grid at the bottom (lines 122–154)
+
+**What becomes dynamic:**
+
+##### A. Code Editor Panel (right side, lines 92–117)
+
+- **Typed.js** types the Shiki-highlighted HTML character by character into this panel
+- The raw `<span>` markup from Shiki is injected as `contentType: 'html'` in Typed.js config
+- A blinking cursor (Typed.js built-in) appears at the typing position
+- Backspace animation erases the code before loading the next problem
+- The file tab updates (`solution.js` stays, language badge stays)
+
+##### B. Problem Description Panel (left side, lines 50–88)
+
+- Problem title, difficulty badge, description, and example update per problem
+- **Motion** `AnimatePresence` handles the crossfade between problems
+- Difficulty badge uses Motion's `initial/animate` for a pop-in effect
+
+##### C. Submission Result Card (inside problem panel, lines 71–87)
+
+- This card transitions through 3 states, orchestrated by **GSAP** timeline, animated by **Motion**:
+
+| State        | Visual                                    | Motion Animation                                              |
+| ------------ | ----------------------------------------- | ------------------------------------------------------------- |
+| **Hidden**   | Card not visible                          | —                                                             |
+| **Running**  | Pulsing "Running..." with spinner         | `motion.div` fade in + `animate-spin` on icon                 |
+| **Accepted** | Green ✅ card with runtime/memory metrics | `motion.div` spring scale-up + staggered children for metrics |
+
+```tsx
+<AnimatePresence mode="wait">
+  {phase === 'RUNNING' && (
+    <motion.div
+      key="running"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
+      transition={{ duration: 0.3 }}
+    >
+      <Loader2 className="animate-spin" /> Running...
+    </motion.div>
+  )}
+  {phase === 'RESULT' && (
+    <motion.div
+      key="result"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+    >
+      ✅ Accepted — Runtime: 24ms — Memory: 7MB
+    </motion.div>
+  )}
+</AnimatePresence>
+```
+
+##### D. Breadcrumb (top bar)
+
+- Updates text per problem (e.g., "Problems → Strings → Reverse String" → "Problems → Arrays → Two Sum")
+- Simple text swap, no animation needed
+
+##### E. Execution Badge (bottom-right of editor, line 113–116)
+
+- Pulses green during "Running" phase (already has `animate-pulse`)
+- **Motion** adds a brief glow burst when result arrives
+
+**GSAP Timeline Structure:**
+
+```ts
+// Pseudocode — the master timeline
+const tl = gsap.timeline({ repeat: -1, onRepeat: advanceToNextProblem });
+
+// Phase 1: Typing (duration controlled by Typed.js callback)
+tl.call(() => startTyping(), [], 0);
+tl.addPause('typingDone'); // resumed by Typed.js onComplete
+
+// Phase 2: Pause after typing
+tl.to({}, { duration: 0.8 }, 'typingDone');
+
+// Phase 3: Show "Running..."
+tl.call(() => setPhase('RUNNING'));
+tl.to({}, { duration: 1.2 });
+
+// Phase 4: Show result
+tl.call(() => setPhase('RESULT'));
+tl.to({}, { duration: 2.5 });
+
+// Phase 5: Erase code (Typed.js backspace)
+tl.call(() => startErasing());
+tl.addPause('erasingDone'); // resumed by Typed.js onComplete
+
+// Phase 6: Transition to next problem
+tl.call(() => {
+  setPhase('HIDDEN');
+  loadNextProblem();
+});
+tl.to({}, { duration: 0.5 });
+```
+
+---
+
+### Component 4: CSS Additions
+
+#### [MODIFY] [globals.css](file:///d:/interviewUndo/apps/frontend/src/app/globals.css)
+
+Add a few utility classes for the showcase:
+
+```css
+/* Blinking cursor for code editor */
+@keyframes blink-caret {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.showcase-cursor {
+  animation: blink-caret 1s step-end infinite;
+}
+
+/* Shiki overrides to match Fey design */
+.showcase-editor .shiki {
+  background: transparent !important;
+  font-family: var(--font-geist-mono);
+  font-size: 0.875rem;
+  line-height: 1.75;
+}
+
+/* Glow pulse on result arrival */
+@keyframes glow-pulse {
+  0% {
+    box-shadow: 0 0 0 rgba(78, 190, 150, 0);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(78, 190, 150, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(78, 190, 150, 0);
+  }
+}
+
+.result-glow {
+  animation: glow-pulse 0.8s ease-out;
+}
+```
+
+---
+
+### Component 5: Landing Page Integration
+
+#### [MODIFY] [page.tsx](file:///d:/interviewUndo/apps/frontend/src/app/page.tsx)
+
+No structural changes needed — `ProductShowcase` is already imported. The component just becomes interactive internally.
+
+---
+
+## File Summary
+
+| File                                                                                                         | Action     | Description                                                        |
+| ------------------------------------------------------------------------------------------------------------ | ---------- | ------------------------------------------------------------------ |
+| [shiki-highlighter.ts](file:///d:/interviewUndo/apps/frontend/src/lib/shiki-highlighter.ts)                  | **NEW**    | Shiki utility for pre-highlighting code                            |
+| [showcase-problems.ts](file:///d:/interviewUndo/apps/frontend/src/components/marketing/showcase-problems.ts) | **NEW**    | Problem data (4 problems with code, metadata, results)             |
+| [product-showcase.tsx](file:///d:/interviewUndo/apps/frontend/src/components/marketing/product-showcase.tsx) | **MODIFY** | Convert to animated client component with GSAP + Typed.js + Motion |
+| [globals.css](file:///d:/interviewUndo/apps/frontend/src/app/globals.css)                                    | **MODIFY** | Add cursor blink, Shiki theme overrides, glow animation            |
+| [page.tsx](file:///d:/interviewUndo/apps/frontend/src/app/page.tsx)                                          | No change  | Already imports ProductShowcase                                    |
 
 ---
 
 ## Verification Plan
 
-### Build Steps
+### Automated Tests
 
-```bash
-# 1. Migrate DB for starterFiles field
-npx prisma migrate dev --name add_starter_files --schema apps/backend-api/src/infrastructure/database/prisma/schema.prisma
-
-# 2. Build Docker image
-docker build -t node-react-runner -f infrastructure/docker/Dockerfile.react-runner .
-
-# 3. Re-seed
-npx prisma db seed --schema apps/backend-api/src/infrastructure/database/prisma/schema.prisma
-
-# 4. Start dev
-npm run dev
-```
+- `cd apps/frontend && npx next build` — Verify the build compiles with no errors (SSR compatibility, no hydration mismatches)
 
 ### Manual Verification
 
-- Open a React problem → verify 3-panel layout renders
-- Edit Counter.js → verify live preview updates
-- Edit styles.css → verify CSS applies in preview
-- Click Run → verify test results show in console
-- Click Submit → verify submission is accepted
-- Open a JS problem → verify 2-panel layout still works
+1. Run `npm run dev` and navigate to `/` (landing page)
+2. Verify the full animation cycle:
+   - Code types character by character with syntax highlighting
+   - Blinking cursor visible during typing
+   - "Running..." appears with loading spinner after typing completes
+   - Result card animates in with ✅ Accepted, runtime, memory
+   - Code erases character by character
+   - Next problem loads and cycle repeats
+3. Verify the animation pauses when scrolled out of view
+4. Verify no layout shift — static elements (sidebar, widgets) remain stable
+5. Verify mobile responsiveness — editor panel hides on `< lg` (existing behavior preserved)
+6. Check browser DevTools Performance tab — no jank, 60fps animations
