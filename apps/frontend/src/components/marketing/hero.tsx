@@ -37,7 +37,7 @@ export function Hero() {
           Get Started
         </Link>
         <Link
-          href="https://github.com"
+          href="https://github.com/rishnudk/interviewundo"
           className="text-fey-white text-sm font-medium px-6 py-3 rounded-full border border-fey-mist/20 hover:bg-fey-charcoal transition-colors"
         >
           View Source

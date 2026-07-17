@@ -7,20 +7,6 @@ export function Navbar() {
         <Link href="/" className="text-fey-white text-lg font-bold tracking-[-0.053em]">
           interviewUndo
         </Link>
-        <div className="hidden md:flex items-center gap-1 bg-[#191919] rounded-full p-1 border border-white/5">
-          <Link
-            href="/docs"
-            className="text-fey-white text-sm font-medium px-4 py-1.5 rounded-full hover:bg-[#131313] transition-colors"
-          >
-            Docs
-          </Link>
-          <Link
-            href="/github"
-            className="text-fey-graphite text-sm font-medium px-4 py-1.5 rounded-full hover:text-fey-white transition-colors"
-          >
-            GitHub
-          </Link>
-        </div>
       </div>
       <div className="flex items-center gap-4">
         <Link
