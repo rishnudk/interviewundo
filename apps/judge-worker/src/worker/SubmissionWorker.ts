@@ -50,8 +50,8 @@ export const submissionWorker = new Worker(
     const isPlayground = submissionId.startsWith('run-');
 
     try {
-      // 1. Fetch problem details and test cases from database
-      const [problem, testCases] = await prisma.$transaction([
+      // 1. Fetch problem details and test cases from database using Promise.all (faster & avoids transaction connection lock)
+      const [problem, testCases] = await Promise.all([
         prisma.problem.findUnique({
           where: { id: problemId },
           select: { category: true },
@@ -149,26 +149,32 @@ export const submissionWorker = new Worker(
           }),
         );
       } else {
-        // Save database records via a single atomic transaction
-        await prisma.$transaction([
-          prisma.submission.update({
-            where: { id: submissionId },
-            data: { status: finalStatus as any },
-          }),
-          prisma.submissionResult.create({
-            data: {
-              submissionId,
-              runtime: execResult.runtime ?? 0,
-              memory: execResult.memory ?? 0,
-              passedCases: execResult.passedCases,
-              totalCases: execResult.totalCases,
-              error: execResult.error,
-              output: execResult.results
-                .map((r) => (r.actual ? JSON.stringify(r.actual) : ''))
-                .join('\n'),
-            },
-          }),
-        ]);
+        // Save database records via a single atomic transaction with increased timeouts for Neon Free Tier
+        await prisma.$transaction(
+          [
+            prisma.submission.update({
+              where: { id: submissionId },
+              data: { status: finalStatus as any },
+            }),
+            prisma.submissionResult.create({
+              data: {
+                submissionId,
+                runtime: execResult.runtime ?? 0,
+                memory: execResult.memory ?? 0,
+                passedCases: execResult.passedCases,
+                totalCases: execResult.totalCases,
+                error: execResult.error,
+                output: execResult.results
+                  .map((r) => (r.actual ? JSON.stringify(r.actual) : ''))
+                  .join('\n'),
+              },
+            }),
+          ],
+          {
+            maxWait: 15000, // Wait up to 15s for a pool connection (default 2s)
+            timeout: 30000, // Allow transaction up to 30s to finish
+          },
+        );
 
         // Increment solvedCount if successfully solved
         if (finalStatus === 'ACCEPTED') {
