@@ -27,7 +27,8 @@
     "db:seed:react": "dotenv -e ../../.env -- tsx src/infrastructure/database/prisma/seed-react.ts",
     "db:seed:typescript": "dotenv -e ../../.env -- tsx src/infrastructure/database/prisma/seed-typescript.ts",
     "studio": "dotenv -e ../../.env -- prisma studio",
-    "generate": "dotenv -e ../../.env -- prisma generate"
+    "generate": "dotenv -e ../../.env -- prisma generate",
+    "make-admin": "dotenv -e ../../.env -- tsx src/scripts/make-admin.ts"
   },
   "dependencies": {
     "@interviewprep/shared-types": "*",

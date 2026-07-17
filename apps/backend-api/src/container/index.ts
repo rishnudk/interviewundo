@@ -10,6 +10,7 @@ import { PrismaProblemRepository } from '../infrastructure/database/repositories
 import { PrismaSubmissionRepository } from '../infrastructure/database/repositories/PrismaSubmissionRepository';
 import { PrismaTestCaseRepository } from '../infrastructure/database/repositories/PrismaTestCaseRepository';
 import { PrismaHintUsageRepository } from '../infrastructure/database/repositories/PrismaHintUsageRepository';
+import { PrismaFeatureRequestRepository } from '../infrastructure/database/repositories/PrismaFeatureRequestRepository';
 import { GrokHintService } from '../infrastructure/ai/GrokHintService';
 import { JoseAuthTokenService } from '../infrastructure/auth/JoseAuthTokenService';
 import { Argon2PasswordService } from '../infrastructure/auth/Argon2PasswordService';
@@ -37,7 +38,7 @@ import { GetCategoryProgress } from '../application/use-cases/dashboard/GetCateg
 import { GetActivityHeatmap } from '../application/use-cases/dashboard/GetActivityHeatmap';
 import { GetRecentActivity } from '../application/use-cases/dashboard/GetRecentActivity';
 
-// Admin & Test Cases Use Cases
+// Admin & Test Cases & Feature Request Use Cases
 import { GetAdminStats } from '../application/use-cases/admin/GetAdminStats';
 import { GetAdminProblems } from '../application/use-cases/admin/GetAdminProblems';
 import { CreateProblem } from '../application/use-cases/problem/CreateProblem';
@@ -48,6 +49,9 @@ import { CreateTestCase } from '../application/use-cases/testcase/CreateTestCase
 import { UpdateTestCase } from '../application/use-cases/testcase/UpdateTestCase';
 import { DeleteTestCase } from '../application/use-cases/testcase/DeleteTestCase';
 import { GetTestCasesByProblemId } from '../application/use-cases/testcase/GetTestCasesByProblemId';
+import { CreateFeatureRequest } from '../application/use-cases/requests/CreateFeatureRequest';
+import { GetFeatureRequests } from '../application/use-cases/requests/GetFeatureRequests';
+import { UpvoteFeatureRequest } from '../application/use-cases/requests/UpvoteFeatureRequest';
 
 // --- Controllers ---
 import { AuthController } from '../presentation/controllers/AuthController';
@@ -55,6 +59,7 @@ import { ProblemController } from '../presentation/controllers/ProblemController
 import { SubmissionController } from '../presentation/controllers/SubmissionController';
 import { DashboardController } from '../presentation/controllers/DashboardController';
 import { AdminController } from '../presentation/controllers/AdminController';
+import { FeatureRequestController } from '../presentation/controllers/FeatureRequestController';
 
 // ============================================================
 // Wire Dependencies
@@ -65,6 +70,7 @@ const userRepository = new PrismaUserRepository();
 const problemRepository = new PrismaProblemRepository();
 const submissionRepository = new PrismaSubmissionRepository();
 const testCaseRepository = new PrismaTestCaseRepository();
+const featureRequestRepository = new PrismaFeatureRequestRepository();
 const authTokenService = new JoseAuthTokenService();
 const passwordService = new Argon2PasswordService();
 const cacheService = new RedisCacheService();
@@ -104,7 +110,7 @@ const getCategoryProgress = new GetCategoryProgress(submissionRepository, proble
 const getActivityHeatmap = new GetActivityHeatmap(submissionRepository);
 const getRecentActivity = new GetRecentActivity(submissionRepository);
 
-// Admin & Test Cases
+// Admin & Test Cases & Feature Requests
 const getAdminStats = new GetAdminStats(userRepository, submissionRepository, problemRepository);
 const getAdminProblems = new GetAdminProblems(problemRepository);
 const createProblem = new CreateProblem(problemRepository);
@@ -114,6 +120,9 @@ const createTestCase = new CreateTestCase(testCaseRepository, problemRepository)
 const updateTestCase = new UpdateTestCase(testCaseRepository);
 const deleteTestCase = new DeleteTestCase(testCaseRepository);
 const getTestCasesByProblemId = new GetTestCasesByProblemId(testCaseRepository);
+const createFeatureRequest = new CreateFeatureRequest(featureRequestRepository);
+const getFeatureRequests = new GetFeatureRequests(featureRequestRepository);
+const upvoteFeatureRequest = new UpvoteFeatureRequest(featureRequestRepository);
 
 // Step 3: Instantiate controllers
 const authController = new AuthController(
@@ -153,6 +162,11 @@ const adminController = new AdminController(
   deleteTestCase,
   getTestCasesByProblemId,
 );
+const featureRequestController = new FeatureRequestController(
+  createFeatureRequest,
+  getFeatureRequests,
+  upvoteFeatureRequest,
+);
 
 // Step 4: Export container
 export const container = {
@@ -162,6 +176,7 @@ export const container = {
     submissionRepository,
     testCaseRepository,
     hintUsageRepository,
+    featureRequestRepository,
   },
   services: {
     authTokenService,
@@ -195,6 +210,9 @@ export const container = {
     updateTestCase,
     deleteTestCase,
     getTestCasesByProblemId,
+    createFeatureRequest,
+    getFeatureRequests,
+    upvoteFeatureRequest,
   },
   controllers: {
     authController,
@@ -202,5 +220,6 @@ export const container = {
     submissionController,
     dashboardController,
     adminController,
+    featureRequestController,
   },
 };

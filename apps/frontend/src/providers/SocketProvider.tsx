@@ -33,7 +33,16 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     });
 
     socketInstance.on('connect_error', (err) => {
-      console.error('❌ Socket connection error:', err.message);
+      if (
+        err.message.toLowerCase().includes('authentication') ||
+        err.message.toLowerCase().includes('token')
+      ) {
+        console.warn('⚠️ Socket auth check:', err.message);
+        // Disconnect immediately to prevent infinite reconnect attempts with an expired/invalid token
+        socketInstance.disconnect();
+      } else {
+        console.error('❌ Socket connection error:', err.message);
+      }
     });
 
     socketInstance.on('disconnect', () => {

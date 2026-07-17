@@ -111,3 +111,23 @@ export const UpdateTestCaseSchema = CreateTestCaseSchema.partial().omit({ proble
 
 export type CreateTestCaseDTO = z.infer<typeof CreateTestCaseSchema>;
 export type UpdateTestCaseDTO = z.infer<typeof UpdateTestCaseSchema>;
+
+// ============================================================
+// Feature Request DTOs
+// ============================================================
+
+export const CreateFeatureRequestSchema = z.object({
+  title: z.string().min(5, 'Title must be at least 5 characters').max(150),
+  description: z
+    .string()
+    .min(10, 'Please provide a more detailed description (at least 10 characters)')
+    .max(2000),
+  type: z.enum(['PROBLEM_REQUEST', 'FEATURE_SUGGESTION', 'BUG_REPORT']).default('PROBLEM_REQUEST'),
+});
+
+export const UpdateFeatureRequestStatusSchema = z.object({
+  status: z.enum(['PENDING', 'UNDER_REVIEW', 'APPROVED', 'REJECTED']),
+});
+
+export type CreateFeatureRequestDTO = z.infer<typeof CreateFeatureRequestSchema>;
+export type UpdateFeatureRequestStatusDTO = z.infer<typeof UpdateFeatureRequestStatusSchema>;

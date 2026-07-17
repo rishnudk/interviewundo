@@ -28,6 +28,7 @@
     "db:seed:nodejs": "npm run db:seed:nodejs --workspace=apps/backend-api",
     "db:seed:mongodb": "npm run db:seed:mongodb --workspace=apps/backend-api",
     "db:studio": "npm run studio --workspace=apps/backend-api",
+    "make-admin": "npm run make-admin --workspace=apps/backend-api --",
     "prepare": "node -e \"try { require('child_process').execSync('husky', { stdio: 'inherit' }) } catch (e) {}\"",
     "postinstall": "prisma generate --schema=apps/backend-api/src/infrastructure/database/prisma/schema.prisma",
     "doctor": "npx react-doctor@latest"

@@ -5,7 +5,17 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/providers';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Code2, History, User, Shield, LogOut, Terminal, X } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Code2,
+  History,
+  User,
+  Shield,
+  LogOut,
+  Terminal,
+  X,
+  Sparkles,
+} from 'lucide-react';
 
 interface SidebarProps {
   className?: string;
@@ -28,6 +38,11 @@ const navItems = [
     label: 'Submissions',
     href: '/submissions',
     icon: History,
+  },
+  {
+    label: 'Request Challenge',
+    href: '/requests',
+    icon: Sparkles,
   },
   {
     label: 'Profile',

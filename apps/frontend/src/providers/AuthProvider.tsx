@@ -77,24 +77,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [logout],
   );
 
+  // Helper to check if a JWT access token is expired or expiring in <= 15 seconds
+  const isJwtExpired = (jwtToken: string): boolean => {
+    try {
+      const parts = jwtToken.split('.');
+      if (parts.length !== 3) return true;
+      const payload = JSON.parse(atob(parts[1]));
+      if (!payload.exp) return false;
+      return payload.exp * 1000 <= Date.now() + 15000;
+    } catch {
+      return true;
+    }
+  };
+
   // Synchronize Next-Auth session
   useEffect(() => {
-    if (sessionStatus === 'authenticated' && session?.accessToken && session?.user) {
-      setToken(session.accessToken);
-      setUser({
-        id: session.user.id,
-        name: session.user.name || 'GitHub User',
-        email: session.user.email || '',
-        role: session.user.role || 'STUDENT',
-        image: session.user.image,
-      });
-      setLoading(false);
-    }
-  }, [session, sessionStatus]);
+    const syncSession = async () => {
+      if (sessionStatus === 'authenticated' && session?.accessToken && session?.user) {
+        if (session.refreshToken) {
+          localStorage.setItem('refreshToken', session.refreshToken as string);
+        }
+
+        const storedRt = localStorage.getItem('refreshToken');
+        if (isJwtExpired(session.accessToken as string) && storedRt) {
+          await refreshSession(storedRt);
+        } else {
+          setToken(session.accessToken as string);
+          setUser({
+            id: session.user.id,
+            name: session.user.name || 'GitHub User',
+            email: session.user.email || '',
+            role: session.user.role || 'STUDENT',
+            image: session.user.image,
+          });
+        }
+        setLoading(false);
+      }
+    };
+    syncSession();
+  }, [session, sessionStatus, refreshSession]);
 
   // Periodic silent refresh (runs every 14 minutes since JWT expiry is 15 minutes)
   useEffect(() => {
-    if (!token || sessionStatus === 'authenticated') return;
+    if (!token) return;
 
     const interval = setInterval(
       async () => {
@@ -107,7 +132,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
 
     return () => clearInterval(interval);
-  }, [token, refreshSession, sessionStatus]);
+  }, [token, refreshSession]);
 
   // Initial boot check
   useEffect(() => {

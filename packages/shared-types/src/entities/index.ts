@@ -99,3 +99,26 @@ export interface DailyChallenge {
   date: Date;
   createdAt: Date;
 }
+
+// ============================================================
+// FeatureRequest
+// ============================================================
+
+export type RequestType = 'PROBLEM_REQUEST' | 'FEATURE_SUGGESTION' | 'BUG_REPORT';
+export type RequestStatus = 'PENDING' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED';
+
+export interface FeatureRequest {
+  id: string;
+  userId: string;
+  title: string;
+  description: string;
+  type: RequestType;
+  status: RequestStatus;
+  upvotes: number;
+  createdAt: Date;
+  updatedAt: Date;
+  user?: {
+    name: string;
+    email: string;
+  };
+}

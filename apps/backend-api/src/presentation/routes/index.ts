@@ -5,6 +5,7 @@ import { problemRoutes } from './problem.routes';
 import { submissionRoutes } from './submission.routes';
 import { dashboardRoutes } from './dashboard.routes';
 import { adminRoutes } from './admin.routes';
+import { requestRoutes } from './requests.routes';
 
 // ============================================================
 // Route Aggregator
@@ -22,5 +23,6 @@ router.use('/api/problems', problemRoutes);
 router.use('/api/submissions', submissionRoutes);
 router.use('/api/dashboard', dashboardRoutes);
 router.use('/api/admin', adminRoutes);
+router.use('/api/requests', requestRoutes);
 
 export { router };
