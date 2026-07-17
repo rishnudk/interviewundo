@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Beams from '@/components/ui/Beams';
+import { Component as TrustedDevelopersBadge } from '@/components/ui/avatar-demo';
 
 export function Hero() {
   return (
@@ -17,6 +18,10 @@ export function Hero() {
             rotation={-45}
           />
         </div>
+      </div>
+
+      <div className="relative z-10 mb-6">
+        <TrustedDevelopersBadge />
       </div>
 
       <h1 className="relative z-10 text-5xl md:text-[54px] font-bold text-fey-white leading-[1.1] tracking-[-0.08em] max-w-3xl mb-6">
