@@ -18,6 +18,44 @@ router.get('/health', (_req: Request, res: Response) => {
   });
 });
 
+router.get('/ping', (_req: Request, res: Response) => {
+  res.json({
+    status: 'pong',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// /keepalive — checks node uptime + pings DB and Redis so all free-tier services stay awake
+router.get('/keepalive', async (_req: Request, res: Response) => {
+  const result: {
+    status: string;
+    timestamp: string;
+    uptime: number;
+    services: { database: string; redis: string };
+  } = {
+    status: 'alive',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    services: { database: 'connected', redis: 'connected' },
+  };
+
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+  } catch {
+    result.services.database = 'disconnected';
+    result.status = 'degraded';
+  }
+
+  try {
+    await redis.ping();
+  } catch {
+    result.services.redis = 'disconnected';
+    result.status = 'degraded';
+  }
+
+  res.status(result.status === 'degraded' ? 207 : 200).json(result);
+});
+
 router.get('/ready', async (_req: Request, res: Response) => {
   try {
     // Check database connectivity

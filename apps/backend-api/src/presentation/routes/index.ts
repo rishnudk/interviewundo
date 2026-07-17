@@ -15,8 +15,9 @@ import { statsRoutes } from './stats.routes';
 
 const router = Router();
 
-// Health checks (no /api prefix)
+// Health and keepalive checks (mounted on both root and /api)
 router.use('/', healthRoutes);
+router.use('/api', healthRoutes);
 
 // Feature routes
 router.use('/api/auth', authRoutes);
