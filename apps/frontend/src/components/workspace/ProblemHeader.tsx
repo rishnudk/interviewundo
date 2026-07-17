@@ -13,6 +13,7 @@ import {
   Code2,
   Database,
   Terminal,
+  Target,
 } from 'lucide-react';
 import { useToast } from '@/providers';
 import { Problem } from '@interviewprep/shared-types';
@@ -156,6 +157,15 @@ export function ProblemHeader({ problem }: ProblemHeaderProps) {
   const solvedCount = problem.solvedCount;
   const estimatedTime = `${problem.estimatedMinutes || 15} mins`;
 
+  const acceptanceRate = attemptCount > 0 ? Math.round((solvedCount / attemptCount) * 100) : null;
+
+  const socialProof =
+    attemptCount > 100
+      ? `🔥 Popular Challenge · ${formatNumber(attemptCount)} submissions · ${formatNumber(solvedCount)} solved`
+      : attemptCount > 0
+        ? `✨ ${formatNumber(attemptCount)} developers have attempted this`
+        : `🌟 New Challenge · Be among the first to solve this!`;
+
   const catDetails = getCategoryDetails(problem.category);
   const diffDetails = getDifficultyDetails(problem.difficulty);
   const CatIcon = catDetails.icon;
@@ -215,6 +225,9 @@ export function ProblemHeader({ problem }: ProblemHeaderProps) {
         )}
       </div>
 
+      {/* Social Proof Banner */}
+      <p className="text-[11px] text-zinc-500 mt-1.5 tracking-wide">{socialProof}</p>
+
       {/* Badges & Stats */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-4 text-[11px] text-zinc-400">
         {/* Category Badge */}
@@ -266,6 +279,15 @@ export function ProblemHeader({ problem }: ProblemHeaderProps) {
             <CheckCircle size={13} className="text-zinc-500 shrink-0" />
             <span>{formatNumber(solvedCount)}</span>
           </div>
+
+          {/* Acceptance Rate */}
+          {acceptanceRate !== null && (
+            <div className="flex items-center gap-1 text-zinc-400/90" title="Acceptance Rate">
+              <Target size={13} className="text-emerald-500 shrink-0" />
+              <span className="text-emerald-400 font-semibold">{acceptanceRate}%</span>
+              <span>accepted</span>
+            </div>
+          )}
 
           {/* Duration */}
           <div className="flex items-center gap-1 text-zinc-400/90" title="Estimated Time">
