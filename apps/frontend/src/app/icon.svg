@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="brand-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="32" height="32" rx="8" fill="url(#brand-grad)" />
+  
+  <!-- Terminal Prompt symbol '>' -->
+  <path d="M10 11.5l4 4-4 4" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- Undo loop path (counter-clockwise arc) -->
+  <path d="M22 13a5.5 5.5 0 1 0 1.2 4.5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- Arrow head at the top of the loop (pointing back/counter-clockwise) -->
+  <path d="M19 12.5h3v3" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
