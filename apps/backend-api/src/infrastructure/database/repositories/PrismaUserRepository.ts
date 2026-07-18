@@ -122,4 +122,18 @@ export class PrismaUserRepository implements IUserRepository {
   async count(): Promise<number> {
     return prisma.user.count();
   }
+
+  async findRecentWithImages(limit: number): Promise<User[]> {
+    const prismaUsers = await prisma.user.findMany({
+      where: {
+        AND: [{ image: { not: null } }, { image: { not: '' } }],
+      },
+      take: limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return prismaUsers.map(this.mapPrismaUser);
+  }
 }

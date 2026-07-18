@@ -24,6 +24,8 @@ export interface IUserRepository {
 
   findByGoogleId(googleId: string): Promise<User | null>;
 
+  findRecentWithImages?(limit: number): Promise<User[]>;
+
   updateStreak(userId: string, streak: number, lastActiveAt: Date): Promise<void>;
 
   update(

@@ -8,9 +8,18 @@ const userRepository = new PrismaUserRepository();
 router.get('/public', async (_req: Request, res: Response) => {
   try {
     const userCount = await userRepository.count();
-    res.json({ userCount });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch public stats' });
+    const recentUsers = await userRepository.findRecentWithImages(10);
+    res.json({
+      userCount,
+      recentUsers: recentUsers.map((u) => ({
+        name: u.name,
+        image: u.image,
+        createdAt: u.createdAt,
+      })),
+    });
+  } catch (err) {
+    console.error('Error fetching public stats:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

@@ -3,16 +3,19 @@ import Beams from '@/components/ui/Beams';
 import { Component as TrustedDevelopersBadge } from '@/components/ui/avatar-demo';
 import { TechStackGroup } from '@/components/ui/avatar-group-demo';
 
-async function getPublicStats(): Promise<{ userCount: number | null }> {
+async function getPublicStats(): Promise<{
+  userCount: number | null;
+  recentUsers?: { name: string; image: string | null }[];
+}> {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
     const res = await fetch(`${apiUrl}/api/stats/public`, {
       next: { revalidate: 60 },
     });
-    if (!res.ok) return { userCount: null };
+    if (!res.ok) return { userCount: null, recentUsers: [] };
     return await res.json();
   } catch {
-    return { userCount: null };
+    return { userCount: null, recentUsers: [] };
   }
 }
 
@@ -37,7 +40,7 @@ export async function Hero() {
       </div>
 
       <div className="relative z-10 mb-6">
-        <TrustedDevelopersBadge initialCount={stats.userCount} />
+        <TrustedDevelopersBadge initialCount={stats.userCount} recentUsers={stats.recentUsers} />
       </div>
 
       <h1 className="relative z-10 text-5xl md:text-[54px] font-bold text-fey-white leading-[1.1] tracking-[-0.08em] max-w-3xl mb-6">
