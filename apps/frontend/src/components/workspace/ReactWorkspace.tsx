@@ -291,7 +291,12 @@ export default function ReactWorkspace({ problem }: ReactWorkspaceProps) {
     }) => {
       if (payload.submissionId !== activeJobId) return;
 
-      if (payload.status === 'PROCESSING') {
+      if (payload.status === 'PENDING') {
+        setConsoleOutput({
+          status: 'Pending',
+          stdout: 'Queueing React submission to the judge...',
+        });
+      } else if (payload.status === 'PROCESSING') {
         setConsoleOutput({
           status: 'Processing',
           stdout: 'Executing UI component tests inside sandboxed JSDOM container...',

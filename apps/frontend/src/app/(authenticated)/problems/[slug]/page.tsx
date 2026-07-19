@@ -233,7 +233,12 @@ export default function ProblemWorkspacePage() {
       console.log('Received WebSocket submission:status update:', payload);
       if (payload.submissionId !== activeJobId) return;
 
-      if (payload.status === 'PROCESSING') {
+      if (payload.status === 'PENDING') {
+        setConsoleOutput({
+          status: 'Pending',
+          stdout: 'Queueing submission in the judge...',
+        });
+      } else if (payload.status === 'PROCESSING') {
         setConsoleOutput({
           status: 'Processing',
           stdout: 'Executing test cases inside Docker container...',
