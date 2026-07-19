@@ -1,7 +1,6 @@
-﻿// @ts-nocheck â€” TODO: Remove this and fix all `any` types properly
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, useSocket, useToast } from '@/providers';
 import { Button } from '@/components/ui/button';
@@ -11,19 +10,7 @@ import { cn } from '@/lib/utils';
 import { ReactWorkspaceDescriptionPanel } from './ReactWorkspaceDescriptionPanel';
 import { ReactWorkspaceEditorPanel } from './ReactWorkspaceEditorPanel';
 import { ReactWorkspacePreviewPanel } from './ReactWorkspacePreviewPanel';
-
-interface Problem {
-  id: string;
-  title: string;
-  slug: string;
-  description: string;
-  difficulty: 'EASY' | 'MEDIUM' | 'HARD';
-  category: string;
-  starterCode: string;
-  starterFiles?: Record<string, string> | null;
-  solvedCount: number;
-  attemptCount: number;
-}
+import { Problem } from '@interviewprep/shared-types';
 
 interface ReactWorkspaceProps {
   problem: Problem;
@@ -166,15 +153,6 @@ export default function ReactWorkspace({ problem }: ReactWorkspaceProps) {
     error?: string;
   } | null>(null);
 
-  // Debounced update for iframe srcdoc
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      buildPreviewHtml();
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [files]);
-
   const cleanCode = (code: string) => {
     return code
       .replace(/import\s+.*?\s+from\s+['"]react['"];?/g, '')
@@ -185,7 +163,7 @@ export default function ReactWorkspace({ problem }: ReactWorkspaceProps) {
       .replace(/export\s+function\s+/g, 'function ');
   };
 
-  const buildPreviewHtml = () => {
+  const buildPreviewHtml = useCallback(() => {
     let cssContent = '';
     let jsContent = '';
 
@@ -259,7 +237,16 @@ export default function ReactWorkspace({ problem }: ReactWorkspaceProps) {
     `;
 
     setPreviewSrcdoc(html);
-  };
+  }, [files]);
+
+  // Debounced update for iframe srcdoc
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      buildPreviewHtml();
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [files, buildPreviewHtml]);
 
   // Listen for logs from preview iframe
   useEffect(() => {
@@ -287,7 +274,19 @@ export default function ReactWorkspace({ problem }: ReactWorkspaceProps) {
     const handleStatusUpdate = (payload: {
       submissionId: string;
       status: string;
-      data?: any;
+      data?: {
+        results?: Array<{
+          id: string;
+          passed: boolean;
+          actual: unknown;
+          expected: unknown;
+          runtime: number;
+          error?: string;
+        }>;
+        passedCases?: number;
+        totalCases?: number;
+        runtime?: number;
+      } | null;
       error?: string;
     }) => {
       if (payload.submissionId !== activeJobId) return;
@@ -322,17 +321,10 @@ export default function ReactWorkspace({ problem }: ReactWorkspaceProps) {
         if (payload.error) {
           stdout = payload.error;
         } else if (payload.data?.results) {
-          const results = payload.data.results as Array<{
-            id: string;
-            passed: boolean;
-            actual: any;
-            expected: any;
-            runtime: number;
-            error?: string;
-          }>;
+          const results = payload.data.results;
           stdout = results
             .map((res, i) => {
-              const tcTitle = `Test Case ${i + 1}: ${res.passed ? 'PASSED Ã¢Å“â€¦' : 'FAILED Ã¢ÂÅ’'} (${res.runtime}ms)`;
+              const tcTitle = `Test Case ${i + 1}: ${res.passed ? 'PASSED ✅' : 'FAILED ❌'} (${res.runtime}ms)`;
               const detail = res.passed
                 ? 'Component interactions matched expected UI states.'
                 : `Error: ${res.error || 'UI state mismatch.'}`;
@@ -360,7 +352,7 @@ export default function ReactWorkspace({ problem }: ReactWorkspaceProps) {
     return () => {
       socket.off('submission:status', handleStatusUpdate);
     };
-  }, [socket, activeJobId]);
+  }, [socket, activeJobId, showError, showSuccess]);
 
   const handleRunCode = async () => {
     setIsRunning(true);
@@ -383,9 +375,9 @@ export default function ReactWorkspace({ problem }: ReactWorkspaceProps) {
       });
 
       setActiveJobId(result.jobId);
-    } catch (err: any) {
+    } catch (err) {
       setIsRunning(false);
-      const errMsg = err.message || 'Failed to trigger runner';
+      const errMsg = err instanceof Error ? err.message : 'Failed to trigger runner';
       setConsoleOutput({
         status: 'Error',
         error: errMsg,
@@ -415,9 +407,9 @@ export default function ReactWorkspace({ problem }: ReactWorkspaceProps) {
       });
 
       setActiveJobId(result.id);
-    } catch (err: any) {
+    } catch (err) {
       setIsSubmitting(false);
-      const errMsg = err.message || 'Failed to submit solution';
+      const errMsg = err instanceof Error ? err.message : 'Failed to submit solution';
       setConsoleOutput({
         status: 'Error',
         error: errMsg,

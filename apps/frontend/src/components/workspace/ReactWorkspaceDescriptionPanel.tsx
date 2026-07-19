@@ -1,4 +1,3 @@
-﻿// @ts-nocheck â€” TODO: Remove this and fix all `any` types properly
 'use client';
 
 import React, { useState } from 'react';
@@ -42,8 +41,8 @@ export function ReactWorkspaceDescriptionPanel({
       });
       setHint(response.hint);
       showSuccess('AI Hint generated!');
-    } catch (err: any) {
-      const msg = err.message || 'Failed to generate hint';
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to generate hint';
       setHintError(msg);
       showError(msg);
     } finally {

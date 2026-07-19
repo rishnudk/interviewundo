@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth, useSocket, useToast } from '@/providers';
 import { Button } from '@/components/ui/button';
-import { DifficultyBadge } from '@/components/ui/difficulty-badge';
 import { ChevronLeft, RotateCcw, Settings, HelpCircle, Play, Send, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ReactWorkspace from '@/components/workspace/ReactWorkspace';
@@ -95,7 +94,7 @@ export default function ProblemWorkspacePage() {
   }, [isDragging]);
 
   // Workspace Settings
-  const [editorTheme, setEditorTheme] = useState<'vs-dark' | 'light'>('vs-dark');
+  const [editorTheme] = useState<'vs-dark' | 'light'>('vs-dark');
   const [fontSize, setFontSize] = useState<number>(14);
   const [code, setCode] = useState<string>('');
 
@@ -136,9 +135,42 @@ export default function ProblemWorkspacePage() {
   // Load starter code once problem data is fetched
   useEffect(() => {
     if (problem?.starterCode) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCode(problem.starterCode);
     }
   }, [problem]);
+
+  const handleSubmitCode = useCallback(async () => {
+    if (!problem?.id) return;
+    setIsSubmitting(true);
+    setConsoleTab('result');
+    setConsoleOutput({
+      status: 'Queueing',
+      stdout: 'Queueing submission in the judge...',
+    });
+    showInfo('Solution submission queued...');
+
+    try {
+      const result = await apiFetch<{ id: string; status: string }>('/api/submissions', {
+        method: 'POST',
+        body: JSON.stringify({
+          problemId: problem.id,
+          code,
+          language: editorConfig.language,
+        }),
+      });
+
+      setActiveJobId(result.id);
+    } catch (err) {
+      setIsSubmitting(false);
+      const errMsg = err instanceof Error ? err.message : 'Failed to trigger solution submission';
+      setConsoleOutput({
+        status: 'Error',
+        error: errMsg,
+      });
+      showError(errMsg);
+    }
+  }, [problem, code, editorConfig.language, apiFetch, showInfo, showError]);
 
   // Keyboard Shortcuts (Ctrl+Enter = Submit, Ctrl+S = Save)
   useEffect(() => {
@@ -161,7 +193,7 @@ export default function ProblemWorkspacePage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [code]);
+  }, [code, handleSubmitCode]);
 
   const handleResetCode = () => {
     if (
@@ -179,7 +211,20 @@ export default function ProblemWorkspacePage() {
     const handleStatusUpdate = (payload: {
       submissionId: string;
       status: string;
-      data?: any;
+      data?: {
+        results?: Array<{
+          id: string;
+          passed: boolean;
+          actual: unknown;
+          expected: unknown;
+          runtime: number;
+          stdout?: string;
+        }>;
+        passedCases?: number;
+        totalCases?: number;
+        runtime?: number;
+        memory?: number;
+      } | null;
       error?: string;
       userStreak?: number;
       streakMilestone?: number | null;
@@ -221,14 +266,7 @@ export default function ProblemWorkspacePage() {
         if (payload.error) {
           stdout = payload.error;
         } else if (payload.data?.results) {
-          const results = payload.data.results as Array<{
-            id: string;
-            passed: boolean;
-            actual: any;
-            expected: any;
-            runtime: number;
-            stdout?: string;
-          }>;
+          const results = payload.data.results;
           stdout = results
             .map((res, i) => {
               const tcTitle = `Test Case ${i + 1}: ${res.passed ? 'PASSED ✅' : 'FAILED ❌'} (${res.runtime}ms)`;
@@ -266,7 +304,7 @@ export default function ProblemWorkspacePage() {
     return () => {
       socket.off('submission:status', handleStatusUpdate);
     };
-  }, [socket, activeJobId]);
+  }, [socket, activeJobId, showError, showSuccess]);
 
   const handleRunCode = async () => {
     if (!problem?.id) return;
@@ -289,41 +327,9 @@ export default function ProblemWorkspacePage() {
       });
 
       setActiveJobId(result.jobId);
-    } catch (err: any) {
+    } catch (err) {
       setIsRunning(false);
-      const errMsg = err.message || 'Failed to trigger playground run';
-      setConsoleOutput({
-        status: 'Error',
-        error: errMsg,
-      });
-      showError(errMsg);
-    }
-  };
-
-  const handleSubmitCode = async () => {
-    if (!problem?.id) return;
-    setIsSubmitting(true);
-    setConsoleTab('result');
-    setConsoleOutput({
-      status: 'Queueing',
-      stdout: 'Queueing submission in the judge...',
-    });
-    showInfo('Solution submission queued...');
-
-    try {
-      const result = await apiFetch<{ id: string; status: string }>('/api/submissions', {
-        method: 'POST',
-        body: JSON.stringify({
-          problemId: problem.id,
-          code,
-          language: editorConfig.language,
-        }),
-      });
-
-      setActiveJobId(result.id);
-    } catch (err: any) {
-      setIsSubmitting(false);
-      const errMsg = err.message || 'Failed to trigger solution submission';
+      const errMsg = err instanceof Error ? err.message : 'Failed to trigger playground run';
       setConsoleOutput({
         status: 'Error',
         error: errMsg,
