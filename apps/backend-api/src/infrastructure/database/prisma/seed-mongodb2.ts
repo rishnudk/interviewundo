@@ -2192,7 +2192,7 @@ Sort the results alphabetically by \`name\` in ascending order.
     tags: ['mongodb', 'find', 'nested-array-matching'],
     starterCode: `// Write your raw MongoDB query or async function here
 // e.g. db.users.find(...)`,
-    solutionCode: `db.users.find({ "tasks.done": { $not: { $ne: true } } }, { _id: 0, name: 1 }).sort({ name: 1 })`,
+    solutionCode: `db.users.find({ "tasks.done": { $ne: false } }, { _id: 0, name: 1 }).sort({ name: 1 })`,
     order: 760,
     isPublished: true,
     testCases: [

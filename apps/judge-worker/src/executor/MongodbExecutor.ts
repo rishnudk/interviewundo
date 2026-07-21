@@ -168,7 +168,32 @@ async function run() {
               }
               return target[prop];
             }
-            return target.collection(prop);
+            const collection = target.collection(prop);
+            return new Proxy(collection, {
+              get(colTarget, colProp) {
+                if (colProp === 'find') {
+                  return (filter, optionsOrProjection) => {
+                    let options = optionsOrProjection;
+                    if (
+                      options &&
+                      typeof options === 'object' &&
+                      !Array.isArray(options) &&
+                      !('projection' in options) &&
+                      !('sort' in options) &&
+                      !('limit' in options) &&
+                      !('skip' in options)
+                    ) {
+                      options = { projection: options };
+                    }
+                    return colTarget.find(filter, options);
+                  };
+                }
+                if (typeof colTarget[colProp] === 'function') {
+                  return colTarget[colProp].bind(colTarget);
+                }
+                return colTarget[colProp];
+              }
+            });
           }
         });
 
