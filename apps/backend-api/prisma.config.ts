@@ -1,11 +1,9 @@
 import path from 'node:path';
+import dotenv from 'dotenv';
 import { defineConfig, env } from 'prisma/config';
 
-// ============================================================
-// Prisma v7 Configuration
-// Connection URL moved here from schema.prisma
-// See: https://pris.ly/d/config-datasource
-// ============================================================
+dotenv.config({ path: path.join(__dirname, '.env') });
+dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 export default defineConfig({
   earlyAccess: true,
