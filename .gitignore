@@ -8,7 +8,7 @@ dist/
 .next/
 out/
 # files/  <-- deployment docs are now tracked in git
-ecosystem.config.js
+# ecosystem.config.js  <-- now tracked: no secrets, uses portable __dirname paths
 # Turbo
 .turbo/
 
@@ -19,6 +19,9 @@ ecosystem.config.js
 .env.test.local
 .env.production.local
 .env.production
+
+# VPS private reference (contains real passwords — NEVER commit)
+files/vps-private-reference.md
 
 # IDE
 .vscode/
