@@ -3,7 +3,7 @@ import * as Sentry from '@sentry/nextjs';
 Sentry.init({
   dsn:
     process.env.NEXT_PUBLIC_SENTRY_DSN ||
-    'https://27829b68874b11f1b2c1ce67353f4361@o0.ingest.sentry.io/4511789330792448',
+    'https://cce2f70c1caa6f6b60c6f2c8d7ae137c@o4511789323386880.ingest.us.sentry.io/4511789330792448',
   tracesSampleRate: 1.0,
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
