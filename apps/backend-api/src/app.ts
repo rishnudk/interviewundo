@@ -17,6 +17,9 @@ import { swaggerSpec } from './docs/openapi';
 
 const app = express();
 
+// --- Proxy Trust (required: behind Nginx reverse proxy) ---
+app.set('trust proxy', 1);
+
 // --- Global Middleware ---
 app.use(requestId);
 app.use(helmet());
