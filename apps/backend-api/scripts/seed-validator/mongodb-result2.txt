@@ -1,0 +1,124 @@
+﻿
+ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+≡ƒôª  seed-mongodb.ts  (MongoDB Validator)
+    18 problems
+ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+
+  Calculate Average Marks
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£ô #3  OK
+      Γ£ô #4  OK
+      Γ£à 4/4 passed
+
+  Find Second Largest Mark
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£ô #3  OK
+      Γ£ô #4  OK
+      Γ£à 4/4 passed
+
+  Increase Marks by 10 Percent
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£ô #3  OK
+      Γ£ô #4  OK
+      Γ£à 4/4 passed
+
+  Reduce Salary by 10 Percent
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£ô #3  OK
+      Γ£ô #4  OK
+      Γ£à 4/4 passed
+
+  Find Names Ending with J
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£ô #3  OK
+      Γ£ô #4  OK
+      Γ£à 4/4 passed
+
+  Group Products by Category
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£ô #3  OK
+      Γ£ô #4  OK
+      Γ£à 4/4 passed
+
+  Find Maximum Price in Category
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£ô #3  OK
+      Γ£à 3/3 passed
+
+  Find Minimum Age in Department
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£ô #3  OK
+      Γ£à 3/3 passed
+
+  Find Documents with Equal Fields
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£ô #3  OK
+      Γ£ô #4  OK
+      Γ£à 4/4 passed
+
+  Filter Documents by Array Element Match
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£ô #3  OK
+      Γ£ô #4  OK
+      Γ£à 4/4 passed
+
+  Find Documents with Existing Field
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£ô #3  OK
+      Γ£ô #4  OK
+      Γ£à 4/4 passed
+
+  Run Multi-Pipeline Facets
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£ô #3  OK
+      Γ£à 3/3 passed
+
+  Join Collections Using Lookup
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£ô #3  OK
+      Γ£à 3/3 passed
+
+  Perform Bulk Write Operations
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£ô #3  OK
+      Γ£à 3/3 passed
+
+  Create Database View
+      Γ£ù #1  ERROR: SyntaxError: Unexpected token 'try'
+      Γ£ù #2  ERROR: SyntaxError: Unexpected token 'try'
+      Γ£ù #3  ERROR: SyntaxError: Unexpected token 'try'
+      Γ¥î 0/3 passed
+
+  Active Users Query
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£à 2/2 passed
+
+  Total Revenue by Product
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£à 2/2 passed
+
+  Query Active Mature Users
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£à 2/2 passed
+
+ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+Summary: 57 passed, 3 failed ΓÇö 3 FAILED
+ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+

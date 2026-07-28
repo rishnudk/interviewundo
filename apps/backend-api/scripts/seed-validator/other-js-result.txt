@@ -1,0 +1,241 @@
+﻿≡ƒî▒ Starting other JavaScript topics seeding...
+Processing problem: Create an Object (create-an-object)
+
+ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+≡ƒôª  seed-other-js.ts
+    65 problems, 72 test cases
+ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+
+  Γ£à Create an Object
+      Γ£ô #1  ["Alice", 25, true] ΓåÆ {"name":"Alice","age":25,"i...
+      Γ£ô #2  ["Bob", 30, false] ΓåÆ {"name":"Bob","age":30,"isD...
+
+  Γ£à Manipulate Objects
+      Γ£ô #1  [{"name":"Alice","age":25}] ΓåÆ {"name":"Alice","age":26,"s...
+
+  Γ£à Check If Object Is Empty
+      Γ£ô #1  [{}] ΓåÆ true
+      Γ£ô #2  [{"a":1}] ΓåÆ false
+
+  Γ£à Deep Copy an Object (JSON)
+      Γ£ô #1  [{"a":1,"b":{"c":2}}] ΓåÆ {"a":1,"b":{"c":2}}
+
+  Γ£à Deep Clone Manual
+      Γ£ô #1  [{"a":1,"b":{"c":2}}] ΓåÆ {"a":1,"b":{"c":2}}
+
+  Γ£à Shallow Copy
+      Γ£ô #1  [{"a":1,"b":2}] ΓåÆ {"a":1,"b":2}
+
+  Γ£à Delete a Property
+      Γ£ô #1  [{"a":1,"b":2}, "a"] ΓåÆ {"b":2}
+
+  Γ£à Remove the Last Property
+      Γ£ô #1  [{"a":1,"b":2}] ΓåÆ {"a":1}
+
+  Γ£à Remove Highest Valued Property
+      Γ£ô #1  [{"a":10,"b":20,"c":5}] ΓåÆ {"a":10,"c":5}
+
+  Γ£à Remove Lowest Valued Property
+      Γ£ô #1  [{"a":10,"b":20,"c":5}] ΓåÆ {"a":10,"b":20}
+
+  Γ£à Remove Odd Valued Properties
+      Γ£ô #1  [{"a":2,"b":3,"c":4}] ΓåÆ {"a":2,"c":4}
+
+  Γ£à Add a New Property
+      Γ£ô #1  [{"a":1}, "b", 2] ΓåÆ {"a":1,"b":2}
+
+  Γ£à Merge Two Objects
+      Γ£ô #1  [{"a":1}, {"b":2}] ΓåÆ {"a":1,"b":2}
+
+  Γ£à Combine Two Objects
+      Γ£ô #1  [{"a":1,"b":2}, {"b":3,"c":4}] ΓåÆ {"a":1,"b":5,"c":4}
+
+  Γ£à Convert Nested to Flat Object
+      Γ£ô #1  [{"a":1,"b":{"c":2,"d":{"e":3}}}] ΓåÆ {"a":1,"b.c":2,"b.d.e":3}
+
+  Γ£à Convert Object to Key-Value Array
+      Γ£ô #1  [{"a":1,"b":2}] ΓåÆ [{"key":"a","value":1},{"ke...
+
+  Γ£à Key with Highest Value
+      Γ£ô #1  [{"a":10,"b":25,"c":5}] ΓåÆ "b"
+
+  Γ£à Key with Lowest Value
+      Γ£ô #1  [{"a":10,"b":25,"c":5}] ΓåÆ "c"
+
+  Γ£à Sum of Object Values
+      Γ£ô #1  [{"a":10,"b":20,"c":"test"}] ΓåÆ 30
+
+  Γ£à Sum of Object Keys Length
+      Γ£ô #1  [{"apple":1,"banana":2}] ΓåÆ 11
+
+  Γ£à Check Object Value Types
+      Γ£ô #1  [{"a":1,"b":2}] ΓåÆ "Error: All values are of t...
+      Γ£ô #2  [{"a":1,"b":"hello"}] ΓåÆ true
+
+  Γ£à Loop Through Objects
+      Γ£ô #1  [{"a":1,"b":2}] ΓåÆ ["a:1","b:2"]
+
+  Γ£à Object Methods Demo
+      Γ£ô #1  [{"a":1,"b":2}] ΓåÆ {"keys":["a","b"],"values":...
+
+  Γ£à Reverse Each Word
+      Γ£ô #1  ["How Are You"] ΓåÆ "woH erA uoY"
+
+  Γ£à Reverse String (No Built-ins)
+      Γ£ô #1  ["hello"] ΓåÆ "olleh"
+
+  Γ£à Palindrome Checker (Ignore Special)
+      Γ£ô #1  ["Racecar"] ΓåÆ true
+      Γ£ô #2  ["hello"] ΓåÆ false
+
+  Γ£à Reverse Words Order
+      Γ£ô #1  ["hello world"] ΓåÆ "world hello"
+
+  Γ£à Capitalize Every Word
+      Γ£ô #1  ["hello world from javascript"] ΓåÆ "Hello World From Javascript"
+
+  Γ£à Capitalize First Letter
+      Γ£ô #1  ["javascript"] ΓåÆ "Javascript"
+
+  Γ£à Capitalize First and Last Letters
+      Γ£ô #1  ["hello world"] ΓåÆ "HellO WorlD"
+
+  Γ£à Remove Character
+      Γ£ô #1  ["banana", "a"] ΓåÆ "bnn"
+
+  Γ£à Split First Two Characters
+      Γ£ô #1  ["javascript"] ΓåÆ ["ja","vascript"]
+
+  Γ£à Longest Word using Reduce
+      Γ£ô #1  ["I love programming in Javascript"] ΓåÆ "programming"
+
+  Γ£à Count Characters
+      Γ£ô #1  ["hello"] ΓåÆ {"h":1,"e":1,"l":2,"o":1}
+
+  Γ£à Remove Smallest String
+      Γ£ô #1  [["apple", "cat", "banana"]] ΓåÆ ["apple","banana"]
+
+  Γ£à Array of Strings to Object
+      Γ£ô #1  [["a", "ab", "abc"]] ΓåÆ {"a":1,"ab":2,"abc":3}
+
+  Γ¥î Create a Promise
+      Γ£ù #1  input:    [50]
+            expected: "Success"
+            got:      {}
+
+  Γ£à Create Callback Code
+      Γ£ô #1  ["Alice"] ΓåÆ "Hello, Alice"
+
+  Γ¥î Convert Callback to Promise
+      Γ£ù #1  input:    ["test"]
+            expected: "Data: test"
+            got:      {}
+
+  Γ¥î Async/Await Handler
+      Γ£ù #1  input:    [true, "success"]
+            expected: "success"
+            got:      {}
+      Γ£ù #2  input:    [false, "failed"]
+            expected: "Error: failed"
+            got:      {}
+
+  Γ¥î Promise Chaining
+      Γ£ù #1  input:    [5]
+            expected: 10
+            got:      {}
+
+  Γ¥î Arrow Function: Square
+      Γ£ù #1  input:    [4]
+            expected: 16
+            got:      "ERROR: Function 'square' not found in sandbox ...
+            error:    Function 'square' not found in sandbox after execution
+
+  Γ¥î Arrow Function: Sum
+      Γ£ù #1  input:    [3, 5]
+            expected: 8
+            got:      "ERROR: Function 'sum' not found in sandbox aft...
+            error:    Function 'sum' not found in sandbox after execution
+
+  Γ¥î Arrow Function: Sum N Numbers
+      Γ£ù #1  input:    [1, 2, 3, 4]
+            expected: 10
+            got:      "ERROR: Function 'sumAll' not found in sandbox ...
+            error:    Function 'sumAll' not found in sandbox after execution
+
+  Γ£à Higher Order Multiplier
+      Γ£ô #1  [3, 5] ΓåÆ 15
+
+  Γ£à Generator Count Up
+      Γ£ô #1  [5] ΓåÆ [1,2,3,4,5]
+
+  Γ£à Generator Countdown
+      Γ£ô #1  [3] ΓåÆ [3,2,1]
+
+  Γ£à Generator Multiples
+      Γ£ô #1  [3, 4] ΓåÆ [3,6,9,12]
+
+  Γ£à Currying Example
+      Γ£ô #1  [2, 3, 4] ΓåÆ 24
+
+  Γ£à Closure Counter Object
+      Γ£ô #1  [["inc", "inc", "dec", "inc"]] ΓåÆ 2
+
+  Γ£à Memoization Factorial
+      Γ£ô #1  [5] ΓåÆ 120
+
+  Γ£à Function Borrowing
+      Γ£ô #1  [{"name":"Alice"}, {"name":"Bob"}] ΓåÆ {"callResult":"Hello, Bob!"...
+
+  Γ£à Custom Filter Method
+      Γ£ô #1  [[1, 5, 8, 2], 4] ΓåÆ [5,8]
+
+  Γ£à Function Composition
+      Γ£ô #1  [4] ΓåÆ 14
+
+  Γ£à Factory Function Profile
+      Γ£ô #1  ["Alice", "Admin"] ΓåÆ "Name: Alice, Role: Admin"
+
+  Γ£à Constructor Function Profile
+      Γ£ô #1  ["Bob", "Moderator"] ΓåÆ "Name: Bob, Role: Moderator"
+
+  Γ£à Declare and Call Function
+      Γ£ô #1  [2, 3] ΓåÆ 25
+
+  Γ£à Sum Numbers to Limit (while)
+      Γ£ô #1  [100] ΓåÆ 5050
+      Γ£ô #2  [10] ΓåÆ 55
+
+  Γ¥î Print with Delay (async)
+      Γ£ù #1  input:    [5]
+            expected: [1,2,3,4,5]
+            got:      {}
+
+  Γ¥î Print Countdown (async)
+      Γ£ù #1  input:    [5]
+            expected: [5,4,3,2,1]
+            got:      {}
+
+  Γ¥î Countdown Timer to Zero (async)
+      Γ£ù #1  input:    [3]
+            expected: [3,2,1,0]
+            got:      {}
+
+  Γ£à Deterministic Pseudo-Random LCG
+      Γ£ô #1  [42, 0, 10] ΓåÆ 2
+      Γ£ô #2  [100, 1, 100] ΓåÆ 28
+
+  Γ£à Format Time (HH:MM:SS)
+      Γ£ô #1  [1716382000000] ΓåÆ "12:46:40"
+
+  Γ£à First 5 Multiples of 3 (while loop)
+      Γ£ô #1  [] ΓåÆ [3,6,9,12,15]
+
+  Γ¥î Promise.all Polyfill
+      Γ£ù #1  input:    ["promise-all-simple"]
+            expected: "passed"
+            got:      {}
+
+ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+Summary: 60 passed, 12 failed ΓÇö 12 FAILED
+ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+

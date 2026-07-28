@@ -34,7 +34,7 @@ interface ProblemSeed {
   testCases: TestCaseSeed[];
 }
 
-const mongodbProblems: ProblemSeed[] = [
+export const mongodbProblems: ProblemSeed[] = [
   {
     title: 'Find Active Users Over 18',
     slug: 'mongodb-active-users-over-18',
@@ -2276,12 +2276,14 @@ async function main() {
   console.log('🎉 Database seeding complete for MongoDB (Part 2) problems!');
 }
 
-main()
-  .catch((e) => {
-    console.error('❌ Seeding failed:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-    await pool.end();
-  });
+if (process.env.SKIP_SEED_DB !== 'true') {
+  main()
+    .catch((e) => {
+      console.error('❌ Seeding failed:', e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+      await pool.end();
+    });
+}

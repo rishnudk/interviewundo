@@ -21,7 +21,7 @@ interface ProblemSeed {
   testCases: TestCaseSeed[];
 }
 
-const loopProblems: ProblemSeed[] = [
+export const loopProblems: ProblemSeed[] = [
   {
     title: 'Print Even Numbers',
     slug: 'print-even-numbers',
@@ -505,7 +505,7 @@ Return \`result\`.
     isPublished: true,
     testCases: [
       { input: '[4]', expectedOutput: '8', isHidden: false, order: 1 },
-      { input: '[3]', expectedOutput: '2', isHidden: false, order: 2 },
+      { input: '[3]', expectedOutput: '4', isHidden: false, order: 2 },
       { input: '[0]', expectedOutput: '0', isHidden: true, order: 3 },
       { input: '[5]', expectedOutput: '12', isHidden: true, order: 4 },
     ],
@@ -688,11 +688,13 @@ async function main() {
   console.log('🎉 Database seeding complete for loop problems!');
 }
 
-main()
-  .catch((e) => {
-    console.error('❌ Seeding failed:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+if (process.env.SKIP_SEED_DB !== 'true') {
+  main()
+    .catch((e) => {
+      console.error('❌ Seeding failed:', e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}

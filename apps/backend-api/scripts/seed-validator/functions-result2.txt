@@ -1,0 +1,34 @@
+﻿
+ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+≡ƒôª  seed-functions.ts
+    5 problems, 8 test cases
+ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+
+  Γ£à Debounce Implementation
+      Γ£ô #1  ["debounce-test-simple"] ΓåÆ "passed"
+
+  Γ¥î Memoize Function
+      Γ£ù #1  input:    ["memoize-test-simple"]
+            expected: "passed"
+            got:      "ERROR: SyntaxError: Unexpected token ':'"
+            error:    SyntaxError: Unexpected token ':'
+
+  Γ¥î Currying Function
+      Γ£ù #1  input:    ["curry-test-simple"]
+            expected: "passed"
+            got:      "ERROR: SyntaxError: Unexpected token ':'"
+            error:    SyntaxError: Unexpected token ':'
+
+  Γ£à React Todo Reducer
+      Γ£ô #1  [[], {"type": "ADD", "payload": {"id"... ΓåÆ [{"id": 1, "text": "Learn R...
+      Γ£ô #2  [[{"id": 1, "text": "Learn React", "c... ΓåÆ [{"id": 1, "text": "Learn R...
+      Γ£ô #3  [[{"id": 1, "text": "Learn React", "c... ΓåÆ []
+
+  Γ£à React Wizard Derived State
+      Γ£ô #1  [[{"title": "Step 1", "requiredFields... ΓåÆ {"canGoNext":true,"canGoBac...
+      Γ£ô #2  [[{"title": "Step 1", "requiredFields... ΓåÆ {"canGoNext":false,"canGoBa...
+
+ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+Summary: 6 passed, 2 failed ΓÇö 2 FAILED
+ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+

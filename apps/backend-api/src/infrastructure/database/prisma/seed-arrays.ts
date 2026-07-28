@@ -21,7 +21,7 @@ interface ProblemSeed {
   testCases: TestCaseSeed[];
 }
 
-const arrayProblems: ProblemSeed[] = [
+export const arrayProblems: ProblemSeed[] = [
   {
     title: 'Average of Even Numbers',
     slug: 'average-of-even-numbers',
@@ -90,8 +90,8 @@ const arrayProblems: ProblemSeed[] = [
 
 ### Example 1:
 **Input:** nums = [1, 2, 3, 4, 5, 6, 7]  
-**Output:** 14  
-**Explanation:** The prime numbers are 2, 3, 5, and 7. Their sum is 2 + 3 + 5 + 7 = 14.`,
+**Output:** 17  
+**Explanation:** The prime numbers are 2, 3, 5, and 7. Their sum is 2 + 3 + 5 + 7 = 17.`,
     difficulty: 'MEDIUM',
     category: 'JAVASCRIPT',
     tags: ['arrays', 'math'],
@@ -111,7 +111,7 @@ const arrayProblems: ProblemSeed[] = [
     order: 103,
     isPublished: true,
     testCases: [
-      { input: '[[1, 2, 3, 4, 5, 6, 7]]', expectedOutput: '14', isHidden: false, order: 1 },
+      { input: '[[1, 2, 3, 4, 5, 6, 7]]', expectedOutput: '17', isHidden: false, order: 1 },
       { input: '[[4, 6, 8, 9]]', expectedOutput: '0', isHidden: false, order: 2 },
       { input: '[[11, 13, 17]]', expectedOutput: '41', isHidden: true, order: 3 },
       { input: '[[]]', expectedOutput: '0', isHidden: true, order: 4 },
@@ -2842,11 +2842,13 @@ async function main() {
   console.log('🎉 Database seeding complete for array problems!');
 }
 
-main()
-  .catch((e) => {
-    console.error('❌ Seeding failed:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+if (process.env.SKIP_SEED_DB !== 'true') {
+  main()
+    .catch((e) => {
+      console.error('❌ Seeding failed:', e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}

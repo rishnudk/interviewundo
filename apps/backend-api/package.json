@@ -29,7 +29,11 @@
     "db:seed:typescript": "dotenv -e ../../.env -- tsx src/infrastructure/database/prisma/seed-typescript.ts",
     "studio": "dotenv -e ../../.env -- prisma studio",
     "generate": "dotenv -e ../../.env -- prisma generate",
-    "make-admin": "dotenv -e ../../.env -- tsx src/scripts/make-admin.ts"
+    "make-admin": "dotenv -e ../../.env -- tsx src/scripts/make-admin.ts",
+    "validate:seeds:js": "dotenv -e ../../.env -- npx tsx scripts/seed-validator/js/arrays.test.ts && dotenv -e ../../.env -- npx tsx scripts/seed-validator/js/arrays2.test.ts && dotenv -e ../../.env -- npx tsx scripts/seed-validator/js/loops.test.ts && dotenv -e ../../.env -- npx tsx scripts/seed-validator/js/strings.test.ts && dotenv -e ../../.env -- npx tsx scripts/seed-validator/js/objects.test.ts && dotenv -e ../../.env -- npx tsx scripts/seed-validator/js/other-js.test.ts && dotenv -e ../../.env -- npx tsx scripts/seed-validator/js/functions.test.ts && dotenv -e ../../.env -- npx tsx scripts/seed-validator/js/nodejs.test.ts && dotenv -e ../../.env -- npx tsx scripts/seed-validator/js/typescript.test.ts",
+    "validate:seeds:sql": "dotenv -e ../../.env -- npx tsx scripts/seed-validator/sql/sql.test.ts",
+    "validate:seeds:mongodb": "dotenv -e ../../.env -- npx tsx scripts/seed-validator/mongodb/mongodb.test.ts && dotenv -e ../../.env -- npx tsx scripts/seed-validator/mongodb/mongodb2.test.ts",
+    "validate:seeds": "dotenv -e ../../.env -- npx tsx scripts/seed-validator/run-all.ts"
   },
   "dependencies": {
     "@interviewprep/shared-types": "*",
@@ -59,12 +63,15 @@
     "@types/express": "^5.0.0",
     "@types/node-cron": "^3.0.11",
     "@types/pg": "^8.20.0",
+    "@types/sql.js": "^1.4.11",
     "@types/supertest": "^7.2.0",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.7",
     "dotenv-cli": "^8.0.0",
+    "mongodb-memory-server": "^11.2.0",
     "pino-pretty": "^13.0.0",
     "prisma": "^7.0.0",
+    "sql.js": "^1.14.1",
     "supertest": "^7.2.2",
     "tsx": "^4.19.0",
     "typescript": "^5.8.0",

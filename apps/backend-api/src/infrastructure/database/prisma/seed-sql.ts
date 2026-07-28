@@ -34,7 +34,7 @@ interface ProblemSeed {
   testCases: TestCaseSeed[];
 }
 
-const sqlProblems: ProblemSeed[] = [
+export const sqlProblems: ProblemSeed[] = [
   {
     title: 'Filter Engineering Employees',
     slug: 'filter-engineering-employees',
@@ -1410,12 +1410,14 @@ async function main() {
   console.log('🎉 Database seeding complete for SQL problems!');
 }
 
-main()
-  .catch((e) => {
-    console.error('❌ Seeding failed:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-    await pool.end();
-  });
+if (process.env.SKIP_SEED_DB !== 'true') {
+  main()
+    .catch((e) => {
+      console.error('❌ Seeding failed:', e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+      await pool.end();
+    });
+}

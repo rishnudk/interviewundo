@@ -21,7 +21,7 @@ interface ProblemSeed {
   testCases: TestCaseSeed[];
 }
 
-const functionProblems: ProblemSeed[] = [
+export const functionProblems: ProblemSeed[] = [
   {
     title: 'Debounce Implementation',
     slug: 'debounce-implementation',
@@ -355,11 +355,13 @@ async function main() {
   console.log('🎉 Database seeding complete for function problems!');
 }
 
-main()
-  .catch((e) => {
-    console.error('❌ Seeding failed:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+if (process.env.SKIP_SEED_DB !== 'true') {
+  main()
+    .catch((e) => {
+      console.error('❌ Seeding failed:', e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}

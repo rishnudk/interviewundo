@@ -21,7 +21,7 @@ interface ProblemSeed {
   testCases: TestCaseSeed[];
 }
 
-const nodejsProblems: ProblemSeed[] = [
+export const nodejsProblems: ProblemSeed[] = [
   {
     title: 'Extract Parameter Names Middleware',
     slug: 'extract-parameter-names-middleware',
@@ -209,7 +209,7 @@ function hashSHA256(text) {
       },
       {
         input: '["interview-prep"]',
-        expectedOutput: '"226bc8f15d74944fa12419c8d57577317e08929e0618037305988e404b901594"',
+        expectedOutput: '"baa2db522393c0844badcbabae04cf153af677e68c46d5345f8d0e793355a722"',
         isHidden: true,
         order: 3,
       },
@@ -326,11 +326,13 @@ async function main() {
   console.log('🎉 Database seeding complete for Node.js problems!');
 }
 
-main()
-  .catch((e) => {
-    console.error('❌ Seeding failed:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+if (process.env.SKIP_SEED_DB !== 'true') {
+  main()
+    .catch((e) => {
+      console.error('❌ Seeding failed:', e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}

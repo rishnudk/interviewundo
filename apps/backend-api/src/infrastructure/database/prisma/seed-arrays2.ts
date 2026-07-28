@@ -21,7 +21,7 @@ interface ProblemSeed {
   testCases: TestCaseSeed[];
 }
 
-const arrayProblems: ProblemSeed[] = [
+export const arrayProblems: ProblemSeed[] = [
   {
     title: 'Sum of Elements Using Reduce',
     slug: 'sum-elements-using-reduce',
@@ -225,11 +225,13 @@ async function main() {
   console.log('🎉 Database seeding complete for array problems part 2!');
 }
 
-main()
-  .catch((e) => {
-    console.error('❌ Seeding failed:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+if (process.env.SKIP_SEED_DB !== 'true') {
+  main()
+    .catch((e) => {
+      console.error('❌ Seeding failed:', e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}

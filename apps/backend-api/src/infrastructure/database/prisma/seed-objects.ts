@@ -21,7 +21,7 @@ interface ProblemSeed {
   testCases: TestCaseSeed[];
 }
 
-const objectProblems: ProblemSeed[] = [
+export const objectProblems: ProblemSeed[] = [
   {
     title: 'Remove Last Property',
     slug: 'objects-remove-last-property',
@@ -1315,11 +1315,13 @@ async function main() {
   console.log('🎉 Database seeding complete for object problems!');
 }
 
-main()
-  .catch((e) => {
-    console.error('❌ Seeding failed:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+if (process.env.SKIP_SEED_DB !== 'true') {
+  main()
+    .catch((e) => {
+      console.error('❌ Seeding failed:', e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}

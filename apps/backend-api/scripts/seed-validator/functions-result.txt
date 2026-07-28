@@ -1,0 +1,28 @@
+﻿≡ƒî▒ Starting function problems seeding...
+Processing problem: Debounce Implementation (debounce-implementation)
+
+ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+≡ƒôª  seed-functions.ts
+    5 problems, 8 test cases
+ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+
+  Γ¥î Debounce Implementation
+      Γ£ù #1  input:    ["debounce-test-simple"]
+            expected: "passed"
+D:\interviewUndo\apps\backend-api\scripts\seed-validator\engine.ts:217
+  return s.length > max ? s.slice(0, max - 3) + '...' : s;
+           ^
+System.Management.Automation.RemoteException
+TypeError: Cannot read properties of undefined (reading 'length')
+    at truncate (D:\interviewUndo\apps\backend-api\scripts\seed-validator\engine.ts:217:12)
+    at printReport (D:\interviewUndo\apps\backend-api\scripts\seed-validator\engine.ts:238:52)
+    at <anonymous> (D:\interviewUndo\apps\backend-api\scripts\seed-validator\js\functions.test.ts:4:1)
+    at Object.<anonymous> (D:\interviewUndo\apps\backend-api\scripts\seed-validator\js\functions.test.ts:4:68)
+    at Module._compile (node:internal/modules/cjs/loader:1804:14)
+    at Object.transformer (D:\interviewUndo\node_modules\tsx\dist\register-BOkp8V6j.cjs:9:3176)
+    at Module.load (node:internal/modules/cjs/loader:1525:32)
+    at Module._load (node:internal/modules/cjs/loader:1327:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+System.Management.Automation.RemoteException
+Node.js v24.13.1

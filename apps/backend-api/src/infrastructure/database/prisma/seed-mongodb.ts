@@ -21,7 +21,7 @@ interface ProblemSeed {
   testCases: TestCaseSeed[];
 }
 
-const mongodbProblems: ProblemSeed[] = [
+export const mongodbProblems: ProblemSeed[] = [
   {
     title: 'Calculate Average Marks',
     slug: 'mongodb-average-marks',
@@ -1053,11 +1053,13 @@ async function main() {
   console.log('🎉 Database seeding complete for MongoDB problems!');
 }
 
-main()
-  .catch((e) => {
-    console.error('❌ Seeding failed:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+if (process.env.SKIP_SEED_DB !== 'true') {
+  main()
+    .catch((e) => {
+      console.error('❌ Seeding failed:', e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}

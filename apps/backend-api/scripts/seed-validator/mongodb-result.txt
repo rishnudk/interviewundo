@@ -1,0 +1,156 @@
+﻿
+ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+≡ƒôª  seed-mongodb.ts  (MongoDB Validator)
+    18 problems
+ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+
+  Calculate Average Marks
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£ô #3  OK
+      Γ£ô #4  OK
+      Γ£à 4/4 passed
+
+  Find Second Largest Mark
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£ô #3  OK
+      Γ£ô #4  OK
+      Γ£à 4/4 passed
+
+  Increase Marks by 10 Percent
+      Γ£ù #1  ERROR: SyntaxError: Unexpected token ';'
+      Γ£ù #2  ERROR: SyntaxError: Unexpected token ';'
+      Γ£ù #3  ERROR: SyntaxError: Unexpected token ';'
+      Γ£ù #4  ERROR: SyntaxError: Unexpected token ';'
+      Γ¥î 0/4 passed
+
+  Reduce Salary by 10 Percent
+      Γ£ù #1  ERROR: SyntaxError: Unexpected token ';'
+      Γ£ù #2  ERROR: SyntaxError: Unexpected token ';'
+      Γ£ù #3  ERROR: SyntaxError: Unexpected token ';'
+      Γ£ù #4  ERROR: SyntaxError: Unexpected token ';'
+      Γ¥î 0/4 passed
+
+  Find Names Ending with J
+      Γ£ù #1  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ£ù #2  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ£ù #3  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ£ù #4  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ¥î 0/4 passed
+
+  Group Products by Category
+      Γ£ù #1
+            expected: [{"_id":"Apparel","totalQuantity":15},{"_id":"Electronics","totalQuantity":15}]
+            got:      [{"totalQuantity":15},{"totalQuantity":15}]
+      Γ£ô #2  OK
+      Γ£ù #3
+            expected: [{"_id":"X","totalQuantity":1}]
+            got:      [{"totalQuantity":1}]
+      Γ£ù #4
+            expected: [{"_id":"X","totalQuantity":6},{"_id":"Y","totalQuantity":3}]
+            got:      [{"totalQuantity":6},{"totalQuantity":3}]
+      Γ¥î 1/4 passed
+
+  Find Maximum Price in Category
+      Γ£ù #1
+            expected: [{"_id":"E","maxPrice":200},{"_id":"H","maxPrice":50}]
+            got:      [{"maxPrice":200},{"maxPrice":50}]
+      Γ£ô #2  OK
+      Γ£ù #3
+            expected: [{"_id":"X","maxPrice":10}]
+            got:      [{"maxPrice":10}]
+      Γ¥î 1/3 passed
+
+  Find Minimum Age in Department
+      Γ£ù #1
+            expected: [{"_id":"HR","minAge":40},{"_id":"Sales","minAge":25}]
+            got:      [{"minAge":40},{"minAge":25}]
+      Γ£ô #2  OK
+      Γ£ù #3
+            expected: [{"_id":"IT","minAge":21}]
+            got:      [{"minAge":21}]
+      Γ¥î 1/3 passed
+
+  Find Documents with Equal Fields
+      Γ£ù #1  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ£ù #2  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ£ù #3  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ£ù #4  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ¥î 0/4 passed
+
+  Filter Documents by Array Element Match
+      Γ£ù #1  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ£ù #2  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ£ù #3  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ£ù #4  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ¥î 0/4 passed
+
+  Find Documents with Existing Field
+      Γ£ù #1  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ£ù #2  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ£ù #3  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ£ù #4  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ¥î 0/4 passed
+
+  Run Multi-Pipeline Facets
+      Γ£ô #1  OK
+      Γ£ô #2  OK
+      Γ£ô #3  OK
+      Γ£à 3/3 passed
+
+  Join Collections Using Lookup
+      Γ£ù #1
+            expected: [{"_id":1,"productId":101,"quantity":2,"productDetails":[{"_id":101,"name":"Pen"
+            got:      [{"productId":101,"quantity":2,"productDetails":[{"_id":101,"name":"Pen","price"
+      Γ£ô #2  OK
+      Γ£ù #3
+            expected: [{"_id":2,"productId":999,"productDetails":[]}]
+            got:      [{"productId":999,"productDetails":[]}]
+      Γ¥î 1/3 passed
+
+  Perform Bulk Write Operations
+      Γ£ù #1  ERROR: SyntaxError: Unexpected token ';'
+      Γ£ù #2  ERROR: SyntaxError: Unexpected token ';'
+      Γ£ù #3  ERROR: SyntaxError: Unexpected token ';'
+      Γ¥î 0/3 passed
+
+  Create Database View
+      Γ£ù #1  ERROR: Unsupported solutionCode format:
+try {
+  db.createCollection("active_users", {
+    viewOn: "users",
+
+      Γ£ù #2  ERROR: Unsupported solutionCode format:
+try {
+  db.createCollection("active_users", {
+    viewOn: "users",
+
+      Γ£ù #3  ERROR: Unsupported solutionCode format:
+try {
+  db.createCollection("active_users", {
+    viewOn: "users",
+
+      Γ¥î 0/3 passed
+
+  Active Users Query
+      Γ£ù #1  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ£ù #2  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ¥î 0/2 passed
+
+  Total Revenue by Product
+      Γ£ù #1
+            expected: [{"_id":"Laptop","totalRevenue":3000},{"_id":"Mouse","totalRevenue":75},{"_id":"
+            got:      [{"totalRevenue":3000},{"totalRevenue":75},{"totalRevenue":50}]
+      Γ£ô #2  OK
+      Γ¥î 1/2 passed
+
+  Query Active Mature Users
+      Γ£ù #1  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ£ù #2  ERROR: TypeError: Cannot read properties of undefined (reading 'find')
+      Γ¥î 0/2 passed
+
+ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+Summary: 16 passed, 44 failed ΓÇö 44 FAILED
+ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+

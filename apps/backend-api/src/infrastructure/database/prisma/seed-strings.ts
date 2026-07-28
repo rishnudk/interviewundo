@@ -21,7 +21,7 @@ interface ProblemSeed {
   testCases: TestCaseSeed[];
 }
 
-const stringProblems: ProblemSeed[] = [
+export const stringProblems: ProblemSeed[] = [
   {
     title: 'Reverse String',
     slug: 'reverse-string-basic',
@@ -786,11 +786,13 @@ async function main() {
   console.log('🎉 Database seeding complete for string problems!');
 }
 
-main()
-  .catch((e) => {
-    console.error('❌ Seeding failed:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+if (process.env.SKIP_SEED_DB !== 'true') {
+  main()
+    .catch((e) => {
+      console.error('❌ Seeding failed:', e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}

@@ -21,7 +21,7 @@ interface ProblemSeed {
   testCases: TestCaseSeed[];
 }
 
-const otherJsProblems: ProblemSeed[] = [
+export const otherJsProblems: ProblemSeed[] = [
   // ==========================================
   // OBJECTS (1-23)
   // ==========================================
@@ -1785,7 +1785,7 @@ Return the next integer scaled to the range \`[min, max]\` inclusive: \`Math.flo
     isPublished: true,
     testCases: [
       { input: '[42, 0, 10]', expectedOutput: '2', isHidden: false, order: 1 },
-      { input: '[100, 1, 100]', expectedOutput: '40', isHidden: false, order: 2 },
+      { input: '[100, 1, 100]', expectedOutput: '28', isHidden: false, order: 2 },
     ],
   },
   {
@@ -1962,11 +1962,13 @@ async function main() {
   console.log('🎉 Database seeding complete for other JavaScript topics!');
 }
 
-main()
-  .catch((e) => {
-    console.error('❌ Seeding failed:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+if (process.env.SKIP_SEED_DB !== 'true') {
+  main()
+    .catch((e) => {
+      console.error('❌ Seeding failed:', e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}
