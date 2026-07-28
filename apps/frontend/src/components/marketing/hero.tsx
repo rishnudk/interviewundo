@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Beams from '@/components/ui/ClientBeams';
 import { Component as TrustedDevelopersBadge } from '@/components/ui/avatar-demo';
 import { TechStackGroup } from '@/components/ui/avatar-group-demo';
+import SparkleButton from '@/components/ui/sparkle-button';
 
 async function getPublicStats(): Promise<{
   userCount: number | null;
@@ -55,21 +56,6 @@ export async function Hero() {
 
       <div className="relative z-10 mb-10">
         <TechStackGroup />
-      </div>
-
-      <div className="relative z-10 flex items-center gap-4">
-        <Link
-          href="/register"
-          className="text-fey-white text-sm font-medium px-6 py-3 rounded-full border border-fey-mist/20 bg-[#131313] hover:bg-[#191919] transition-colors shadow-[0_0_14px_rgba(255,255,255,0.25)]"
-        >
-          Get Started
-        </Link>
-        <Link
-          href="https://github.com/rishnudk/interviewundo"
-          className="text-fey-white text-sm font-medium px-6 py-3 rounded-full border border-fey-mist/20 hover:bg-fey-charcoal transition-colors"
-        >
-          View Source
-        </Link>
       </div>
     </section>
   );
