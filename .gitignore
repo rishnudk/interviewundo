@@ -22,6 +22,7 @@ out/
 
 # VPS private reference (contains real passwords — NEVER commit)
 files/vps-private-reference.md
+files/vps-deployment-guide.md
 
 # IDE
 .vscode/

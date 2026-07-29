@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
 import { PasswordStrengthMeter } from './PasswordStrengthMeter';
 import { OAuthButtons } from './OAuthButtons';
+import { Component as TrustedDevelopersBadge } from '@/components/ui/avatar-demo';
 
 export default function RegisterForm() {
   const { register: registerUser } = useAuth();
@@ -54,8 +55,11 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="bg-[#191919] border border-white/5 rounded-[16px] shadow-[0_0_44px_rgba(0,0,0,0.8)] overflow-hidden">
-      <div className="pt-10 pb-6 px-8 text-center flex flex-col items-center">
+    <div className="bg-[#09090B]/60 border border-white/5 rounded-[20px] shadow-[0_24px_80px_rgba(0,0,0,0.8)] backdrop-blur-md overflow-hidden relative">
+      <div className="pt-8 pb-4 px-8 text-center flex flex-col items-center">
+        <div className="mb-4">
+          <TrustedDevelopersBadge />
+        </div>
         <h1 className="text-2xl font-bold tracking-[-0.05em] text-[#ffffff] mb-2">
           Create an account
         </h1>
@@ -85,7 +89,7 @@ export default function RegisterForm() {
               id="name"
               type="text"
               placeholder="John Doe"
-              className={`rounded-xl h-11 border-white/10 bg-[#131313] text-[#ffffff] placeholder:text-[#525252] focus:border-[#479ffa] focus:ring-0 shadow-inner ${
+              className={`rounded-xl h-11 border-white/10 bg-[#131313] text-[#ffffff] placeholder:text-[#525252] focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/50 shadow-inner ${
                 errors.name ? 'border-red-500' : ''
               }`}
               {...register('name')}
@@ -108,7 +112,7 @@ export default function RegisterForm() {
               id="email"
               type="email"
               placeholder="name@example.com"
-              className={`rounded-xl h-11 border-white/10 bg-[#131313] text-[#ffffff] placeholder:text-[#525252] focus:border-[#479ffa] focus:ring-0 shadow-inner ${
+              className={`rounded-xl h-11 border-white/10 bg-[#131313] text-[#ffffff] placeholder:text-[#525252] focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/50 shadow-inner ${
                 errors.email ? 'border-red-500' : ''
               }`}
               {...register('email')}
@@ -132,7 +136,7 @@ export default function RegisterForm() {
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
-                className={`rounded-xl h-11 pr-11 border-white/10 bg-[#131313] text-[#ffffff] placeholder:text-[#525252] focus:border-[#479ffa] focus:ring-0 shadow-inner ${
+                className={`rounded-xl h-11 pr-11 border-white/10 bg-[#131313] text-[#ffffff] placeholder:text-[#525252] focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/50 shadow-inner ${
                   errors.password ? 'border-red-500' : ''
                 }`}
                 {...register('password')}
@@ -159,11 +163,11 @@ export default function RegisterForm() {
           {/* Submit button */}
           <Button
             type="submit"
-            className="w-full h-11 rounded-full bg-[#0b0b0b] hover:bg-[#191919] text-[#ffffff] font-medium border border-white/10 shadow-[0_0_14px_rgba(255,255,255,0.15)] transition-all mt-8"
+            className="w-full h-11 rounded-xl bg-[#22C55E] hover:bg-[#1db053] text-[#09090B] font-bold shadow-[0_4px_20px_rgba(34,197,94,0.15)] transition-all cursor-pointer mt-8"
             disabled={isSubmitting}
           >
             {isSubmitting ? (
-              <span className="flex items-center gap-2">
+              <span className="flex items-center justify-center gap-2">
                 <Loader2 className="animate-spin" size={16} />
                 Creating account...
               </span>
@@ -190,7 +194,7 @@ export default function RegisterForm() {
             Already have an account?{' '}
             <Link
               href="/login"
-              className="font-medium text-[#ffffff] hover:text-[#cccccc] transition-colors"
+              className="font-medium text-[#ffffff] hover:text-[#22C55E] transition-colors"
             >
               Sign In
             </Link>

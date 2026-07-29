@@ -12,7 +12,7 @@ export function OAuthButtons({ disabled }: OAuthButtonsProps) {
       <Button
         type="button"
         variant="outline"
-        className="h-11 rounded-full border border-white/10 bg-[#0b0b0b] hover:bg-[#191919] text-[#ffffff] font-medium transition-colors flex items-center justify-center gap-2"
+        className="h-11 rounded-xl border border-white/5 bg-[#0b0b0b] hover:bg-[#131313] hover:border-white/10 text-[#ffffff] font-medium transition-all flex items-center justify-center gap-2"
         onClick={() => {
           import('next-auth/react').then(({ signIn }) => {
             signIn('github', { callbackUrl: '/dashboard' });
@@ -34,7 +34,7 @@ export function OAuthButtons({ disabled }: OAuthButtonsProps) {
       <Button
         type="button"
         variant="outline"
-        className="h-11 rounded-full border border-white/10 bg-[#0b0b0b] hover:bg-[#191919] text-[#ffffff] font-medium transition-colors flex items-center justify-center gap-2"
+        className="h-11 rounded-xl border border-white/5 bg-[#0b0b0b] hover:bg-[#131313] hover:border-white/10 text-[#ffffff] font-medium transition-all flex items-center justify-center gap-2"
         onClick={() => {
           import('next-auth/react').then(({ signIn }) => {
             signIn('google', { callbackUrl: '/dashboard' });
