@@ -41,9 +41,13 @@ echo "  Running containers:" >> "$LOG"
 docker ps --format "  - {{.Names}} ({{.Status}})" >> "$LOG"
 
 # -----------------------------------------------------------------------------
-# STEP 3: Pull base Docker image for code runners
+# STEP 3: Pull base Docker image for code runners and clean up locks
 # -----------------------------------------------------------------------------
-echo "[3/6] Pulling node:22-slim base image..." >> "$LOG"
+echo "[3/6] Cleaning up old dummy locks and pulling base image..." >> "$LOG"
+
+# Remove old dummy container locks so we can safely rebuild/update images
+docker rm -f dummy-node-base dummy-mongodb-runner dummy-react-runner dummy-sql-runner >> "$LOG" 2>&1
+
 docker pull node:22-slim >> "$LOG" 2>&1
 if [ $? -eq 0 ]; then
     echo "  ✓ node:22-slim pulled." >> "$LOG"
@@ -52,7 +56,7 @@ else
 fi
 
 # -----------------------------------------------------------------------------
-# STEP 4: Build all code runner images for judge worker
+# STEP 4: Build runner images and lock them against pruning
 # -----------------------------------------------------------------------------
 echo "[4/6] Building runner images..." >> "$LOG"
 cd "$PROJECT_DIR" || { echo "  ✗ FAILED: $PROJECT_DIR not found" >> "$LOG"; exit 1; }
@@ -68,6 +72,13 @@ if [ $? -eq 0 ]; then echo "  ✓ node-react-runner:latest built." >> "$LOG"; el
 echo "  Building node-sql-runner..." >> "$LOG"
 docker build -t node-sql-runner:latest -f infrastructure/docker/Dockerfile.sql-runner . >> "$LOG" 2>&1
 if [ $? -eq 0 ]; then echo "  ✓ node-sql-runner:latest built." >> "$LOG"; else echo "  ✗ FAILED: node-sql-runner" >> "$LOG"; fi
+
+echo "  Creating dummy container locks to prevent automatic pruning..." >> "$LOG"
+docker create --name dummy-node-base node:22-slim >> "$LOG" 2>&1
+docker create --name dummy-mongodb-runner node-mongodb-runner:latest >> "$LOG" 2>&1
+docker create --name dummy-react-runner node-react-runner:latest >> "$LOG" 2>&1
+docker create --name dummy-sql-runner node-sql-runner:latest >> "$LOG" 2>&1
+echo "  ✓ Dummy container locks created." >> "$LOG"
 
 echo "  All Docker images:" >> "$LOG"
 docker images --format "  - {{.Repository}}:{{.Tag}} ({{.Size}})" >> "$LOG"
