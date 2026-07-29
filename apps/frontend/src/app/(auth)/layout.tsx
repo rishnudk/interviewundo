@@ -1,6 +1,5 @@
 import React from 'react';
 import CommunityTestimonials from '@/components/CommunityTestimonials/CommunityTestimonials';
-import { mockUsers, mockTestimonials } from '@/components/CommunityTestimonials/mockData';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,7 +11,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
       {/* Right Side: Community Testimonials (hidden on mobile, sticky on desktop) */}
       <div className="hidden lg:block lg:w-[48%] xl:w-[45%] h-screen sticky top-0 p-6 self-start">
-        <CommunityTestimonials users={mockUsers} testimonials={mockTestimonials} />
+        <CommunityTestimonials />
       </div>
     </div>
   );

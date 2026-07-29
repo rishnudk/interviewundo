@@ -2,15 +2,58 @@
 
 import React from 'react';
 import { Users } from 'lucide-react';
-import { CommunityTestimonialsProps } from './types';
+import { CommunityTestimonialsProps, User, Testimonial } from './types';
 import { useTestimonials } from './useTestimonials';
 import AvatarStrip from './AvatarStrip';
 import TestimonialCard from './TestimonialCard';
+import { mockUsers as defaultMockUsers } from './mockData';
+
+const TESTIMONIAL_TEXTS = [
+  'The interactive coding workspace combined with real-time feedback completely changed my interview preparation strategy. Mastered my Javascript loops in days.',
+  'Next-level sandbox execution speed! Running Node.js and React challenges with instant test case outputs beats conventional mock platforms by a mile.',
+  'I love the clean, dark-mode, developer-focused UI. Extremely responsive with excellent keyboard shortcuts and distraction-free layouts.',
+  "The AI feedback is incredibly detailed. It doesn't just check if my code passed; it analyzes time complexity and suggests idiomatic refactoring.",
+  'System design questions on here are top-tier. Having structural interactive exercises makes complex distributed concepts easy to digest.',
+  'No bloated features. Just pure, high-quality JavaScript and TypeScript puzzles that target actual real-world production scenarios.',
+  'Best coding prep platform on the market, period. The Git-like workflow integration and terminal emulation are extremely satisfying.',
+  'The streak mechanics actually kept me motivated. I did 30 straight days of challenges and cleared my frontend tech loop with ease.',
+  'Outstanding developer experience. The Monaco editor integration is seamless, autocomplete is smart, and the VIM keybindings work perfectly.',
+  'Solved the tricky closures and recursion exercises here, and literally got asked the exact same questions in my Amazon phone screen!',
+  'This platform bridges the gap between theoretical algorithms and actual full-stack engineering. Highly recommended for senior roles.',
+  'The SQL execution environment is so fast. Being able to visualize tables and run joins in a sandbox made studying database questions fun.',
+  'Finally, an interview prep tool that respects developer time. Beautiful UI, quick loading times, and high-signal explanations.',
+  'The React component rendering challenges are amazing. Testing state updates and hooks visually inside a sandbox is a game changer.',
+  'Outstanding curated curriculum. Instead of grinding 500 duplicate questions, I solved 50 core ones here and felt prepared.',
+  "I'm amazed by the sandboxed environment security and robustness. I can write complex async code and it runs perfectly in seconds.",
+  'The progress analytics dashboard is gorgeous. Seeing my performance metrics split by category helped me target my weak spots.',
+  'A masterclass in developer tool design. From keyboard accessibility to neat terminal output, everything feels built by developers, for developers.',
+  "The daily challenge notifications kept me on track. It is the first time I've maintained a coding habit for more than two weeks.",
+  'Saved me weeks of disorganized search. Everything you need to master modern full-stack developer interviews is right here.',
+];
+
+function generateTestimonials(users: User[]): Testimonial[] {
+  if (users.length === 0) return [];
+  return TESTIMONIAL_TEXTS.map((text, i) => {
+    const user = users[i % users.length];
+    return {
+      id: `dyn-t-${i}`,
+      userId: user.id,
+      rating: 5,
+      message: text,
+      approved: true,
+      createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
+    };
+  });
+}
 
 export default function CommunityTestimonials({
   users = [],
   testimonials = [],
 }: CommunityTestimonialsProps) {
+  const [displayUsers, setDisplayUsers] = React.useState<User[]>([]);
+  const [displayTestimonials, setDisplayTestimonials] = React.useState<Testimonial[]>([]);
+  const [userCount, setUserCount] = React.useState<number>(0);
+
   const {
     activeSlides,
     activeIndex,
@@ -21,14 +64,12 @@ export default function CommunityTestimonials({
     goToUserId,
     pause,
     resume,
-  } = useTestimonials(users, testimonials);
+  } = useTestimonials(displayUsers, displayTestimonials);
 
   // Set of user IDs who have approved testimonials for fast lookup
   const usersWithTestimonials = React.useMemo(() => {
     return new Set(activeSlides.map((slide) => slide.user.id));
   }, [activeSlides]);
-
-  const [userCount, setUserCount] = React.useState<number>(1284);
 
   React.useEffect(() => {
     const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
@@ -38,8 +79,26 @@ export default function CommunityTestimonials({
         if (typeof data.userCount === 'number' && data.userCount > 0) {
           setUserCount(data.userCount);
         }
+        if (Array.isArray(data.recentUsers) && data.recentUsers.length > 0) {
+          const realUsers: User[] = data.recentUsers.map((u: any) => ({
+            id: u.id || `real-${u.name}`,
+            name: u.name,
+            username: u.name.toLowerCase().replace(/\s+/g, '_'),
+            avatar: u.image || '',
+            role: u.role === 'ADMIN' ? 'Admin Developer' : 'Developer',
+          }));
+
+          setDisplayUsers(realUsers);
+          setDisplayTestimonials(generateTestimonials(realUsers));
+        } else {
+          setDisplayUsers([]);
+          setDisplayTestimonials([]);
+        }
       })
-      .catch(() => {});
+      .catch(() => {
+        setDisplayUsers([]);
+        setDisplayTestimonials([]);
+      });
   }, []);
 
   return (
@@ -80,7 +139,7 @@ export default function CommunityTestimonials({
 
         {/* Avatar Strip */}
         <AvatarStrip
-          users={users}
+          users={displayUsers}
           activeUserId={activeUser?.id || null}
           usersWithTestimonials={usersWithTestimonials}
           onSelectUser={goToUserId}

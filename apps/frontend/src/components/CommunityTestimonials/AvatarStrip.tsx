@@ -6,8 +6,6 @@ import Image from 'next/image';
 import { User } from './types';
 
 export function AvatarImage({ src, alt, name }: { src: string; alt: string; name: string }) {
-  const [imgSrc, setImgSrc] = useState(src);
-
   const fallbackSvg = React.useMemo(() => {
     const svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="#18181b"/><text x="50" y="55" font-family="sans-serif" font-weight="bold" font-size="36" fill="#a1a1aa" text-anchor="middle" dominant-baseline="middle">${name.charAt(0).toUpperCase()}</text></svg>`;
     const base64 =
@@ -16,6 +14,12 @@ export function AvatarImage({ src, alt, name }: { src: string; alt: string; name
         : Buffer.from(svgString).toString('base64');
     return `data:image/svg+xml;base64,${base64}`;
   }, [name]);
+
+  const [imgSrc, setImgSrc] = useState(src || fallbackSvg);
+
+  useEffect(() => {
+    setImgSrc(src || fallbackSvg);
+  }, [src, fallbackSvg]);
 
   return (
     <Image

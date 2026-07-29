@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
 import { OAuthButtons } from '../register/OAuthButtons';
-import { Component as TrustedDevelopersBadge } from '@/components/ui/avatar-demo';
 
 export default function LoginForm() {
   const { login } = useAuth();
@@ -54,9 +53,6 @@ export default function LoginForm() {
   return (
     <div className="bg-[#09090B]/60 border border-white/5 rounded-[20px] shadow-[0_24px_80px_rgba(0,0,0,0.8)] backdrop-blur-md overflow-hidden relative">
       <div className="pt-8 pb-4 px-8 text-center flex flex-col items-center">
-        <div className="mb-4">
-          <TrustedDevelopersBadge />
-        </div>
         <h1 className="text-2xl font-bold tracking-[-0.05em] text-[#ffffff] mb-2">Welcome back</h1>
         <p className="text-[#868f97] text-sm">
           Sign in to your interviewUndo account to continue solving

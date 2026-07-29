@@ -8,12 +8,14 @@ const userRepository = new PrismaUserRepository();
 router.get('/public', async (_req: Request, res: Response) => {
   try {
     const userCount = await userRepository.count();
-    const recentUsers = await userRepository.findRecentWithImages(10);
+    const recentUsers = await userRepository.findRecent(20);
     res.json({
       userCount,
       recentUsers: recentUsers.map((u) => ({
+        id: u.id,
         name: u.name,
         image: u.image,
+        role: u.role,
         createdAt: u.createdAt,
       })),
     });

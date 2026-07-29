@@ -17,6 +17,6 @@ export interface Testimonial {
 }
 
 export interface CommunityTestimonialsProps {
-  users: User[];
-  testimonials: Testimonial[];
+  users?: User[];
+  testimonials?: Testimonial[];
 }

@@ -136,4 +136,15 @@ export class PrismaUserRepository implements IUserRepository {
 
     return prismaUsers.map(this.mapPrismaUser);
   }
+
+  async findRecent(limit: number): Promise<User[]> {
+    const prismaUsers = await prisma.user.findMany({
+      take: limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return prismaUsers.map(this.mapPrismaUser);
+  }
 }

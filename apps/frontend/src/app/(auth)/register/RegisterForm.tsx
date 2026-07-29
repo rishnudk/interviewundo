@@ -57,9 +57,6 @@ export default function RegisterForm() {
   return (
     <div className="bg-[#09090B]/60 border border-white/5 rounded-[20px] shadow-[0_24px_80px_rgba(0,0,0,0.8)] backdrop-blur-md overflow-hidden relative">
       <div className="pt-8 pb-4 px-8 text-center flex flex-col items-center">
-        <div className="mb-4">
-          <TrustedDevelopersBadge />
-        </div>
         <h1 className="text-2xl font-bold tracking-[-0.05em] text-[#ffffff] mb-2">
           Create an account
         </h1>

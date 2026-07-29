@@ -26,6 +26,8 @@ export interface IUserRepository {
 
   findRecentWithImages?(limit: number): Promise<User[]>;
 
+  findRecent(limit: number): Promise<User[]>;
+
   updateStreak(userId: string, streak: number, lastActiveAt: Date): Promise<void>;
 
   update(
