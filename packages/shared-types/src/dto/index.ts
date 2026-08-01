@@ -131,3 +131,44 @@ export const UpdateFeatureRequestStatusSchema = z.object({
 
 export type CreateFeatureRequestDTO = z.infer<typeof CreateFeatureRequestSchema>;
 export type UpdateFeatureRequestStatusDTO = z.infer<typeof UpdateFeatureRequestStatusSchema>;
+
+export const CreateTestimonialSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(100),
+  title: z.string().min(1, 'Title is required').max(100),
+  linkedin: z.string().optional().nullable(),
+  twitter: z.string().optional().nullable(),
+  content: z.string().min(10, 'Testimonial must be at least 10 characters').max(1000),
+  rating: z.number().int().min(1).max(5).optional().default(5),
+  isFeatured: z.boolean().optional().default(true),
+});
+
+export interface CreateTestimonialDTO {
+  userId?: string;
+  name: string;
+  title: string;
+  linkedin?: string | null;
+  twitter?: string | null;
+  content: string;
+  rating?: number;
+  isFeatured?: boolean;
+}
+
+export interface TestimonialResponseDTO {
+  id: string;
+  userId: string;
+  name: string;
+  title: string;
+  linkedin?: string;
+  twitter?: string;
+  content: string;
+  rating: number;
+  isFeatured: boolean;
+  createdAt: string;
+  updatedAt: string;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    image?: string | null;
+  };
+}

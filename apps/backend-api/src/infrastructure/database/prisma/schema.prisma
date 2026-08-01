@@ -60,6 +60,8 @@ model User {
   lastActiveAt DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+  testimonial             Testimonial?
+  hasSubmittedTestimonial Boolean      @default(false)
 
   submissions     Submission[]
   hintUsages      HintUsage[]
@@ -103,6 +105,25 @@ model Problem {
   @@index([isPublished])
   @@map("problems")
 }
+
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  name        String
+  title       String
+  linkedin    String?
+  twitter     String?
+  content     String   @db.Text
+  rating      Int      @default(5)
+  isFeatured  Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@map("testimonials")
+}
+
 
 model TestCase {
   id             String   @id @default(cuid())

@@ -73,32 +73,61 @@ export default function CommunityTestimonials({
 
   React.useEffect(() => {
     const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
-    fetch(`${apiUrl}/api/stats/public`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (typeof data.userCount === 'number' && data.userCount > 0) {
-          setUserCount(data.userCount);
-        }
-        if (Array.isArray(data.recentUsers) && data.recentUsers.length > 0) {
-          const realUsers: User[] = data.recentUsers.map((u: any) => ({
-            id: u.id || `real-${u.name}`,
-            name: u.name,
-            username: u.name.toLowerCase().replace(/\s+/g, '_'),
-            avatar: u.image || '',
-            role: u.role === 'ADMIN' ? 'Admin Developer' : 'Developer',
-          }));
 
-          setDisplayUsers(realUsers);
-          setDisplayTestimonials(generateTestimonials(realUsers));
-        } else {
-          setDisplayUsers([]);
-          setDisplayTestimonials([]);
-        }
-      })
-      .catch(() => {
-        setDisplayUsers([]);
-        setDisplayTestimonials([]);
-      });
+    // Fetch stats user count and real testimonials simultaneously
+    Promise.all([
+      fetch(`${apiUrl}/api/stats/public`)
+        .then((res) => res.json())
+        .catch(() => ({})),
+      fetch(`${apiUrl}/api/testimonials/public`)
+        .then((res) => res.json())
+        .catch(() => ({})),
+    ]).then(([statsData, testimonialsData]) => {
+      if (typeof statsData.userCount === 'number' && statsData.userCount > 0) {
+        setUserCount(statsData.userCount);
+      }
+
+      const realTestimonialsList: any[] = testimonialsData.data || [];
+
+      if (realTestimonialsList.length > 0) {
+        const users: User[] = realTestimonialsList.map((t: any) => ({
+          id: t.userId || t.id,
+          name: t.name || t.user?.name || 'Developer',
+          username: (t.twitter || t.name || 'dev')
+            .replace(/^@/, '')
+            .toLowerCase()
+            .replace(/\s+/g, '_'),
+          avatar: t.user?.image || '',
+          role: t.title || 'Software Engineer',
+        }));
+
+        const testimonials: Testimonial[] = realTestimonialsList.map((t: any, i: number) => ({
+          id: t.id || `t-${i}`,
+          userId: t.userId,
+          message: t.content,
+          rating: t.rating || 5,
+          approved: true,
+          createdAt: t.createdAt,
+        }));
+
+        setDisplayUsers(users);
+        setDisplayTestimonials(testimonials);
+      } else if (Array.isArray(statsData.recentUsers) && statsData.recentUsers.length > 0) {
+        const fallbackUsers: User[] = statsData.recentUsers.map((u: any) => ({
+          id: u.id || `real-${u.name}`,
+          name: u.name,
+          username: u.name.toLowerCase().replace(/\s+/g, '_'),
+          avatar: u.image || '',
+          role: u.role === 'ADMIN' ? 'Admin Developer' : 'Developer',
+        }));
+
+        setDisplayUsers(fallbackUsers);
+        setDisplayTestimonials(generateTestimonials(fallbackUsers));
+      } else {
+        setDisplayUsers(defaultMockUsers);
+        setDisplayTestimonials(generateTestimonials(defaultMockUsers));
+      }
+    });
   }, []);
 
   return (

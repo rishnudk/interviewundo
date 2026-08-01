@@ -11,6 +11,7 @@ import ReactWorkspace from '@/components/workspace/ReactWorkspace';
 import { Problem } from '@interviewprep/shared-types';
 import { ProblemDescriptionPanel } from './ProblemDescriptionPanel';
 import { ProblemEditorPanel } from './ProblemEditorPanel';
+import FirstSubmissionTestimonialModal from '@/components/testimonials/FirstSubmissionTestimonialModal';
 
 const getCategoryEditorConfig = (cat: string) => {
   switch (cat) {
@@ -204,6 +205,8 @@ export default function ProblemWorkspacePage() {
     }
   };
 
+  const [showTestimonialModal, setShowTestimonialModal] = useState(false);
+
   // Listen for real-time WebSocket updates
   useEffect(() => {
     if (!socket || !activeJobId) return;
@@ -255,6 +258,14 @@ export default function ProblemWorkspacePage() {
           payload.status === 'Finished'
         ) {
           showSuccess('All tests passed! Solution Accepted.');
+          // Check testimonial eligibility after successful submission
+          apiFetch<{ data: { isEligible: boolean } }>('/api/testimonials/check')
+            .then((res) => {
+              if (res?.data?.isEligible) {
+                setShowTestimonialModal(true);
+              }
+            })
+            .catch(() => {});
         } else if (payload.status === 'WRONG_ANSWER') {
           showError('Wrong Answer: Some test cases failed.');
         } else if (payload.status === 'TIME_LIMIT_EXCEEDED') {
@@ -562,6 +573,11 @@ export default function ProblemWorkspacePage() {
           <div className="absolute inset-0 bg-transparent z-[9999] cursor-col-resize select-none pointer-events-auto" />
         )}
       </div>
+
+      <FirstSubmissionTestimonialModal
+        isOpen={showTestimonialModal}
+        onClose={() => setShowTestimonialModal(false)}
+      />
     </div>
   );
 }

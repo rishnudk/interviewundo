@@ -6,6 +6,7 @@ import SparkleButton from '@/components/ui/sparkle-button';
 
 async function getPublicStats(): Promise<{
   userCount: number | null;
+  submissionCount: number | null;
   recentUsers?: { name: string; image: string | null }[];
 }> {
   try {
@@ -13,10 +14,10 @@ async function getPublicStats(): Promise<{
     const res = await fetch(`${apiUrl}/api/stats/public`, {
       next: { revalidate: 60 },
     });
-    if (!res.ok) return { userCount: null, recentUsers: [] };
+    if (!res.ok) return { userCount: null, submissionCount: null, recentUsers: [] };
     return await res.json();
   } catch {
-    return { userCount: null, recentUsers: [] };
+    return { userCount: null, submissionCount: null, recentUsers: [] };
   }
 }
 
@@ -41,7 +42,11 @@ export async function Hero() {
       </div>
 
       <div className="relative z-10 mb-6">
-        <TrustedDevelopersBadge initialCount={stats.userCount} recentUsers={stats.recentUsers} />
+        <TrustedDevelopersBadge
+          initialCount={stats.userCount}
+          recentUsers={stats.recentUsers}
+          submissionCount={stats.submissionCount}
+        />
       </div>
 
       <h1 className="relative z-10 text-5xl md:text-[54px] font-bold text-fey-white leading-[1.1] tracking-[-0.08em] max-w-3xl mb-6">

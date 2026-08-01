@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Users } from 'lucide-react';
+import { Users, Zap } from 'lucide-react';
 const AVATARS = [
   {
     src: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
@@ -33,13 +33,47 @@ function getInitials(name: string): string {
   return (parts[0][0] + (parts[parts.length - 1]?.[0] || '')).toUpperCase();
 }
 
+function useAnimatedCount(target: number | null, duration = 1200): number | null {
+  const [value, setValue] = React.useState<number | null>(null);
+
+  React.useEffect(() => {
+    if (target === null || target === undefined) return;
+    const targetVal = target;
+
+    let start = 0;
+    const startTime = performance.now();
+
+    function tick(now: number) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(eased * targetVal);
+      setValue(current);
+      if (progress < 1) {
+        requestAnimationFrame(tick);
+      }
+    }
+
+    requestAnimationFrame(tick);
+  }, [target, duration]);
+
+  return value;
+}
+
 interface TrustedDevelopersBadgeProps {
   initialCount?: number | null;
   recentUsers?: Array<{ name: string; image: string | null }>;
+  submissionCount?: number | null;
 }
 
-function Component({ initialCount, recentUsers }: TrustedDevelopersBadgeProps = {}) {
+function Component({
+  initialCount,
+  recentUsers,
+  submissionCount,
+}: TrustedDevelopersBadgeProps = {}) {
   const [userCount, setUserCount] = React.useState<number | null>(initialCount ?? null);
+  const [submissions, setSubmissions] = React.useState<number | null>(submissionCount ?? null);
   const [users, setUsers] = React.useState<Array<{ name: string; image: string | null }>>(() => {
     return recentUsers ?? [];
   });
@@ -54,6 +88,9 @@ function Component({ initialCount, recentUsers }: TrustedDevelopersBadgeProps = 
         if (typeof data.userCount === 'number' && data.userCount > 0) {
           setUserCount(data.userCount);
         }
+        if (typeof data.submissionCount === 'number' && data.submissionCount > 0) {
+          setSubmissions(data.submissionCount);
+        }
         if (Array.isArray(data.recentUsers)) {
           setUsers(data.recentUsers);
         }
@@ -62,6 +99,15 @@ function Component({ initialCount, recentUsers }: TrustedDevelopersBadgeProps = 
         // Fallback silently if API is offline or unreachable
       });
   }, [initialCount, recentUsers]);
+
+  // Sync props on SSR → client hydration
+  React.useEffect(() => {
+    if (submissionCount !== undefined && submissionCount !== null) {
+      setSubmissions(submissionCount);
+    }
+  }, [submissionCount]);
+
+  const animatedSubmissions = useAnimatedCount(submissions);
 
   const displayAvatars =
     users.length > 0
@@ -102,6 +148,20 @@ function Component({ initialCount, recentUsers }: TrustedDevelopersBadgeProps = 
           developers.
         </p>
       </div>
+      {submissions !== null && submissions > 0 && (
+        <>
+          <span className="text-fey-mist/30 text-xs select-none px-1">·</span>
+          <div className="flex items-center gap-1.5">
+            <Zap className="w-3.5 h-3.5 text-[#ffa16c]" />
+            <p className="text-xs text-fey-graphite">
+              <strong className="font-semibold text-fey-white">
+                {(animatedSubmissions ?? submissions).toLocaleString()}+
+              </strong>{' '}
+              submissions
+            </p>
+          </div>
+        </>
+      )}
     </div>
   );
 }

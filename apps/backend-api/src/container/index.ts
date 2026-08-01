@@ -65,12 +65,21 @@ import { FeatureRequestController } from '../presentation/controllers/FeatureReq
 // Wire Dependencies
 // ============================================================
 
+import { PrismaTestimonialRepository } from '../infrastructure/database/repositories/PrismaTestimonialRepository';
+import { CreateTestimonial } from '../application/use-cases/testimonial/CreateTestimonial';
+import { GetTestimonialsByUserId } from '../application/use-cases/testimonial/GetTestimonialsByUserId';
+import { GetPublicTestimonials } from '../application/use-cases/testimonial/GetPublicTestimonials';
+import { DeleteTestimonial } from '../application/use-cases/testimonial/DeleteTestimonial';
+import { CheckTestimonialEligibility } from '../application/use-cases/testimonial/CheckTestimonialEligibility';
+import { TestimonialController } from '../presentation/controllers/TestimonialController';
+
 // Step 1: Instantiate infrastructure
 const userRepository = new PrismaUserRepository();
 const problemRepository = new PrismaProblemRepository();
 const submissionRepository = new PrismaSubmissionRepository();
 const testCaseRepository = new PrismaTestCaseRepository();
 const featureRequestRepository = new PrismaFeatureRequestRepository();
+const testimonialRepository = new PrismaTestimonialRepository();
 const authTokenService = new JoseAuthTokenService();
 const passwordService = new Argon2PasswordService();
 const cacheService = new RedisCacheService();
@@ -124,6 +133,16 @@ const createFeatureRequest = new CreateFeatureRequest(featureRequestRepository);
 const getFeatureRequests = new GetFeatureRequests(featureRequestRepository);
 const upvoteFeatureRequest = new UpvoteFeatureRequest(featureRequestRepository);
 
+// Testimonials
+const createTestimonial = new CreateTestimonial(testimonialRepository);
+const getTestimonialsByUserId = new GetTestimonialsByUserId(testimonialRepository);
+const getPublicTestimonials = new GetPublicTestimonials(testimonialRepository);
+const deleteTestimonial = new DeleteTestimonial(testimonialRepository);
+const checkTestimonialEligibility = new CheckTestimonialEligibility(
+  testimonialRepository,
+  submissionRepository,
+);
+
 // Step 3: Instantiate controllers
 const authController = new AuthController(
   registerUser,
@@ -167,6 +186,13 @@ const featureRequestController = new FeatureRequestController(
   getFeatureRequests,
   upvoteFeatureRequest,
 );
+const testimonialController = new TestimonialController(
+  createTestimonial,
+  getTestimonialsByUserId,
+  getPublicTestimonials,
+  deleteTestimonial,
+  checkTestimonialEligibility,
+);
 
 // Step 4: Export container
 export const container = {
@@ -177,6 +203,7 @@ export const container = {
     testCaseRepository,
     hintUsageRepository,
     featureRequestRepository,
+    testimonialRepository,
   },
   services: {
     authTokenService,
@@ -213,6 +240,11 @@ export const container = {
     createFeatureRequest,
     getFeatureRequests,
     upvoteFeatureRequest,
+    createTestimonial,
+    getTestimonialsByUserId,
+    getPublicTestimonials,
+    deleteTestimonial,
+    checkTestimonialEligibility,
   },
   controllers: {
     authController,
@@ -221,5 +253,6 @@ export const container = {
     dashboardController,
     adminController,
     featureRequestController,
+    testimonialController,
   },
 };
