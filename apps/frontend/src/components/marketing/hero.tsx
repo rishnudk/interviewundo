@@ -6,7 +6,7 @@ import SparkleButton from '@/components/ui/sparkle-button';
 
 async function getPublicStats(): Promise<{
   userCount: number | null;
-  submissionCount: number | null;
+  // submissionCount: number | null;
   recentUsers?: { name: string; image: string | null }[];
 }> {
   try {
@@ -14,10 +14,10 @@ async function getPublicStats(): Promise<{
     const res = await fetch(`${apiUrl}/api/stats/public`, {
       next: { revalidate: 60 },
     });
-    if (!res.ok) return { userCount: null, submissionCount: null, recentUsers: [] };
+    if (!res.ok) return { userCount: null, recentUsers: [] };
     return await res.json();
   } catch {
-    return { userCount: null, submissionCount: null, recentUsers: [] };
+    return { userCount: null, recentUsers: [] };
   }
 }
 
@@ -45,7 +45,7 @@ export async function Hero() {
         <TrustedDevelopersBadge
           initialCount={stats.userCount}
           recentUsers={stats.recentUsers}
-          submissionCount={stats.submissionCount}
+          // submissionCount={stats.submissionCount}
         />
       </div>
 
